@@ -51,4 +51,5 @@ Thumbs.db
 # Custom
 *.tmp
 tmp
+lib
 
