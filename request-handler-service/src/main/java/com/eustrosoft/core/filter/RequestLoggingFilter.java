@@ -1,0 +1,86 @@
+package com.eustrosoft.core.filter;
+
+import com.eustrosoft.core.tools.ColorTextUtil;
+import com.eustrosoft.core.tools.LogFormatter;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.eustrosoft.core.filter.Constants.LOGGING_FILE_NAME;
+import static com.eustrosoft.core.filter.Constants.PROPERTY_LOG_FILE;
+
+@WebFilter(
+        urlPatterns = {"/*"},
+        filterName = "RequestLoggingFilter",
+        description = "Logging Filter"
+)
+public class RequestLoggingFilter implements Filter {
+    private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class.getName());
+    private static final Properties loggingProperties = new Properties();
+    private static FileHandler fileHandler;
+    private static ConsoleHandler consoleHandler;
+
+    public void init(FilterConfig filterConfig) throws ServletException {
+        addConsoleHandler();
+        addFileHandler();
+    }
+
+    public void doFilter(ServletRequest req, ServletResponse resp,
+                         FilterChain chain) throws IOException, ServletException {
+        logger.log(Level.INFO,
+                String.format("Produced request from: %s. Protocol: %s. Content-Type:%s",
+                        req.getRemoteAddr(), req.getProtocol(), req.getContentType())
+        );
+        chain.doFilter(req, resp);
+    }
+
+    public void destroy() {
+    }
+
+    private void addFileHandler() {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(LOGGING_FILE_NAME)) {
+            if (input == null) {
+                logger.warning("Unable to find logging.properties.\nFile logging will be unavailable.\n");
+                return;
+            }
+            loggingProperties.load(input);
+            String logFilePath = loggingProperties.getProperty(PROPERTY_LOG_FILE);
+            if (logFilePath == null) {
+                logger.warning("Property file was found, but " +
+                        ColorTextUtil.getColoredString("logFile", ColorTextUtil.Color.GREEN) +
+                        " property wasn't found.");
+                return;
+            }
+            File logFile = new File(logFilePath);
+            if (!logFile.exists()) {
+                logger.warning("Property was found, but " +
+                        ColorTextUtil.getColoredString("file", ColorTextUtil.Color.GREEN) +
+                        " does not exist.");
+                return;
+            }
+            fileHandler = new FileHandler(logFilePath, true);
+            fileHandler.setFormatter(new LogFormatter());
+            logger.addHandler(fileHandler);
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, "Error while processing properties.");
+        }
+    }
+
+    private void addConsoleHandler() {
+        consoleHandler = new ConsoleHandler();
+        logger.addHandler(consoleHandler);
+    }
+}
