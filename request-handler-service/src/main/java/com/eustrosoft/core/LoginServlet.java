@@ -2,13 +2,14 @@ package com.eustrosoft.core;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import static com.eustrosoft.core.Constants.SESSION_TIMEOUT;
 
 @WebServlet(
         urlPatterns = {"/login"}
@@ -29,10 +30,7 @@ public class LoginServlet extends HttpServlet {
                 oldSession.invalidate();
             }
             HttpSession newSession = request.getSession(true);
-            newSession.setMaxInactiveInterval(1 * 60);
-
-            Cookie message = new Cookie("message", "Welcome");
-            response.addCookie(message);
+            newSession.setMaxInactiveInterval(SESSION_TIMEOUT);
             response.sendRedirect("api/dispatch");
         } else {
             response.sendRedirect("login");
