@@ -15,10 +15,10 @@ pipelines:
               - pipe: atlassian/checkstyle-report:0.3.0
         - step:
             name: Build Front
-            caches:
-              - node
+            image: node:latest
             script:
               - cd request-handler-front
+              - npm install
               - npm run build
               - cd ..
             after-script:
