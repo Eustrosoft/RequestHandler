@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static com.eustrosoft.core.Constants.SESSION_TIMEOUT;
 
@@ -22,7 +21,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
-        String password = request.getParameter("pwd");
+        String password = request.getParameter("password");
 
         if (this.username.equals(username) && this.password.equals(password)) {
             HttpSession oldSession = request.getSession(false);
@@ -33,23 +32,7 @@ public class LoginServlet extends HttpServlet {
             newSession.setMaxInactiveInterval(SESSION_TIMEOUT);
             response.sendRedirect("api/dispatch");
         } else {
-            response.sendRedirect("login");
+            response.sendRedirect("index.jsp");
         }
-    }
-
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        PrintWriter writer = response.getWriter();
-        response.setContentType("text/html");
-        writer.println("<form action=\"login\" method=\"post\">\n" +
-                "\n" +
-                "    Username: <input type=\"text\" name=\"username\">\n" +
-                "    <br>\n" +
-                "    Password: <input type=\"password\" name=\"pwd\">\n" +
-                "    <br><br>\n" +
-                "    <input type=\"submit\" value=\"Login\">\n" +
-                "</form>");
-        writer.flush();
-        writer.close();
     }
 }

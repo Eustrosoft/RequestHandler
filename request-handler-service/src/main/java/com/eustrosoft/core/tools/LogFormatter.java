@@ -9,7 +9,7 @@ import java.util.logging.LogRecord;
 public class LogFormatter extends Formatter {
     @Override
     public String format(LogRecord record) {
-        return String.format("\n[%s] %s: %s",
+        return String.format("[%s] %s: %s\n",
                 record.getLevel().getName(),
                 getFormattedDate(record.getMillis()),
                 record.getMessage());
