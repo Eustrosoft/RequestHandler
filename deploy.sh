@@ -1,0 +1,1 @@
+cp request-handler-service/target/request-handler-service-1.0-SNAPSHOT.war /opt/homebrew/Cellar/tomcat@9/9.0.69/libexec/webapps/Eustrosoft

@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: SansSerif, serif;
+}
+
+.mainContainer {
+    margin: auto;
+    height: 100vh;
+    max-width: 900px;
+}
+
+.containerHeader {
+    text-align: center;
+    color: black;
+    font-size: 44px;
+    font-weight: bolder;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.containerBody {
+    text-align: center;
+    padding: 0 30px;
+}
+
+.containerFormHeader {
+    color: darkgray;
+    font-size: 30px;
+    font-weight: bold;
+    padding: 35px;
+}
+
+.containerForm {
+    font-weight: normal;
+    font-size: 20px;
+}
