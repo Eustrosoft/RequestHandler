@@ -21,7 +21,7 @@ import java.io.IOException;
 public class AuthorizedRequestFilter implements Filter {
     private ServletContext servletContext;
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         servletContext = filterConfig.getServletContext();
     }
 
@@ -33,7 +33,6 @@ public class AuthorizedRequestFilter implements Filter {
         HttpSession session = request.getSession(false);
         if (session == null) {
             this.servletContext.log("Unauthorized access request");
-            response.sendRedirect(request.getContextPath() + "/login");
         } else {
             chain.doFilter(request, response);
         }
