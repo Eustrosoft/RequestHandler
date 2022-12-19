@@ -1,20 +1,12 @@
-import axios from "axios";
-import {APP_URL} from "../Constants";
+import PostService from "./PostService";
 
 export default class LoginService {
 
     static async login(body) {
-        return await fetch(`${APP_URL}login`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        })
+        return await PostService.post('login', body);
     }
 
     static async logout() {
-        return await axios.post(`${APP_URL}logout`)
+        return await PostService.post('logout', '');
     }
 }

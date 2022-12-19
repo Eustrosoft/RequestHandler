@@ -1,20 +1,24 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import Header from "../ui/Header/Header";
 import Form from "../ui/Form/Form";
 import Input from "../ui/Input/Input";
 import LoginService from "../api/LoginService";
+import {AuthContext} from "../context";
 
 function LoginPage() {
     const [login, setLogin] = useState({login: '', password: ''});
+    const {isAuth, setIsAuth} = useContext(AuthContext);
 
     const loginAction = (e) => {
         e.preventDefault();
         LoginService.login(login)
             .then(function (response) {
                 if (response.ok) {
-                    window.open("http://localhost:8080/eustrosofthandler_war/api/dispatch", "_self");
+                    setIsAuth(true);
+                    localStorage.setItem('auth', 'true');
+                    window.open("main", "_self");
                 }
-            }).catch(err => console.log(err));
+            }).catch(err => alert("Not logined"));
     }
 
     return (

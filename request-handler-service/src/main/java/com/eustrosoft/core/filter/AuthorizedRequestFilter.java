@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 @WebFilter(
         urlPatterns = {"/api/*"},
@@ -19,6 +21,7 @@ import java.io.IOException;
         description = "Authorized Filter"
 )
 public class AuthorizedRequestFilter implements Filter {
+    private Set<String> excluded = new HashSet<>(Set.of("/api/login"));
     private ServletContext servletContext;
 
     public void init(FilterConfig filterConfig) {
@@ -30,11 +33,19 @@ public class AuthorizedRequestFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
 
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            this.servletContext.log("Unauthorized access request");
+        String path = request.getRequestURI()
+                .substring(request.getContextPath().length())
+                .replaceAll("[/]+$", "");
+        if (excluded.contains(path)) {
+            chain.doFilter(req, resp);
         } else {
-            chain.doFilter(request, response);
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                this.servletContext.log("Unauthorized access request");
+                response.sendError(501);
+            } else {
+                chain.doFilter(req, resp);
+            }
         }
     }
 

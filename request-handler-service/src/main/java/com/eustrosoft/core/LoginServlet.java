@@ -12,7 +12,7 @@ import java.io.IOException;
 import static com.eustrosoft.core.Constants.SESSION_TIMEOUT;
 
 @WebServlet(
-        urlPatterns = {"/login"}
+        urlPatterns = {"/api/login"}
 )
 public class LoginServlet extends HttpServlet {
 
@@ -33,8 +33,12 @@ public class LoginServlet extends HttpServlet {
             }
             HttpSession newSession = request.getSession(true);
             newSession.setMaxInactiveInterval(SESSION_TIMEOUT);
+            String cookie = response.getHeader("Set-Cookie");
+            String[] cookies = cookie.split(";");
+            cookie = String.format("%s; Path=/; %s", cookies[0], cookies[2]);
+            response.setHeader("Set-Cookie", cookie);
         } else {
-            response.sendRedirect("index.jsp");
+            response.sendError(501, "Unauthorized");
         }
     }
 }

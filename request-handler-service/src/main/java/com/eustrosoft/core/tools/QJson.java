@@ -550,7 +550,7 @@ public class QJson {
     } // parseJSONReader()
 
     // return next string token from stream
-// word, spaces, string, crlf, {, [, },], \
+    // word, spaces, string, crlf, {, [, },], \
     private int skipSpaceAny(Reader json)
             throws IOException {
         int c = json.read();

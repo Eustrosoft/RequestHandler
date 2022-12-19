@@ -1,2 +1,3 @@
-export const SERVER_URL = "http://localhost:8080/";
-export const APP_URL = SERVER_URL + "eustrosofthandler_war/";
+export const SERVER_URL = "http://localhost:3000";
+export const API_URL = "/api/";
+export const APP_URL = SERVER_URL + API_URL;
