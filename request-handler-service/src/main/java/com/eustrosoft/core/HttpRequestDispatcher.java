@@ -5,6 +5,7 @@ import com.eustrosoft.core.handlers.QTisRequestObject;
 import com.eustrosoft.core.handlers.RequestObject;
 import com.eustrosoft.core.handlers.Response;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.tools.QJson;
@@ -48,9 +49,12 @@ public class HttpRequestDispatcher extends HttpServlet {
         QJson qJson = new QJson();
         qJson.parseJSONReader(request.getReader());
         RequestObject requestObject = new QTisRequestObject();
-        requestObject.setqTisEnd(qJson.getItemString("qTisEnd").equals("true"));
-        requestObject.setqTisVer(Integer.parseInt(qJson.getItemString("qTisVer")));
+        requestObject.setqTisEnd((Boolean) qJson.getItem("qtisend"));
+        requestObject.setqTisVer((Long) qJson.getItem("qtisver"));
         QJson requestsArray = qJson.getItemQJson("requests");
+
+        // Parsing query and getting request blocks
+
         List<RequestBlock> requestBlocks = new ArrayList<>();
         for (int i = 0; i < requestsArray.size(); i++) {
             QJson reqst = requestsArray.getItemQJson(i);
@@ -59,40 +63,52 @@ public class HttpRequestDispatcher extends HttpServlet {
             RequestBlock requestBlock;
             switch (subsys) {
                 case "sql":
-                    requestBlock = new SQLRequestBlock();
+                    QJson sqlParams = reqst.getItemQJson("parameters");
+                    requestBlock = new SQLRequestBlock(sqlParams);
+                    requestBlocks.add(requestBlock);
                     break;
                 case "file":
                     System.out.println("File processing...");
+                    //requestBlocks.add(requestBlock);
                     break;
                 default:
                     break;
             }
         }
-        //requestObject.setRequestBlocks();
 
-        // for {
-        QJson reqs = qJson.getItemQJson("requests"); // List<QJSon>
-        String subsys = reqs.getItemString("subsystem");
-        String req = reqs.getItemString("request");
-        Handler handler;
-        RequestBlock requestBlock = null;
-        switch (subsys) {
-            case "sql":
-                requestBlock = new SQLRequestBlock();
-                handler = new SQLHandler();
-                break;
-            case "file":
-                System.out.println("File processing...");
-                handler = null;
-                break;
-            default:
-                handler = null;
-                break;
+        // Processing request blocks
+
+        for (RequestBlock block : requestBlocks) {
+            Handler handler;
+            String requestType = block.getRequest();
+            switch (requestType) {
+                case "sql":
+                    handler = new SQLHandler();
+                    break;
+                case "file":
+                    System.out.println("File processing...");
+                    handler = null;
+                    break;
+                default:
+                    handler = null;
+                    break;
+            }
+            if (handler != null) {
+                int exCount = 0;
+                StringBuilder exceptionsBuilder = new StringBuilder();
+                try {
+                    ResponseBlock respBlock = handler.processRequest(block);
+                } catch (Exception ex) {
+                    exCount += 1;
+                    exceptionsBuilder.append(ex.getMessage()).append("\n");
+                }
+                System.out.println(
+                        String.format("%d exceptions occurred\n%s errors msgs",
+                                exCount, exceptionsBuilder)
+                );
+            }
         }
-        if (handler != null) {
-            handler.processRequest(requestBlock);
-        }
-        // }
+
         return null;
     }
 }

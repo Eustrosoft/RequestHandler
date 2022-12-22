@@ -1,7 +1,8 @@
 package com.eustrosoft.core.handlers;
 
 import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
 public interface Handler {
-    void processRequest(RequestBlock requestBlock);
+    ResponseBlock processRequest(RequestBlock requestBlock) throws Exception;
 }

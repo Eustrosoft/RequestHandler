@@ -1,11 +1,13 @@
 package com.eustrosoft.core.handlers;
 
+import com.eustrosoft.core.handlers.requests.RequestBlock;
+
 import java.util.List;
 
 public interface Request {
-    int getqTisVer();
+    long getqTisVer();
 
-    List<RequestObject> getRequests();
+    List<RequestBlock> getRequests();
 
     boolean getqTisEnd();
 }
