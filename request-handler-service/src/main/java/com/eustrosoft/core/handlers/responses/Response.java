@@ -1,11 +1,9 @@
-package com.eustrosoft.core.handlers;
-
-import com.eustrosoft.core.handlers.responses.ResponseBlock;
+package com.eustrosoft.core.handlers.responses;
 
 import java.util.List;
 
 public interface Response {
-    int getQTisVer();
+    long getQTisVer();
 
     List<ResponseBlock> getResponse();
 

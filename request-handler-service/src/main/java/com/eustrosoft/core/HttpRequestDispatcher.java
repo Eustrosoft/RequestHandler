@@ -1,10 +1,12 @@
 package com.eustrosoft.core;
 
 import com.eustrosoft.core.handlers.Handler;
-import com.eustrosoft.core.handlers.QTisRequestObject;
-import com.eustrosoft.core.handlers.RequestObject;
-import com.eustrosoft.core.handlers.Response;
+import com.eustrosoft.core.handlers.file.FileHandler;
+import com.eustrosoft.core.handlers.file.FileRequestBlock;
+import com.eustrosoft.core.handlers.requests.QTisRequestObject;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.handlers.requests.RequestObject;
+import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
@@ -68,8 +70,8 @@ public class HttpRequestDispatcher extends HttpServlet {
                     requestBlocks.add(requestBlock);
                     break;
                 case "file":
-                    System.out.println("File processing...");
-                    //requestBlocks.add(requestBlock);
+                    requestBlock = new FileRequestBlock(reqst);
+                    requestBlocks.add(requestBlock);
                     break;
                 default:
                     break;
@@ -86,8 +88,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     handler = new SQLHandler();
                     break;
                 case "file":
-                    System.out.println("File processing...");
-                    handler = null;
+                    handler = new FileHandler();
                     break;
                 default:
                     handler = null;

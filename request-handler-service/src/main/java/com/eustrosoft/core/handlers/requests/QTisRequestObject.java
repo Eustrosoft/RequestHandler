@@ -1,6 +1,4 @@
-package com.eustrosoft.core.handlers;
-
-import com.eustrosoft.core.handlers.requests.RequestBlock;
+package com.eustrosoft.core.handlers.requests;
 
 import java.util.List;
 

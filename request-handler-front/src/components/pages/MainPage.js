@@ -30,14 +30,21 @@ function MainPage() {
 
     const processRequest = (e) => {
         e.preventDefault();
-        query.requests = [current];
-        RequestHandlerService.process(query)
-            .then(function (response) {
-                if (response.ok) {
-                    console.log(response)
-                }
-            })
-            .catch(err => console.log(err));
+        if (current.subsystem === 'sql') {
+            query.requests.push(current);
+            RequestHandlerService.process(query)
+                .then(function (response) {
+                    if (response.ok) {
+                        console.log(response)
+                    }
+                })
+                .catch(err => console.log(err));
+        } else if (current.subsystem === 'file') {
+            current.parameters = null;
+            query.requests.push(current);
+        } else {
+            console.log('This type of query is not implemented');
+        }
     }
 
     const logout = (e) => {
@@ -82,7 +89,9 @@ function MainPage() {
                     onChange={e => setCurrent({...current, request: e.target.value})}
                 >
                     <Option value={'sql'} label={'SQL'}/>
+                    <Option value={'upload'} label={'Upload'}/>
                 </Select>
+                <Input type={'file'}/>
                 <Input type={'submit'}/>
             </Form>
             <button onClick={logout}>
