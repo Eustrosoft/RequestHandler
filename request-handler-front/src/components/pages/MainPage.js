@@ -13,6 +13,12 @@ import {AuthContext} from "../context";
 function MainPage() {
     const {isAuth, setIsAuth} = useContext(AuthContext);
 
+    const [data, setData] = useState({
+        file: {},
+        name: "",
+        ext: ""
+    });
+
     const [current, setCurrent] = useState({
         subsystem: 'sql',
         request: 'sql',
@@ -24,28 +30,62 @@ function MainPage() {
 
     const [query, setQuery] = useState({
         qtisver: 0,
-        requests: [{}],
+        requests: [],
         qtisend: true
     });
 
     const processRequest = (e) => {
         e.preventDefault();
         if (current.subsystem === 'sql') {
-            query.requests.push(current);
-            RequestHandlerService.process(query)
-                .then(function (response) {
-                    if (response.ok) {
-                        console.log(response)
-                    }
-                })
-                .catch(err => console.log(err));
+            query.requests = [current];
         } else if (current.subsystem === 'file') {
-            current.parameters = null;
-            query.requests.push(current);
+            current.parameters = {
+                method: 'application/octet-stream',
+                data: data
+            };
+            query.requests = [current];
         } else {
             console.log('This type of query is not implemented');
         }
+        RequestHandlerService.process(query)
+            .then(function (response) {
+                if (response.ok) {
+                    console.log(response)
+                }
+            })
+            .catch(err => console.log(err));
     }
+
+    const handleChange = ({
+                              target: {
+                                  files: [file]
+                              }
+                          }) => {
+        if (file) {
+            handleFile(file);
+        }
+    };
+
+    const handleFile = file => {
+        let {name} = file;
+        let ext = name.split(".").reverse()[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            let {result} = reader;
+            let index = result.indexOf("base64") + 7;
+            let data = result.slice(index);
+            setFile(data, name, ext);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const setFile = (file, name, ext) => {
+        setData({
+            file,
+            name,
+            ext
+        });
+    };
 
     const logout = (e) => {
         e.preventDefault();
@@ -83,15 +123,28 @@ function MainPage() {
                     <Option value={'sql'} label={'SQL query'}/>
                     <Option value={'file'} label={'File Query'}/>
                 </Select>
-                <Select
-                    label={'Type Of Request:'}
-                    value={current.request.selectedValue}
-                    onChange={e => setCurrent({...current, request: e.target.value})}
-                >
-                    <Option value={'sql'} label={'SQL'}/>
-                    <Option value={'upload'} label={'Upload'}/>
-                </Select>
-                <Input type={'file'}/>
+                {current.subsystem === 'sql' ?
+                    <Select
+                        label={'Type Of Request:'}
+                        value={current.request.selectedValue}
+                        onChange={e => setCurrent({...current, request: e.target.value})}
+                    >
+                        <Option value={'sql'} label={'SQL'}/>
+                    </Select> : <></>
+                }
+                {current.subsystem === 'file' ?
+                    <>
+                        <Select
+                            label={'Type Of Request:'}
+                            value={current.request.selectedValue}
+                            onChange={e => setCurrent({...current, request: e.target.value})}
+                        >
+                            <Option value={'upload'} label={'Upload'}/>
+                        </Select>
+                        <Input type={'file'} onChange={handleChange}/>
+                    </>
+                    : <></>
+                }
                 <Input type={'submit'}/>
             </Form>
             <button onClick={logout}>

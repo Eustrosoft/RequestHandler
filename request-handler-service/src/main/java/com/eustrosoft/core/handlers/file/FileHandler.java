@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import static com.eustrosoft.core.filter.Constants.PROPERTY_UPLOAD_FILE;
+import static com.eustrosoft.core.filter.Constants.PROPERTY_UPLOAD_DIRECTORY;
 import static com.eustrosoft.core.filter.Constants.SYSTEM_FILE_NAME;
 
 public class FileHandler implements Handler {
@@ -19,7 +19,7 @@ public class FileHandler implements Handler {
     private String uploadFilePath = null;
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+    public ResponseBlock processRequest(RequestBlock requestBlock) {
         setUploadFilePath();
         FileRequestBlock fileRequestBlock = (FileRequestBlock) requestBlock;
         byte[] fileBytes = fileRequestBlock.getFileBytes();
@@ -29,6 +29,8 @@ public class FileHandler implements Handler {
         ) {
             bos.write(fileBytes);
             bos.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return null;
     }
@@ -36,9 +38,9 @@ public class FileHandler implements Handler {
     private void setUploadFilePath() {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(SYSTEM_FILE_NAME)) {
             systemProperties.load(input);
-            this.uploadFilePath = systemProperties.getProperty(PROPERTY_UPLOAD_FILE); // TODO externalize to provider
+            this.uploadFilePath = systemProperties.getProperty(PROPERTY_UPLOAD_DIRECTORY); // TODO externalize to provider
         } catch (IOException ex) {
-
+            ex.printStackTrace();
         }
     }
 }

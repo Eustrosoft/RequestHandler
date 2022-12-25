@@ -48,29 +48,29 @@ public class HttpRequestDispatcher extends HttpServlet {
     }
 
     private Response processRequest(HttpServletRequest request) throws IOException {
+        // Parsing query and getting request blocks
+
         QJson qJson = new QJson();
         qJson.parseJSONReader(request.getReader());
         RequestObject requestObject = new QTisRequestObject();
         requestObject.setqTisEnd((Boolean) qJson.getItem("qtisend"));
         requestObject.setqTisVer((Long) qJson.getItem("qtisver"));
+
         QJson requestsArray = qJson.getItemQJson("requests");
-
-        // Parsing query and getting request blocks
-
         List<RequestBlock> requestBlocks = new ArrayList<>();
+
         for (int i = 0; i < requestsArray.size(); i++) {
             QJson reqst = requestsArray.getItemQJson(i);
-            String subsys = reqst.getItemString("subsystem");
-            String reqs = reqst.getItemString("request");
+            String subSystem = reqst.getItemString("subsystem");
             RequestBlock requestBlock;
-            switch (subsys) {
+            QJson params = reqst.getItemQJson("parameters");
+            switch (subSystem) {
                 case "sql":
-                    QJson sqlParams = reqst.getItemQJson("parameters");
-                    requestBlock = new SQLRequestBlock(sqlParams);
+                    requestBlock = new SQLRequestBlock(params);
                     requestBlocks.add(requestBlock);
                     break;
                 case "file":
-                    requestBlock = new FileRequestBlock(reqst);
+                    requestBlock = new FileRequestBlock(params);
                     requestBlocks.add(requestBlock);
                     break;
                 default:
@@ -87,7 +87,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case "sql":
                     handler = new SQLHandler();
                     break;
-                case "file":
+                case "upload":
                     handler = new FileHandler();
                     break;
                 default:

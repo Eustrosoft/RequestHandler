@@ -3,6 +3,8 @@ package com.eustrosoft.core.handlers.file;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
+import java.util.Base64;
+
 public final class FileRequestBlock implements RequestBlock {
     private byte[] fileBytes;
     private String fileName;
@@ -50,7 +52,12 @@ public final class FileRequestBlock implements RequestBlock {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
         }
-        setFileBytes((byte[]) qJson.getItem("file"));
-        setFileName(qJson.getItemString("name"));
+        QJson fileData = qJson.getItemQJson("data");
+        setFileBytes(decodeString(fileData.getItemString("file")));
+        setFileName(fileData.getItemString("name"));
+    }
+
+    private byte[] decodeString(String str) {
+        return Base64.getDecoder().decode(str);
     }
 }
