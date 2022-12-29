@@ -29,18 +29,14 @@ public final class DBConnector {
         return this.connection;
     }
 
-    public synchronized ResultSet getData(String query) {
+    public synchronized ResultSet getData(String query) throws Exception {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        try {
-            connection = connectToDB();
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(query);
-            return resultSet;
-        } catch (Exception ex) {
-        }
-        return null;
+        connection = connectToDB();
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery(query);
+        return resultSet;
     }
 
     public synchronized void closeConnection() {

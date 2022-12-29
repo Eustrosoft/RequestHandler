@@ -6,6 +6,7 @@ import com.eustrosoft.core.handlers.file.FileRequestBlock;
 import com.eustrosoft.core.handlers.requests.QTisRequestObject;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.requests.RequestObject;
+import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
@@ -29,13 +30,21 @@ import java.util.List;
 )
 public class HttpRequestDispatcher extends HttpServlet {
 
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        super.doPost(request, response);
         Response resp = processRequest(request);
+        response.setContentType("application/json");
+        response.setHeader("Cache-Control", "nocache");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.print(resp.getJson().toJSONString());
         response.setStatus(200);
+        writer.flush();
+        writer.close();
     }
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
         response.setContentType("text/html");
@@ -79,6 +88,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         }
 
         // Processing request blocks
+        QTisResponse qTisResponse = new QTisResponse();
 
         for (RequestBlock block : requestBlocks) {
             Handler handler;
@@ -94,11 +104,13 @@ public class HttpRequestDispatcher extends HttpServlet {
                     handler = null;
                     break;
             }
+            List<ResponseBlock> responses = new ArrayList<>();
             if (handler != null) {
                 int exCount = 0;
                 StringBuilder exceptionsBuilder = new StringBuilder();
                 try {
-                    ResponseBlock respBlock = handler.processRequest(block);
+                    ResponseBlock respBlock = handler.processRequest(block, request);
+                    responses.add(respBlock);
                 } catch (Exception ex) {
                     exCount += 1;
                     exceptionsBuilder.append(ex.getMessage()).append("\n");
@@ -108,8 +120,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                                 exCount, exceptionsBuilder)
                 );
             }
-        }
 
-        return null;
+            qTisResponse.setResponseBlocks(responses);
+        }
+        return qTisResponse;
     }
 }

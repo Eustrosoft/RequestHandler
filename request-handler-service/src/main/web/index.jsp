@@ -22,7 +22,6 @@
             <input type="submit" content="Login!" id="sendLoginData">
         </form>
     </div>
-
 </div>
 </body>
 </html>

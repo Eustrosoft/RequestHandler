@@ -52,6 +52,8 @@ function MainPage() {
                 if (response.ok) {
                     console.log(response)
                 }
+                console.log(response)
+                JSON.parse(response.body);
             })
             .catch(err => console.log(err));
     }

@@ -4,6 +4,4 @@ public interface RequestBlock {
     String getSubsystem();
 
     String getRequest();
-
-    // void parseQJson();
 }

@@ -4,6 +4,7 @@ import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,7 +20,7 @@ public class FileHandler implements Handler {
     private String uploadFilePath = null;
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) {
+    public ResponseBlock processRequest(RequestBlock requestBlock, HttpServletRequest request) {
         setUploadFilePath();
         FileRequestBlock fileRequestBlock = (FileRequestBlock) requestBlock;
         byte[] fileBytes = fileRequestBlock.getFileBytes();

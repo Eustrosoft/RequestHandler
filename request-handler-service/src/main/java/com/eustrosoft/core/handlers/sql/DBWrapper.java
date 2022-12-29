@@ -2,6 +2,7 @@ package com.eustrosoft.core.handlers.sql;
 
 import com.eustrosoft.core.handlers.sql.utils.ResultSetUtils;
 
+import java.sql.ResultSet;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class DBWrapper {
@@ -41,6 +42,14 @@ public final class DBWrapper {
             dbConnector.closeConnection();
         }
         return answer.get();
+    }
+
+    public ResultSet executeQuery(String command) throws Exception {
+        try {
+            return dbConnector.getData(command);
+        } finally {
+            dbConnector.closeConnection();
+        }
     }
 
     private String executeQueryAndGetString(DBConnector connector, String query) throws Exception {
