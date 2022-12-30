@@ -8,9 +8,7 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class SQLHandler implements Handler {
     private DBWrapper dbWrapper;
@@ -47,6 +45,11 @@ public final class SQLHandler implements Handler {
 
     private List<String> getQueries(String query) {
         String[] queries = query.trim().split(";");
-        return Arrays.stream(queries).filter(qu -> !qu.isBlank()).collect(Collectors.toList());
+        List<String> queris = new ArrayList<>();
+        for (int i = 0; i < queries.length; i++) {
+            if (!queries[i].isBlank())
+                queris.add(queries[i]);
+        }
+        return queris;
     }
 }

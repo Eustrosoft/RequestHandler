@@ -21,10 +21,11 @@ import java.util.Set;
         description = "Authorized Filter"
 )
 public class AuthorizedRequestFilter implements Filter {
-    private Set<String> excluded = new HashSet<>(Set.of("/api/login"));
+    private Set<String> excluded = new HashSet<>();
     private ServletContext servletContext;
 
     public void init(FilterConfig filterConfig) {
+        excluded.add("/api/login");
         servletContext = filterConfig.getServletContext();
     }
 
