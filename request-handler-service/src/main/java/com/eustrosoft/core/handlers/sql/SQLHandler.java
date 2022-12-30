@@ -47,7 +47,7 @@ public final class SQLHandler implements Handler {
         String[] queries = query.trim().split(";");
         List<String> queris = new ArrayList<>();
         for (int i = 0; i < queries.length; i++) {
-            if (!queries[i].isBlank())
+            if (!queries[i].isEmpty())
                 queris.add(queries[i]);
         }
         return queris;
