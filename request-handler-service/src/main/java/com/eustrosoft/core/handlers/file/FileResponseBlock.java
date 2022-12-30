@@ -9,11 +9,7 @@ public class FileResponseBlock implements ResponseBlock {
     private String errMsg;
 
     public FileResponseBlock(String answer) {
-        response = new QJson();
-        response.setItem("status", getStatus());
-        response.setItem("qid", getQId());
-        response.setItem("err_code", getErrCode());
-        response.setItem("err_msg", answer); // TODO
+        this.errMsg = answer;
     }
 
     @Override

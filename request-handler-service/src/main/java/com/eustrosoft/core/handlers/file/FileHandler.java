@@ -25,15 +25,18 @@ public class FileHandler implements Handler {
         FileRequestBlock fileRequestBlock = (FileRequestBlock) requestBlock;
         byte[] fileBytes = fileRequestBlock.getFileBytes();
         String fileName = fileRequestBlock.getFileName();
+        String answer = "";
         try (BufferedOutputStream bos = new BufferedOutputStream(
                 new FileOutputStream(new File(uploadFilePath, fileName)))
         ) {
             bos.write(fileBytes);
             bos.flush();
+            answer = fileName;
         } catch (Exception ex) {
             ex.printStackTrace();
+            answer = ex.getMessage();
         }
-        return null;
+        return new FileResponseBlock(answer);
     }
 
     private void setUploadFilePath() {

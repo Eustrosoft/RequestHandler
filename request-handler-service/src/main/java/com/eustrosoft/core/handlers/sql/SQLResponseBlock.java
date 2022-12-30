@@ -8,12 +8,13 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SQLResponseBlock implements ResponseBlock {
     private String errMsg = "";
     private Short errCode = 0;
 
-    private ResultSet resultSet;
+    private List<ResultSet> resultSets;
     private Long status = 200L;
 
     public SQLResponseBlock() {
@@ -57,12 +58,12 @@ public class SQLResponseBlock implements ResponseBlock {
         errCode = (short) code;
     }
 
-    public ResultSet getResultSet() {
-        return this.resultSet;
+    public List<ResultSet> getResultSets() {
+        return this.resultSets;
     }
 
-    public void setResultSet(ResultSet resultSet) {
-        this.resultSet = resultSet;
+    public void setResultSet(List<ResultSet> resultSets) {
+        this.resultSets = resultSets;
     }
 
     public void setErrMsg(String errMsg) {
@@ -77,35 +78,51 @@ public class SQLResponseBlock implements ResponseBlock {
         json.addItem("qid", String.valueOf(getQId()));
         json.addItem("err_code", String.valueOf(getErrCode()));
         json.addItem("err_msg", String.valueOf(getErrMsg()));
-        json.addItem("result", processResultSet());
+        json.addItem("result", processResultSets());
         return json;
     }
 
-    private String processResultSet() throws SQLException {
-        if (this.resultSet == null || this.resultSet.equals("")) {
+    private String processResultSets() throws SQLException {
+        if (this.resultSets == null || this.resultSets.isEmpty()) {
             return "";
         }
-        ResultSet resultSet = this.resultSet;
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        final int columnCount = resultSetMetaData.getColumnCount();
+        List<ResultSet> sets = this.resultSets;
+        List<QJson> jsonSets = new ArrayList<>();
+        for (ResultSet set : sets) {
+            ResultSetMetaData resultSetMetaData = set.getMetaData();
+            final int columnCount = resultSetMetaData.getColumnCount();
 
-        List<String> columnNames = getColumnNames(resultSetMetaData);
-        List<String> columnTypes = getColumnTypes(resultSetMetaData);
-        List<List<Object>> allRows = new ArrayList<>();
+            List<String> columnNames = getColumnNames(resultSetMetaData);
+            List<String> columnTypes = getColumnTypes(resultSetMetaData);
+            List<List<Object>> allRows = new ArrayList<>();
 
-        while (resultSet.next()) {
-            List<Object> values = new ArrayList<>();
-            for (int i = 1; i <= columnCount; i++) {
-                values.add(resultSet.getObject(i));
-                resultSet.getMetaData().getColumnType(i);
+            while (set.next()) {
+                List<Object> values = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    values.add(set.getObject(i));
+                    set.getMetaData().getColumnType(i);
+                }
+                allRows.add(values);
             }
-            allRows.add(values);
+            QJson qJson = new QJson();
+            qJson.addItem("columns", columnNames.toString());
+            qJson.addItem("data_types", columnTypes.toString());
+            qJson.addItem("rows", allRows.toString());
+            qJson.addItem("rows_count", String.valueOf(allRows.size()));
+            jsonSets.add(qJson);
         }
+        return postProcessJsonSets(jsonSets);
+    }
+
+    private String postProcessJsonSets(List<QJson> sets) {
         QJson qJson = new QJson();
-        qJson.addItem("columns", columnNames.toString());
-        qJson.addItem("data_types", columnTypes.toString());
-        qJson.addItem("rows", allRows.toString());
-        qJson.addItem("rows_count", String.valueOf(allRows.size()));
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        builder.append(
+                sets.stream().map(QJson::toJSONString).collect(Collectors.joining(","))
+        );
+        builder.append("]");
+        qJson.addItem("sets", builder.toString());
         return qJson.toJSONString();
     }
 

@@ -17,11 +17,11 @@ public interface ResponseBlock {
 
     default QJson toJson() throws Exception {
         QJson json = new QJson();
-        json.addItem("subsystem", getSubsystem());
-        json.addItem("status", getStatus());
-        json.addItem("qid", getQId());
-        json.addItem("err_code", getErrCode());
-        json.addItem("err_msg", getErrMsg());
+        json.addItem("subsystem", String.valueOf(getSubsystem()));
+        json.addItem("status", String.valueOf(getStatus()));
+        json.addItem("qid", String.valueOf(getQId()));
+        json.addItem("err_code", String.valueOf(getErrCode()));
+        json.addItem("err_msg", String.valueOf(getErrMsg()));
         return json;
     }
 }

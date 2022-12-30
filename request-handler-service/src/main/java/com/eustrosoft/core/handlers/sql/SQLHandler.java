@@ -7,6 +7,10 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class SQLHandler implements Handler {
     private DBWrapper dbWrapper;
@@ -23,12 +27,15 @@ public final class SQLHandler implements Handler {
         String query = sqlRequest.getQuery();
 
         SQLResponseBlock responseBlock = new SQLResponseBlock();
-        ResultSet resultSet = null;
+        List<ResultSet> resultSet = new ArrayList<>();
+        List<String> queries = getQueries(query);
         try {
-            resultSet = this.dbWrapper.executeQuery(query);
-            responseBlock.setStatus(200L);
-            responseBlock.setErrCode(0);
-            responseBlock.setErrMsg("No errors");
+            for (String targetQuery : queries) {
+                resultSet.add(this.dbWrapper.executeQuery(targetQuery));
+                responseBlock.setStatus(200L);
+                responseBlock.setErrCode(0);
+                responseBlock.setErrMsg("No errors");
+            }
         } catch (Exception ex) {
             responseBlock.setErrMsg(ex.getMessage());
             responseBlock.setStatus(500L);
@@ -36,5 +43,10 @@ public final class SQLHandler implements Handler {
         }
         responseBlock.setResultSet(resultSet);
         return responseBlock;
+    }
+
+    private List<String> getQueries(String query) {
+        String[] queries = query.trim().split(";");
+        return Arrays.stream(queries).filter(qu -> !qu.isBlank()).collect(Collectors.toList());
     }
 }

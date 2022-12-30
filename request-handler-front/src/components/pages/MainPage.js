@@ -13,6 +13,8 @@ import {AuthContext} from "../context";
 function MainPage() {
     const {isAuth, setIsAuth} = useContext(AuthContext);
 
+    const [response, setResponse] = useState('');
+
     const [data, setData] = useState({
         file: {},
         name: "",
@@ -48,16 +50,56 @@ function MainPage() {
             console.log('This type of query is not implemented');
         }
         RequestHandlerService.process(query)
-            .then(function (response) {
-                if (response.ok) {
-                    console.log(response)
-                }
-                console.log(response)
-                JSON.parse(response.body);
-            })
+            .then(resp => resp.json())
+            .then(json => setResponse(JSON.stringify(json)))
             .catch(err => console.log(err));
     }
+    /*
+        const parseArray = json => {
+            return json === '[]' ? [] : parseElements(json) ;
+        };
 
+        const parseElements = json => {
+            const elementLocations = [0];
+            for (let i = 0; i < json.length; i++) {
+                if (json[i] === ','
+                    && !insideString(json, i)
+                    && !insideArray (json. slice(1, json. length - 1), i)
+                    && !insideObject (json, i)) {
+                    elementLocations .push (i) ;
+                }
+            }
+            const elements = elementLocations.map ((Location, index) => {
+                return (elementLocations [index + 1]) ?
+                    json.slice(location + 1, elementLocations [index + 1]) :
+                    json.slice(location + 1, json. length - 1);
+            });
+            return elements.map(element => parseJson(element)) ;
+        }
+
+        function parseJson(json) {
+            const parseJSON = json => {
+                json = json.trim();
+                if (objectRegex.test(json)) {
+                    return parseObject(json);
+                } else if (arrayRegex.test(json)) {
+                    return parseArray(json);
+                } else if (stringRegex.test(json)) {
+                    return parseString(json);
+                } else if (numberRegex.test(json)) {
+                    return parseNumber(json);
+                } else if (trueRegex.test(json)) {
+                    return true;
+                } else if (falseRegex.test(json)) {
+                    return false;
+                } else if (nullegex.test(json)) {
+                    return null;
+                } else {
+                    throw new SyntaxError;
+                }
+            }
+        }
+    */
     const handleChange = ({
                               target: {
                                   files: [file]
@@ -114,7 +156,7 @@ function MainPage() {
                               ...current,
                               parameters: {
                                   ...current.parameters,
-                                  query: e.target.value
+                                  query: 'select * from tis.samusers;'
                               }
                           })}/>
                 <Select
@@ -149,6 +191,9 @@ function MainPage() {
                 }
                 <Input type={'submit'}/>
             </Form>
+            <div style={{width: 700}}>
+                <p>{response}</p>
+            </div>
             <button onClick={logout}>
                 Logout
             </button>
