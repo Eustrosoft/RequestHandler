@@ -1,41 +1,30 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import './styles/App.css';
 import MainPage from "./components/pages/MainPage";
 import LoginPage from "./components/pages/LoginPage";
-import {AuthContext} from "./components/context";
 
 function App() {
-    const [isAuth, setIsAuth] = useState(false);
-
-    useEffect(() => {
-        if (localStorage.getItem('auth')) {
-            setIsAuth(true);
-        }
-    }, [])
 
     const loginPage = () => {
-        if (window.location.pathname === "/" ||
+        if (window.location.pathname === "/main/" ||
+            window.location.pathname === "/" ||
+            window.location.pathname === "/main/index.html" ||
             window.location.pathname === "/login") {
             return <LoginPage/>
         }
     }
 
     const mainPage = () => {
-        if (window.location.pathname === "/main") {
+        if (window.location.pathname === "/main/main") {
             return <MainPage/>
         }
     }
 
     return (
-        <AuthContext.Provider value={{
-            isAuth,
-            setIsAuth
-        }}>
-            <div className='main'>
-                {loginPage()}
-                {mainPage()}
-            </div>
-        </AuthContext.Provider>
+        <div className='main'>
+            {loginPage()}
+            {mainPage()}
+        </div>
     );
 }
 

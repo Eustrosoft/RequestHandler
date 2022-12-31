@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useState} from 'react'
 import Header from "../ui/Header/Header";
 import Form from "../ui/Form/Form";
 import Input from "../ui/Input/Input";
@@ -8,11 +8,8 @@ import Select from "../ui/Select/Select";
 import Option from "../ui/Select/Option";
 import LoginService from "../api/LoginService";
 import RequestHandlerService from "../api/RequestHandlerService";
-import {AuthContext} from "../context";
 
 function MainPage() {
-    const {isAuth, setIsAuth} = useContext(AuthContext);
-
     const [response, setResponse] = useState('');
 
     const [data, setData] = useState({
@@ -136,7 +133,6 @@ function MainPage() {
         LoginService.logout()
             .then(function (response) {
                 if (response.ok) {
-                    setIsAuth(false);
                     localStorage.removeItem('auth');
                     window.open("login", "_self");
                 }
