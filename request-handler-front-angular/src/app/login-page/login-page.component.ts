@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { LoginService } from './login.service';
-import { Observable } from 'rxjs';
-interface LoginForm {
+import { Observable, switchMap, take, tap } from 'rxjs';
+import { Router } from '@angular/router';
+
+type LoginForm = {
   login: FormControl<string>;
   password: FormControl<string>;
-}
+};
 
 @Component({
   selector: 'app-login-page',
@@ -14,24 +16,27 @@ interface LoginForm {
 })
 export class LoginPageComponent implements OnInit {
   form!: FormGroup;
-  loginStatus!: Observable<any>;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private loginService: LoginService
+    private fb: FormBuilder,
+    private loginService: LoginService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.form = this.formBuilder.group<LoginForm>({
-      login: this.formBuilder.nonNullable.control(''),
-      password: this.formBuilder.nonNullable.control(''),
+    this.form = this.fb.nonNullable.group<LoginForm>({
+      login: this.fb.nonNullable.control('tis'),
+      password: this.fb.nonNullable.control('JhsfRes65'),
     });
   }
 
-  submit() {
-    this.loginStatus = this.loginService.login(
-      this.form.value.login,
-      this.form.value.password
-    );
+  submit(): void {
+    this.loginService
+      .login(this.form.value.login, this.form.value.password)
+      .pipe(
+        take(1),
+        tap(() => this.router.navigate(['request']))
+      )
+      .subscribe();
   }
 }

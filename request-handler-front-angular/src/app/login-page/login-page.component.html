@@ -1,9 +1,14 @@
-<div class="formHolder">
-  <h2>Login form</h2>
-  <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-    <input formControlName="login" placeholder="login">
-    <input formControlName="password" placeholder="password">
-    <button type="submit">submit</button>
-  </form>
-  <p>login status: {{loginStatus | async}}</p>
-</div>
+<form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column align-items-center">
+  <h2>Login</h2>
+  <app-input
+    [label]="'Login'"
+    [control]="form.get('login')! | formControl"
+    [fieldAppearance]="'outline'"
+  ></app-input>
+  <app-input
+    [label]="'Password'"
+    [control]="form.get('password')! | formControl"
+    [fieldAppearance]="'outline'"
+  ></app-input>
+  <app-button [buttonType]="'stroked'" [buttonText]="'Submit'" type="submit"></app-button>
+</form>

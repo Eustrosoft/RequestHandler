@@ -1,0 +1,48 @@
+<ng-container [ngSwitch]="buttonType">
+  <button *ngSwitchDefault mat-button [color]="color" (click)="click()">
+    {{ buttonText }}
+  </button>
+  <button
+    *ngSwitchCase="'raised'"
+    mat-raised-button
+    [color]="color"
+    (click)="click()"
+  >
+    {{ buttonText }}
+  </button>
+  <button
+    *ngSwitchCase="'stroked'"
+    mat-stroked-button
+    [color]="color"
+    (click)="click()"
+  >
+    {{ buttonText }}
+  </button>
+  <button
+    *ngSwitchCase="'flat'"
+    mat-flat-button
+    [color]="color"
+    (click)="click()"
+  >
+    {{ buttonText }}
+  </button>
+  <button
+    *ngSwitchCase="'icon'"
+    mat-icon-button
+    [color]="color"
+    (click)="click()"
+  >
+    {{ buttonText }}
+  </button>
+  <button *ngSwitchCase="'fab'" mat-fab [color]="color" (click)="click()">
+    {{ buttonText }}
+  </button>
+  <button
+    *ngSwitchCase="'mini-fab'"
+    mat-mini-fab
+    [color]="color"
+    (click)="click()"
+  >
+    {{ buttonText }}
+  </button>
+</ng-container>
