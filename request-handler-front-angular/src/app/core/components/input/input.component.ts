@@ -12,4 +12,6 @@ export class InputComponent {
   @Input() placeholder: string = '';
   @Input() fieldAppearance: MatFormFieldAppearance = 'fill';
   @Input() control!: FormControl;
+  @Input() fieldType!: 'input' | 'textarea';
+  @Input() inputType: 'text' | 'password' = 'text';
 }

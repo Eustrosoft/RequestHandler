@@ -1,1 +1,19 @@
-<p>request works!</p>
+<form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column align-items-center">
+  <h2>Request dispatcher</h2>
+  <app-select
+    [label]="'Query type'"
+    [control]="queryType! | formControl"
+    [options]="options"
+    [fieldAppearance]="'outline'"
+  ></app-select>
+  <app-input
+    *ngIf="queryType.value === QueryTypes.SQL"
+    [fieldType]="'textarea'"
+    [label]="'SQL'"
+    [control]="form.get('request')! | formControl"
+    [fieldAppearance]="'outline'"
+  ></app-input>
+  <app-input-file *ngIf="queryType.value === QueryTypes.FILE" [control]="form.get('file')! | formControl"></app-input-file>
+  <app-button [buttonStyleType]="'stroked'" [buttonText]="'Send'" [buttonType]="'submit'"></app-button>
+  <p *ngIf="(requestResult | async) as response">{{response | json}}</p>
+</form>

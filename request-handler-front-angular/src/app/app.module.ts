@@ -9,6 +9,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
 import { RequestComponent } from './request/request.component';
+import { RequestBuilderService } from './request/request-builder.service';
+import { RequestService } from './request/request.service';
 
 @NgModule({
   declarations: [AppComponent, LoginPageComponent, RequestComponent],
@@ -21,7 +23,7 @@ import { RequestComponent } from './request/request.component';
     BrowserAnimationsModule,
     CoreModule,
   ],
-  providers: [LoginService],
+  providers: [LoginService, RequestBuilderService, RequestService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

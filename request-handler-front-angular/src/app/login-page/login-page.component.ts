@@ -25,8 +25,8 @@ export class LoginPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.nonNullable.group<LoginForm>({
-      login: this.fb.nonNullable.control('tis'),
-      password: this.fb.nonNullable.control('JhsfRes65'),
+      login: this.fb.nonNullable.control(''),
+      password: this.fb.nonNullable.control(''),
     });
   }
 

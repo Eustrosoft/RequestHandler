@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthenticationService } from '../core/services/authentication.service';
+import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LoginService {
   constructor(
     private http: HttpClient,
@@ -15,7 +14,7 @@ export class LoginService {
   login(login: string, password: string): Observable<HttpResponse<Object>> {
     return this.http
       .post(
-        '/eustrosofthandler_war/api/login',
+        `${environment.apiUrl}/api/login`,
         {
           login,
           password,

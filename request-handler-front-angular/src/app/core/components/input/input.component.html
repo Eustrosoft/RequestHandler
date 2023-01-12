@@ -1,4 +1,7 @@
 <mat-form-field [appearance]="fieldAppearance">
   <mat-label>{{ label }}</mat-label>
-  <input [formControl]="control" [placeholder]="placeholder" matInput />
+  <ng-container [ngSwitch]="fieldType">
+    <input *ngSwitchCase="'input'" [formControl]="control" [placeholder]="placeholder" [type]="inputType" matInput />
+    <textarea *ngSwitchCase="'textarea'" [formControl]="control" [placeholder]="placeholder" matInput></textarea>
+  </ng-container>
 </mat-form-field>

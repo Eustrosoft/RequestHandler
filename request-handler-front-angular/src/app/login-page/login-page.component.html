@@ -1,14 +1,17 @@
 <form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column align-items-center">
   <h2>Login</h2>
   <app-input
+    [fieldType]="'input'"
     [label]="'Login'"
     [control]="form.get('login')! | formControl"
     [fieldAppearance]="'outline'"
   ></app-input>
   <app-input
+    [fieldType]="'input'"
+    [inputType]="'password'"
     [label]="'Password'"
     [control]="form.get('password')! | formControl"
     [fieldAppearance]="'outline'"
   ></app-input>
-  <app-button [buttonType]="'stroked'" [buttonText]="'Submit'" type="submit"></app-button>
+  <app-button [buttonStyleType]="'stroked'" [buttonText]="'Submit'" [buttonType]="'submit'"></app-button>
 </form>

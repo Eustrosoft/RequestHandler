@@ -8,7 +8,8 @@ import { ThemePalette } from '@angular/material/core';
 })
 export class ButtonComponent {
   @Input() color: ThemePalette = undefined;
-  @Input() buttonType?:
+  @Input() buttonType: 'button' | 'submit' = 'button';
+  @Input() buttonStyleType?:
     | 'raised'
     | 'stroked'
     | 'flat'

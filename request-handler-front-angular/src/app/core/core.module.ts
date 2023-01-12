@@ -8,11 +8,44 @@ import { ButtonComponent } from './components/button/button.component';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthenticationGuard } from './guards/authentication.guard';
 import { AuthenticationService } from './services/authentication.service';
+import { SelectComponent } from './components/select/select.component';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { InputFileComponent } from './components/input-file/input-file.component';
+import { UnauthenticatedInterceptor } from './interceptors/unauthenticated-interceptor.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
-  declarations: [InputComponent, FormControlPipe, ButtonComponent],
-  imports: [CommonModule, MatInputModule, ReactiveFormsModule, MatButtonModule],
-  exports: [InputComponent, FormControlPipe, ButtonComponent],
-  providers: [AuthenticationGuard, AuthenticationService],
+  declarations: [
+    InputComponent,
+    FormControlPipe,
+    ButtonComponent,
+    SelectComponent,
+    InputFileComponent,
+  ],
+  imports: [
+    CommonModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatOptionModule,
+    MatSelectModule,
+  ],
+  exports: [
+    InputComponent,
+    FormControlPipe,
+    ButtonComponent,
+    SelectComponent,
+    InputFileComponent,
+  ],
+  providers: [
+    AuthenticationGuard,
+    AuthenticationService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: UnauthenticatedInterceptor,
+      multi: true,
+    },
+  ],
 })
 export class CoreModule {}

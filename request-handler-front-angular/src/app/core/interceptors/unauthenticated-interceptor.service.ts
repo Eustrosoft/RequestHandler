@@ -15,7 +15,7 @@ export class UnauthenticatedInterceptor implements HttpInterceptor {
   constructor(private router: Router) {}
 
   intercept(
-    request: HttpRequest<unknown>,
+    request: HttpRequest<Object>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
