@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @WebServlet(
+        name = "Logout Servlet",
+        description = "Servlet for logout from system",
         urlPatterns = {"/api/logout"}
 )
 public class LogoutServlet extends HttpServlet {

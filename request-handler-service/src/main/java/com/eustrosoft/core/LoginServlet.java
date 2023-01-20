@@ -1,8 +1,10 @@
 package com.eustrosoft.core;
 
 import com.eustrosoft.core.context.UsersContext;
+import com.eustrosoft.core.exception.CredentialException;
 import com.eustrosoft.core.tools.QJson;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +16,8 @@ import java.io.PrintWriter;
 import static com.eustrosoft.core.Constants.SESSION_TIMEOUT;
 
 @WebServlet(
+        name = "Login Servlet",
+        description = "Servlet for log into system",
         urlPatterns = {"/api/login"}
 )
 public class LoginServlet extends HttpServlet {
@@ -42,9 +46,10 @@ public class LoginServlet extends HttpServlet {
                     newSession.getId(),
                     new UsersContext.SQLUser(username, password)
             );
-        } catch (Exception ex) {
+        } catch (ServletException ex) {
             PrintWriter writer = response.getWriter();
-            writer.write("Error while logging");
+            writer.write(new CredentialException().getMessage());
+            response.setStatus(200);
             writer.flush();
             writer.close();
         }
