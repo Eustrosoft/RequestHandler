@@ -15,6 +15,7 @@ import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor
 import { HeaderComponent } from './header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { MatButtonModule } from '@angular/material/button';
     CoreModule,
     MatIconModule,
     MatButtonModule,
+    MatTableModule,
   ],
   providers: [
     LoginService,

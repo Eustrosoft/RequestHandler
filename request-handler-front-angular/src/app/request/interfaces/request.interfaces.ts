@@ -16,7 +16,14 @@ export interface TisResponseBody {
   qid: number;
   err_code: number;
   err_msg: string;
-  result: any;
+  result: TisTableResult[];
+}
+
+export interface TisTableResult {
+  columns: string[];
+  data_types: string[];
+  rows: Array<Array<any>>;
+  rows_count: number;
 }
 
 export interface SqlQuery {

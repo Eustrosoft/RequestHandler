@@ -18,6 +18,8 @@ import { TextareaComponent } from './components/textarea/textarea.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { PreloaderComponent } from './components/preloader/preloader.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     InputFileComponent,
     TextareaComponent,
     NotFoundComponent,
+    PreloaderComponent,
   ],
   imports: [
     CommonModule,
@@ -38,6 +41,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     MatSelectModule,
     MatIconModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     InputComponent,
@@ -46,6 +50,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     SelectComponent,
     InputFileComponent,
     TextareaComponent,
+    PreloaderComponent,
   ],
   providers: [
     AuthenticationGuard,
