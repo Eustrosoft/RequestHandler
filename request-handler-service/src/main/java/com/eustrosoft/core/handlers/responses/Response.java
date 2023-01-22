@@ -1,7 +1,5 @@
 package com.eustrosoft.core.handlers.responses;
 
-import com.eustrosoft.core.tools.QJson;
-
 import java.util.List;
 
 public interface Response {
@@ -11,5 +9,5 @@ public interface Response {
 
     boolean getQTisEnd();
 
-    QJson getJson();
+    String getJson();
 }

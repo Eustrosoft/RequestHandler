@@ -38,7 +38,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         response.setHeader("Cache-Control", "nocache");
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
-        writer.print(resp.getJson().toJSONString());
+        writer.print(resp.getJson());
         response.setStatus(200);
         writer.flush();
         writer.close();

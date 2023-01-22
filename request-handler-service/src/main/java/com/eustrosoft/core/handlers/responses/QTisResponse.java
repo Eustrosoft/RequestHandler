@@ -1,6 +1,8 @@
 package com.eustrosoft.core.handlers.responses;
 
-import com.eustrosoft.core.tools.QJson;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -39,20 +41,20 @@ public class QTisResponse implements Response {
     }
 
     @Override
-    public QJson getJson() {
-        QJson qJson = new QJson();
-        qJson.addItem("qtisver", String.valueOf(getQTisVer()));
-        qJson.addItem("responses", getResponsesString());
-        qJson.addItem("qtisend", String.valueOf(getQTisEnd()));
-        return qJson;
+    public String getJson() {
+        JsonObject object = new JsonObject();
+        object.addProperty("qtisver", String.valueOf(getQTisVer()));
+        object.add("responses", getResponsesString());
+        object.addProperty("qtisend", String.valueOf(getQTisEnd()));
+        return object.toString();
     }
 
-    private String getResponsesString() {
+    private JsonArray getResponsesString() {
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (ResponseBlock responseBlock : responseBlocks) {
             try {
-                builder.append(responseBlock.toJson().toJSONString());
+                builder.append(responseBlock.toJson());
             } catch (Exception ex) {
                 builder.append(
                         "{\"err_msg\":\"Exception while processing block\"}"
@@ -60,7 +62,7 @@ public class QTisResponse implements Response {
             }
         }
         builder.append("]");
-        return builder.toString();
+        return new Gson().fromJson(builder.toString(), JsonArray.class);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.eustrosoft.core.handlers.responses;
 
-import com.eustrosoft.core.tools.QJson;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public interface ResponseBlock {
     String getSubsystem();
@@ -15,13 +16,13 @@ public interface ResponseBlock {
 
     String getErrMsg();
 
-    default QJson toJson() throws Exception {
-        QJson json = new QJson();
-        json.addItem("subsystem", String.valueOf(getSubsystem()));
-        json.addItem("status", String.valueOf(getStatus()));
-        json.addItem("qid", String.valueOf(getQId()));
-        json.addItem("err_code", String.valueOf(getErrCode()));
-        json.addItem("err_msg", String.valueOf(getErrMsg()));
-        return json;
+    default String toJson() throws Exception {
+        JsonObject object = new JsonObject();
+        object.addProperty("subsystem", getSubsystem());
+        object.addProperty("status", getStatus());
+        object.addProperty("qid", getQId());
+        object.addProperty("err_code", getErrCode());
+        object.addProperty("err_msg", getErrMsg());
+        return new Gson().toJson(object);
     }
 }

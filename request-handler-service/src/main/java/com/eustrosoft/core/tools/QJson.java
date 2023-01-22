@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.Vector;
 
 public class QJson {
@@ -256,6 +257,10 @@ public class QJson {
         return (name);
     } // can be used to return String object.equals(name) from dictionary (to minimize memory usage)
 
+    private String parseArrayObjectToString(Object object) {
+        return object.toString();
+    }
+
     public int size() {
         return (items.size());
     }
@@ -266,6 +271,11 @@ public class QJson {
     }
 
     public void addItem(String name, Object value) {
+        names.add(name2qname(name));
+        items.add(value2qvalue(value));
+    }
+
+    public void addItems(String name, List value) {
         names.add(name2qname(name));
         items.add(value2qvalue(value));
     }

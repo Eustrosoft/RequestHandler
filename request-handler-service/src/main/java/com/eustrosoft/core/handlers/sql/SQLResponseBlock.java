@@ -1,7 +1,10 @@
 package com.eustrosoft.core.handlers.sql;
 
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.handlers.sql.model.ResultSetAnswer;
 import com.eustrosoft.core.tools.QJson;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -71,24 +74,25 @@ public class SQLResponseBlock implements ResponseBlock {
     }
 
     @Override
-    public QJson toJson() throws SQLException {
-        QJson json = new QJson();
-        json.addItem("subsystem", getSubsystem());
-        json.addItem("status", getStatus());
-        json.addItem("qid", String.valueOf(getQId()));
-        json.addItem("err_code", String.valueOf(getErrCode()));
-        json.addItem("err_msg", String.valueOf(getErrMsg()));
-        json.addItem("result", processResultSets());
-        return json;
+    public String toJson() throws SQLException {
+        JsonObject object = new JsonObject();
+        object.addProperty("subsystem", getSubsystem());
+        object.addProperty("status", getStatus());
+        object.addProperty("qid", getQId());
+        object.addProperty("err_code", getErrCode());
+        object.addProperty("err_msg", getErrMsg());
+        object.add("result", new Gson().toJsonTree(processResultSets()));
+        return new Gson().toJson(object);
     }
 
-    private String processResultSets() throws SQLException {
+    private List<ResultSetAnswer> processResultSets() throws SQLException {
         if (this.resultSets == null || this.resultSets.isEmpty()) {
-            return "";
+            return new ArrayList<>();
         }
-        List<ResultSet> sets = this.resultSets;
-        List<QJson> jsonSets = new ArrayList<>();
-        for (ResultSet set : sets) {
+        List<ResultSet> resSets = this.resultSets;
+        List<ResultSetAnswer> sets = new ArrayList<>();
+
+        for (ResultSet set : resSets) {
             ResultSetMetaData resultSetMetaData = set.getMetaData();
             final int columnCount = resultSetMetaData.getColumnCount();
 
@@ -104,14 +108,14 @@ public class SQLResponseBlock implements ResponseBlock {
                 }
                 allRows.add(values);
             }
-            QJson qJson = new QJson();
-            qJson.addItem("columns", columnNames.toString());
-            qJson.addItem("data_types", columnTypes.toString());
-            qJson.addItem("rows", allRows.toString());
-            qJson.addItem("rows_count", String.valueOf(allRows.size()));
-            jsonSets.add(qJson);
+            ResultSetAnswer answer = new ResultSetAnswer();
+            answer.setColumns(columnNames);
+            answer.setData_types(columnTypes);
+            answer.setRows(allRows);
+            answer.setRows_count(allRows.size());
+            sets.add(answer);
         }
-        return postProcessJsonSets(jsonSets);
+        return sets;
     }
 
     private String postProcessJsonSets(List<QJson> sets) {
