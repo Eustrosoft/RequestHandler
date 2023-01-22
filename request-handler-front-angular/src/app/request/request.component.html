@@ -1,19 +1,31 @@
 <form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column align-items-center">
-  <h2>Request dispatcher</h2>
   <app-select
     [label]="'Query type'"
     [control]="queryType! | formControl"
-    [options]="options"
+    [options]="queryTypeOptions"
     [fieldAppearance]="'outline'"
+    class="col-5"
   ></app-select>
-  <app-input
+  <app-select
+    [label]="'Display type'"
+    [control]="displayType! | formControl"
+    [options]="displayTypeOptions"
+    [fieldAppearance]="'outline'"
+    class="col-5"
+  ></app-select>
+  <app-textarea
     *ngIf="queryType.value === QueryTypes.SQL"
-    [fieldType]="'textarea'"
     [label]="'SQL'"
     [control]="form.get('request')! | formControl"
     [fieldAppearance]="'outline'"
-  ></app-input>
+    class="col-5"
+  ></app-textarea>
   <app-input-file *ngIf="queryType.value === QueryTypes.FILE" [control]="form.get('file')! | formControl"></app-input-file>
-  <app-button [buttonStyleType]="'stroked'" [buttonText]="'Send'" [buttonType]="'submit'"></app-button>
-  <p *ngIf="(requestResult | async) as response">{{response | json}}</p>
+  <app-button [buttonStyleType]="'stroked'" [buttonText]="'Send'" [buttonType]="'submit'" [disabled]="form.get('submit')!.disabled"></app-button>
+  <ng-container *ngIf="displayType.value === DisplayTypes.TEXT">
+    <pre *ngIf="(requestResult | async) as response">{{response | json}}</pre>
+  </ng-container>
+  <ng-container *ngIf="displayType.value === DisplayTypes.TABLE">
+    
+  </ng-container>
 </form>

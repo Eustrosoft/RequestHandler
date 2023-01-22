@@ -1,14 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable()
 export class AuthenticationService {
-  get isAuthenticated(): boolean {
-    return Boolean(localStorage.getItem('isAuthenticated'));
-  }
-
-  set isAuthenticated(value: boolean) {
-    localStorage.setItem('isAuthenticated', String(value));
-  }
+  isAuthenticated = new BehaviorSubject(
+    localStorage.getItem('isAuthenticated') === 'true'
+  );
 
   constructor() {}
 }

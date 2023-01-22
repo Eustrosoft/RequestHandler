@@ -1,13 +1,7 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-  UrlTree,
-} from '@angular/router';
-import { Observable, tap } from 'rxjs';
-import { AuthenticationService } from '../services/authentication.service';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree,} from '@angular/router';
+import {Observable} from 'rxjs';
+import {AuthenticationService} from '../services/authentication.service';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
@@ -23,7 +17,7 @@ export class AuthenticationGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this.authenticationService.isAuthenticated
+    return this.authenticationService.isAuthenticated.getValue()
       ? true
       : this.router.createUrlTree(['login']);
   }

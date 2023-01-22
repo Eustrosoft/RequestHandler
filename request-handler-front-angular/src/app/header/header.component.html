@@ -1,0 +1,18 @@
+<header class="d-flex flex-row justify-content-between align-items-center p-3">
+  <div class="d-flex align-items-center">
+    <h2 class="m-0">LOGO</h2>
+    <h1 class="pl-3 m-0">Request Dispatcher</h1>
+  </div>
+  <ng-container *ngIf="isAuthenticated | async as isAuth">
+    <div *ngIf="isAuth">
+      <app-button
+        [buttonStyleType]="'icon'"
+        [iconName]="'logout'"
+        [buttonText]="'Logout'"
+        [buttonType]="'button'"
+        (click)="logout()"
+      >
+      </app-button>
+    </div>
+  </ng-container>
+</header>

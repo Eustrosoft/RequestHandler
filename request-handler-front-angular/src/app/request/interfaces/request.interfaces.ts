@@ -1,7 +1,22 @@
+export interface TisResponse {
+  qtisver: number;
+  responses: TisResponseBody[];
+  qtisend: boolean;
+}
+
 export interface TisQuery {
   qtisver: number;
   requests: SqlQuery[] | FileQuery[];
   qtisend: boolean;
+}
+
+export interface TisResponseBody {
+  subsystem: string;
+  status: number;
+  qid: number;
+  err_code: number;
+  err_msg: string;
+  result: any;
 }
 
 export interface SqlQuery {
@@ -25,21 +40,3 @@ export interface FileQuery {
     };
   };
 }
-
-// const json = {
-//   subsystem: 'sql',
-//   request: 'sql',
-//   parameters: {
-//     method: '',
-//     query: 'select * from tis.v_users;',
-//   },
-// };
-
-// const json2 = {
-//   subsystem: 'file',
-//   request: 'create',
-//   parameters: {
-//     method: '',
-//     data: 'asd',
-//   },
-// };

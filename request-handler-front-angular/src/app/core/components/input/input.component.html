@@ -1,7 +1,5 @@
-<mat-form-field [appearance]="fieldAppearance">
+<mat-form-field [appearance]="fieldAppearance" class="w-100">
   <mat-label>{{ label }}</mat-label>
-  <ng-container [ngSwitch]="fieldType">
-    <input *ngSwitchCase="'input'" [formControl]="control" [placeholder]="placeholder" [type]="inputType" matInput />
-    <textarea *ngSwitchCase="'textarea'" [formControl]="control" [placeholder]="placeholder" matInput></textarea>
-  </ng-container>
+  <input [formControl]="control" [placeholder]="placeholder" [type]="inputType" [attr.disabled]="disabled" matInput />
+  <mat-icon matSuffix>{{suffixIcon}}</mat-icon>
 </mat-form-field>

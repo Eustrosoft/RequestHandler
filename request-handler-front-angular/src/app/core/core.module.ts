@@ -14,6 +14,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { InputFileComponent } from './components/input-file/input-file.component';
 import { UnauthenticatedInterceptor } from './interceptors/unauthenticated-interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TextareaComponent } from './components/textarea/textarea.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +26,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     ButtonComponent,
     SelectComponent,
     InputFileComponent,
+    TextareaComponent,
+    NotFoundComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +36,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     MatButtonModule,
     MatOptionModule,
     MatSelectModule,
+    MatIconModule,
+    MatSnackBarModule,
   ],
   exports: [
     InputComponent,
@@ -37,6 +45,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     ButtonComponent,
     SelectComponent,
     InputFileComponent,
+    TextareaComponent,
   ],
   providers: [
     AuthenticationGuard,

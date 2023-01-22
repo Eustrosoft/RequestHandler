@@ -5,15 +5,24 @@ import { AppComponent } from './app.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from './login-page/login.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
 import { RequestComponent } from './request/request.component';
 import { RequestBuilderService } from './request/request-builder.service';
 import { RequestService } from './request/request.service';
+import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
+import { HeaderComponent } from './header/header.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [AppComponent, LoginPageComponent, RequestComponent],
+  declarations: [
+    AppComponent,
+    LoginPageComponent,
+    RequestComponent,
+    HeaderComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -22,8 +31,19 @@ import { RequestService } from './request/request.service';
     HttpClientModule,
     BrowserAnimationsModule,
     CoreModule,
+    MatIconModule,
+    MatButtonModule,
   ],
-  providers: [LoginService, RequestBuilderService, RequestService],
+  providers: [
+    LoginService,
+    RequestBuilderService,
+    RequestService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
