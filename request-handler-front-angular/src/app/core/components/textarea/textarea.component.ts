@@ -1,11 +1,12 @@
-import {Component, Input} from '@angular/core';
-import {MatFormFieldAppearance} from '@angular/material/form-field';
-import {FormControl} from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { MatFormFieldAppearance } from '@angular/material/form-field';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-textarea',
   templateUrl: './textarea.component.html',
   styleUrls: ['./textarea.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextareaComponent {
   @Input() label: string = '';

@@ -16,6 +16,10 @@ import { HeaderComponent } from './header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
+import {
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatSnackBarConfig,
+} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -44,6 +48,13 @@ import { MatTableModule } from '@angular/material/table';
       provide: HTTP_INTERCEPTORS,
       useClass: HttpErrorInterceptor,
       multi: true,
+    },
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: {
+        duration: 3000,
+        panelClass: 'snackbar',
+      } as MatSnackBarConfig,
     },
   ],
   bootstrap: [AppComponent],

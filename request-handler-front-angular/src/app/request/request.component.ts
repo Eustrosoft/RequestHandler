@@ -1,6 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { catchError, EMPTY, map, mergeMap, Observable, tap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  tap,
+  throwError,
+} from 'rxjs';
 import { RequestBuilderService } from './request-builder.service';
 import {
   TisQuery,
@@ -17,6 +26,7 @@ import { Table } from './interfaces/table.interface';
   selector: 'app-request',
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestComponent implements OnInit {
   form!: FormGroup;
@@ -33,7 +43,7 @@ export class RequestComponent implements OnInit {
 
   tables?: Table[];
 
-  requestResult$!: Observable<TisResponse>;
+  requestResult$!: Observable<TisResponse | null>;
   isResultLoading: boolean = false;
 
   constructor(
@@ -54,6 +64,7 @@ export class RequestComponent implements OnInit {
 
   submit() {
     this.form.get('submit')?.disable();
+    this.isResultLoading = true;
     this.requestResult$ = this.requestBuilderService
       .buildQuery(this.queryType.value, this.form)
       .pipe(
@@ -74,10 +85,14 @@ export class RequestComponent implements OnInit {
           });
           return response;
         }),
-        tap(() => this.form.get('submit')?.enable()),
-        catchError((err) => {
+        tap(() => {
           this.form.get('submit')?.enable();
-          return EMPTY;
+          this.isResultLoading = false;
+        }),
+        catchError(() => {
+          this.form.get('submit')?.enable();
+          this.isResultLoading = false;
+          return of(null);
         })
       );
   }

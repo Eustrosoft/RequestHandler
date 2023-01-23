@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 
@@ -6,6 +6,7 @@ import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
   selector: 'app-preloader',
   templateUrl: './preloader.component.html',
   styleUrls: ['./preloader.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PreloaderComponent {
   @Input() color: ThemePalette = 'primary';

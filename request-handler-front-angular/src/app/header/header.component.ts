@@ -1,13 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {LoginService} from '../login-page/login.service';
-import {AuthenticationService} from '../core/services/authentication.service';
-import {Router} from '@angular/router';
-import {Observable, take, tap} from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { LoginService } from '../login-page/login.service';
+import { AuthenticationService } from '../core/services/authentication.service';
+import { Router } from '@angular/router';
+import { Observable, take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit {
   constructor(
