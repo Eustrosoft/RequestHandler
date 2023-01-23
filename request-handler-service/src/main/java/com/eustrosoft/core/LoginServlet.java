@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
         } catch (ServletException ex) {
             PrintWriter writer = response.getWriter();
             writer.write(new CredentialException().getMessage());
-            response.setStatus(200);
+            response.setStatus(401);
             writer.flush();
             writer.close();
         }
