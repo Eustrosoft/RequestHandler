@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
-import { FileQuery, SqlQuery, TisQuery } from './interfaces/request.interfaces';
-import { combineLatest, mergeMap, Observable, of, ReplaySubject } from 'rxjs';
+import { TisQuery } from './interfaces/request.interfaces';
+import {
+  combineLatest,
+  mergeMap,
+  Observable,
+  of,
+  ReplaySubject,
+  throwError,
+} from 'rxjs';
 import { QueryTypes } from './constants/enums/query-types.enum';
 import { FormGroup } from '@angular/forms';
 import { RequestForm } from './types/request.types';
@@ -15,6 +22,9 @@ export class RequestBuilderService {
   ): Observable<TisQuery> {
     switch (queryType) {
       case QueryTypes.FILE:
+        if (!form.value.file) {
+          return throwError(() => 'Upload a file to make a request');
+        }
         return this.buildFileQuery(form.value.file as File);
       case QueryTypes.SQL:
         return this.buildSqlQuery(form.value.request as string);

@@ -7,4 +7,13 @@
               class="mr-2">
   </app-button>
   <span>{{filename}}</span>
+  <app-button *ngIf="control.value"
+              [buttonType]="'button'"
+              [buttonStyleType]="'icon'"
+              [iconName]="'delete'"
+              [buttonText]="'Upload'"
+              [color]="'warn'"
+              (click)="clear()"
+              class="ml-2">
+  </app-button>
 </div>

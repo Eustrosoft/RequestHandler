@@ -25,9 +25,9 @@
   <ng-container *ngIf="isResultLoading">
     <app-preloader class="m-4"></app-preloader>
   </ng-container>
-  <ng-container *ngIf="(requestResult$ | async) as response">
+  <ng-container *ngIf="{error: requestError$ | async, result: requestResult$ | async} as response">
     <ng-container *ngIf="displayType.value === DisplayTypes.TEXT">
-      <pre class="col-11">{{response | json}}</pre>
+      <pre *ngIf="response.result as result" class="col-11">{{result | json}}</pre>
     </ng-container>
     <ng-container *ngIf="displayType.value === DisplayTypes.TABLE">
       <div class="d-flex flex-column align-items-center col-11">

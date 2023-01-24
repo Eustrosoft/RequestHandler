@@ -1,14 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
   catchError,
-  EMPTY,
+  ignoreElements,
   map,
   mergeMap,
   Observable,
   of,
   tap,
-  throwError,
 } from 'rxjs';
 import { RequestBuilderService } from './request-builder.service';
 import {
@@ -21,6 +25,7 @@ import { QueryTypes } from './constants/enums/query-types.enum';
 import { RequestForm } from './types/request.types';
 import { DisplayTypes } from './constants/enums/display-types.enum';
 import { Table } from './interfaces/table.interface';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-request',
@@ -44,12 +49,15 @@ export class RequestComponent implements OnInit {
   tables?: Table[];
 
   requestResult$!: Observable<TisResponse | null>;
+  requestError$!: Observable<null>;
   isResultLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private requestBuilderService: RequestBuilderService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private cd: ChangeDetectorRef,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -88,12 +96,18 @@ export class RequestComponent implements OnInit {
         tap(() => {
           this.form.get('submit')?.enable();
           this.isResultLoading = false;
-        }),
-        catchError(() => {
-          this.form.get('submit')?.enable();
-          this.isResultLoading = false;
-          return of(null);
         })
       );
+
+    this.requestError$ = this.requestResult$.pipe(
+      ignoreElements(),
+      catchError((err: string) => {
+        this.form.get('submit')?.enable();
+        this.isResultLoading = false;
+        this.snackBar.open(err, 'Close');
+        this.cd.detectChanges();
+        return of(null);
+      })
+    );
   }
 }

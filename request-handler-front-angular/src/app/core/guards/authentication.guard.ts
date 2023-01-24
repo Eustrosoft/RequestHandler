@@ -1,12 +1,20 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree,} from '@angular/router';
-import {Observable} from 'rxjs';
-import {AuthenticationService} from '../services/authentication.service';
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
+import { Observable, of, switchMap } from 'rxjs';
+import { AuthenticationService } from '../services/authentication.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
   constructor(
     private authenticationService: AuthenticationService,
+    private snackBar: MatSnackBar,
     private router: Router
   ) {}
   canActivate(
@@ -17,8 +25,14 @@ export class AuthenticationGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this.authenticationService.isAuthenticated.getValue()
-      ? true
-      : this.router.createUrlTree(['login']);
+    return this.authenticationService.isAuthenticated.pipe(
+      switchMap((value: boolean) => {
+        if (!value) {
+          this.snackBar.open('Authenticate to access this page', 'Close');
+          return of(this.router.createUrlTree(['login']));
+        }
+        return of(true);
+      })
+    );
   }
 }

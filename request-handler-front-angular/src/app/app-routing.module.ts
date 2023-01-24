@@ -7,14 +7,16 @@ import { NotFoundComponent } from './core/components/not-found/not-found.compone
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginPageComponent },
+  { path: 'login', title: 'TIS | Login', component: LoginPageComponent },
   {
     path: 'request',
+    title: 'TIS | Request',
     component: RequestComponent,
     canActivate: [AuthenticationGuard],
   },
   {
     path: '**',
+    title: 'TIS | Not found',
     pathMatch: 'full',
     component: NotFoundComponent,
   },
