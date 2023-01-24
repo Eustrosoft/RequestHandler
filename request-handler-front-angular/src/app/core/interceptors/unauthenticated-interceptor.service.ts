@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
   HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
   HttpStatusCode,
 } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';

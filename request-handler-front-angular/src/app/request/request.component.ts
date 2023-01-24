@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
+  BehaviorSubject,
   catchError,
   ignoreElements,
   map,
@@ -50,7 +51,7 @@ export class RequestComponent implements OnInit {
 
   requestResult$!: Observable<TisResponse | null>;
   requestError$!: Observable<null>;
-  isResultLoading: boolean = false;
+  isResultLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
     private fb: FormBuilder,
@@ -72,7 +73,7 @@ export class RequestComponent implements OnInit {
 
   submit() {
     this.form.get('submit')?.disable();
-    this.isResultLoading = true;
+    this.isResultLoading.next(true);
     this.requestResult$ = this.requestBuilderService
       .buildQuery(this.queryType.value, this.form)
       .pipe(
@@ -95,7 +96,7 @@ export class RequestComponent implements OnInit {
         }),
         tap(() => {
           this.form.get('submit')?.enable();
-          this.isResultLoading = false;
+          this.isResultLoading.next(false);
         })
       );
 
@@ -103,7 +104,7 @@ export class RequestComponent implements OnInit {
       ignoreElements(),
       catchError((err: string) => {
         this.form.get('submit')?.enable();
-        this.isResultLoading = false;
+        this.isResultLoading.next(false);
         this.snackBar.open(err, 'Close');
         this.cd.detectChanges();
         return of(null);

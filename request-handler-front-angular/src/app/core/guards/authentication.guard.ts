@@ -17,6 +17,7 @@ export class AuthenticationGuard implements CanActivate {
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot

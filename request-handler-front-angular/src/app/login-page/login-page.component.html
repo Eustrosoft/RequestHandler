@@ -1,4 +1,8 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column align-items-center">
+<form
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  class="d-flex flex-column align-items-center"
+>
   <h2>Login</h2>
   <app-input
     [inputType]="InputTypes.TEXT"
@@ -19,5 +23,10 @@
     class="col-5"
   >
   </app-input>
-  <app-button [buttonStyleType]="'stroked'" [buttonText]="'Submit'" [buttonType]="'submit'" [disabled]="form.get('submit')!.disabled"></app-button>
+  <app-button
+    [buttonStyleType]="'stroked'"
+    [buttonText]="'Submit'"
+    [buttonType]="'submit'"
+    [disabled]="form.get('submit')!.disabled"
+  ></app-button>
 </form>

@@ -1,4 +1,8 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="d-flex flex-column align-items-center">
+<form
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  class="d-flex flex-column align-items-center"
+>
   <app-select
     [label]="'Query type'"
     [control]="queryType! | formControl"
@@ -20,25 +24,54 @@
     [fieldAppearance]="'outline'"
     class="col-5"
   ></app-textarea>
-  <app-input-file *ngIf="queryType.value === QueryTypes.FILE" [control]="form.get('file')! | formControl"></app-input-file>
-  <app-button [buttonStyleType]="'stroked'" [buttonText]="'Send'" [buttonType]="'submit'" [disabled]="form.get('submit')!.disabled"></app-button>
-  <ng-container *ngIf="isResultLoading">
-    <app-preloader class="m-4"></app-preloader>
+  <app-input-file
+    *ngIf="queryType.value === QueryTypes.FILE"
+    [control]="form.get('file')! | formControl"
+  ></app-input-file>
+  <app-button
+    [buttonStyleType]="'stroked'"
+    [buttonText]="'Send'"
+    [buttonType]="'submit'"
+    [disabled]="form.get('submit')!.disabled"
+  ></app-button>
+  <ng-container *ngIf="isResultLoading | async as loading">
+    <app-preloader *ngIf="loading" class="m-4"></app-preloader>
   </ng-container>
-  <ng-container *ngIf="{error: requestError$ | async, result: requestResult$ | async} as response">
+  <ng-container
+    *ngIf="{
+      error: requestError$ | async,
+      result: requestResult$ | async
+    } as response"
+  >
     <ng-container *ngIf="displayType.value === DisplayTypes.TEXT">
-      <pre *ngIf="response.result as result" class="col-11">{{result | json}}</pre>
+      <pre *ngIf="response.result as result" class="col-11">{{
+        result | json
+      }}</pre>
     </ng-container>
     <ng-container *ngIf="displayType.value === DisplayTypes.TABLE">
       <div class="d-flex flex-column align-items-center col-11">
-        <table *ngFor="let table of tables" mat-table [dataSource]="table.dataSource" class="m-4 mat-elevation-z8">
-          <ng-container [matColumnDef]="column" *ngFor="let column of table.displayedColumns; let i = index">
-            <th mat-header-cell *matHeaderCellDef>{{column}} <br> ({{table.data_types[i]}})</th>
-            <td mat-cell *matCellDef="let element">{{element[column]}}</td>
+        <table
+          *ngFor="let table of tables"
+          mat-table
+          [dataSource]="table.dataSource"
+          class="m-4 mat-elevation-z8"
+        >
+          <ng-container
+            [matColumnDef]="column"
+            *ngFor="let column of table.displayedColumns; let i = index"
+          >
+            <th mat-header-cell *matHeaderCellDef>
+              {{ column }} <br />
+              ({{ table.data_types[i] }})
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="table.columnsToDisplay"></tr>
-          <tr mat-row *matRowDef="let row; columns: table.columnsToDisplay;"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: table.columnsToDisplay"
+          ></tr>
         </table>
       </div>
     </ng-container>

@@ -1,19 +1,29 @@
-<input #fileInput hidden="true" type="file" name="file" (change)="change($event)"/>
+<input
+  #fileInput
+  hidden="true"
+  type="file"
+  name="file"
+  (change)="change($event)"
+/>
 <div class="d-flex align-items-center pb-3">
-  <app-button [buttonType]="'button'"
-              [buttonStyleType]="'stroked'"
-              [buttonText]="'Upload'"
-              (buttonClicked)="fileInput.click()"
-              class="mr-2">
+  <app-button
+    [buttonType]="'button'"
+    [buttonStyleType]="'stroked'"
+    [buttonText]="'Upload'"
+    (buttonClicked)="fileInput.click()"
+    class="mr-2"
+  >
   </app-button>
-  <span>{{filename}}</span>
-  <app-button *ngIf="control.value"
-              [buttonType]="'button'"
-              [buttonStyleType]="'icon'"
-              [iconName]="'delete'"
-              [buttonText]="'Upload'"
-              [color]="'warn'"
-              (click)="clear()"
-              class="ml-2">
+  <span>{{ filename }}</span>
+  <app-button
+    *ngIf="control.value"
+    [buttonType]="'button'"
+    [buttonStyleType]="'icon'"
+    [iconName]="'delete'"
+    [buttonText]="'Upload'"
+    [color]="'warn'"
+    (click)="clear()"
+    class="ml-2"
+  >
   </app-button>
 </div>

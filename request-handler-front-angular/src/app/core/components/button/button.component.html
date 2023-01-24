@@ -1,5 +1,11 @@
 <ng-container [ngSwitch]="buttonStyleType">
-  <button *ngSwitchDefault mat-button [color]="color" [disabled]="disabled" (click)="click()">
+  <button
+    *ngSwitchDefault
+    mat-button
+    [color]="color"
+    [disabled]="disabled"
+    (click)="click()"
+  >
     {{ buttonText }}
   </button>
   <button
