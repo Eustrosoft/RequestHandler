@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QTisResponse implements Response {
@@ -50,19 +51,17 @@ public class QTisResponse implements Response {
     }
 
     private JsonArray getResponsesString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
+        List<String> jsonResponses = new ArrayList<>();
         for (ResponseBlock responseBlock : responseBlocks) {
             try {
-                builder.append(responseBlock.toJson());
+                jsonResponses.add(responseBlock.toJson());
             } catch (Exception ex) {
-                builder.append(
+                jsonResponses.add(
                         "{\"err_msg\":\"Exception while processing block\"}"
                 );
             }
         }
-        builder.append("]");
-        return new Gson().fromJson(builder.toString(), JsonArray.class);
+        return new Gson().fromJson(jsonResponses.toString(), JsonArray.class);
     }
 
 }

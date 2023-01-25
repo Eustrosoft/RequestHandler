@@ -89,7 +89,7 @@ public class HttpRequestDispatcher extends HttpServlet {
 
         // Processing request blocks
         QTisResponse qTisResponse = new QTisResponse();
-
+        List<ResponseBlock> responses = new ArrayList<>();
         for (RequestBlock block : requestBlocks) {
             Handler handler;
             String requestType = block.getRequest();
@@ -104,7 +104,6 @@ public class HttpRequestDispatcher extends HttpServlet {
                     handler = null;
                     break;
             }
-            List<ResponseBlock> responses = new ArrayList<>();
             if (handler != null) {
                 int exCount = 0;
                 StringBuilder exceptionsBuilder = new StringBuilder();
@@ -121,8 +120,8 @@ public class HttpRequestDispatcher extends HttpServlet {
                 );
             }
 
-            qTisResponse.setResponseBlocks(responses);
         }
+        qTisResponse.setResponseBlocks(responses);
         return qTisResponse;
     }
 }
