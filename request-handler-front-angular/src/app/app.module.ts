@@ -8,9 +8,9 @@ import { LoginService } from './login-page/login.service';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
-import { RequestComponent } from './request/request.component';
-import { RequestBuilderService } from './request/request-builder.service';
-import { RequestService } from './request/request.service';
+import { RequestsComponent } from './requests/requests.component';
+import { RequestBuilderService } from './requests/services/request-builder.service';
+import { RequestService } from './requests/services/request.service';
 import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { HeaderComponent } from './header/header.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,13 +20,17 @@ import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatSnackBarConfig,
 } from '@angular/material/snack-bar';
+import { RequestFormBuilderService } from './requests/services/request-form-builder.service';
+import { RequestComponent } from './requests/components/request/request.component';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
-    RequestComponent,
+    RequestsComponent,
     HeaderComponent,
+    RequestComponent,
   ],
   imports: [
     BrowserModule,
@@ -39,10 +43,12 @@ import {
     MatIconModule,
     MatButtonModule,
     MatTableModule,
+    MatDividerModule,
   ],
   providers: [
     LoginService,
     RequestBuilderService,
+    RequestFormBuilderService,
     RequestService,
     {
       provide: HTTP_INTERCEPTORS,

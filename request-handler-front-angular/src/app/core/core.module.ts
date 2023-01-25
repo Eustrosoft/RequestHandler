@@ -20,6 +20,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { PreloaderComponent } from './components/preloader/preloader.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormArrayPipe } from './pipes/form-array.pipe';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     TextareaComponent,
     NotFoundComponent,
     PreloaderComponent,
+    FormArrayPipe,
   ],
   imports: [
     CommonModule,
@@ -51,6 +53,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     InputFileComponent,
     TextareaComponent,
     PreloaderComponent,
+    FormArrayPipe,
   ],
   providers: [
     AuthenticationGuard,

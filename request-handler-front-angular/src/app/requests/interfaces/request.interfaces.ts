@@ -6,7 +6,7 @@ export interface TisResponse {
 
 export interface TisQuery {
   qtisver: number;
-  requests: SqlQuery[] | FileQuery[];
+  requests: Array<SqlQuery | FileQuery>;
   qtisend: boolean;
 }
 

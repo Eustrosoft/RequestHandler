@@ -1,0 +1,22 @@
+<div class="d-flex flex-column">
+  <h1 class="ml-3 mb-3"># {{ formNumber }}</h1>
+  <app-select
+    [label]="'Query type'"
+    [control]="form.get('queryType')! | formControl"
+    [options]="queryTypeOptions"
+    [fieldAppearance]="'outline'"
+    class="col-12"
+  ></app-select>
+  <app-textarea
+    *ngIf="(form.get('queryType')! | formControl).value === QueryTypes.SQL"
+    [label]="'SQL'"
+    [control]="form.get('request')! | formControl"
+    [fieldAppearance]="'outline'"
+    class="col-12"
+  ></app-textarea>
+  <app-input-file
+    *ngIf="(form.get('queryType')! | formControl).value === QueryTypes.FILE"
+    [control]="form.get('file')! | formControl"
+    class="col-12"
+  ></app-input-file>
+</div>

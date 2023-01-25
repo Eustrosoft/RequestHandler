@@ -1,4 +1,4 @@
 export enum DisplayTypes {
-  TEXT = 'text',
+  TEXT = 'json',
   TABLE = 'table',
 }
