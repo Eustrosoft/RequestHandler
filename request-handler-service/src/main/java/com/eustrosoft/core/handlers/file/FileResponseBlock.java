@@ -1,11 +1,11 @@
 package com.eustrosoft.core.handlers.file;
 
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.tools.QJson;
+
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
 
 public class FileResponseBlock implements ResponseBlock {
-    private QJson response;
-
     private String errMsg;
 
     public FileResponseBlock(String answer) {
@@ -14,12 +14,12 @@ public class FileResponseBlock implements ResponseBlock {
 
     @Override
     public String getSubsystem() {
-        return "file";
+        return SUBSYSTEM_FILE;
     }
 
     @Override
     public String getRequest() {
-        return "upload"; // TODO make non static value
+        return REQUEST_FILE_UPLOAD;
     }
 
     @Override

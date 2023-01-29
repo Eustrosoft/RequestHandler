@@ -2,7 +2,6 @@ package com.eustrosoft.core.handlers.sql;
 
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sql.model.ResultSetAnswer;
-import com.eustrosoft.core.tools.QJson;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -11,7 +10,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SQLResponseBlock implements ResponseBlock {
     private String errMsg = "";
@@ -116,18 +114,6 @@ public class SQLResponseBlock implements ResponseBlock {
             sets.add(answer);
         }
         return sets;
-    }
-
-    private String postProcessJsonSets(List<QJson> sets) {
-        QJson qJson = new QJson();
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
-        builder.append(
-                sets.stream().map(QJson::toJSONString).collect(Collectors.joining(","))
-        );
-        builder.append("]");
-        qJson.addItem("sets", builder.toString());
-        return qJson.toJSONString();
     }
 
     private List<String> getColumnNames(ResultSetMetaData metadata) throws SQLException {

@@ -1,5 +1,6 @@
 package com.eustrosoft.core;
 
+import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.exception.CredentialException;
 import com.eustrosoft.core.tools.QJson;
@@ -44,7 +45,7 @@ public class LoginServlet extends HttpServlet {
             UsersContext usersContext = UsersContext.getInstance();
             usersContext.setUserDetails(
                     newSession.getId(),
-                    new UsersContext.SQLUser(username, password)
+                    new User(username, password, request.getRequestedSessionId())
             );
         } catch (ServletException ex) {
             PrintWriter writer = response.getWriter();

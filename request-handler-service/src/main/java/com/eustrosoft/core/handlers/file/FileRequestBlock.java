@@ -5,7 +5,10 @@ import com.eustrosoft.core.tools.QJson;
 
 import java.util.Base64;
 
-public final class FileRequestBlock implements RequestBlock {
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+
+public class FileRequestBlock implements RequestBlock {
     private byte[] fileBytes;
     private String fileName;
 
@@ -40,15 +43,15 @@ public final class FileRequestBlock implements RequestBlock {
 
     @Override
     public String getSubsystem() {
-        return "file";
+        return SUBSYSTEM_FILE;
     }
 
     @Override
     public String getRequest() {
-        return "upload"; // TODO make non static value
+        return REQUEST_FILE_UPLOAD;
     }
 
-    private void parseQJson(QJson qJson) {
+    protected void parseQJson(QJson qJson) {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
         }
@@ -57,7 +60,7 @@ public final class FileRequestBlock implements RequestBlock {
         setFileName(fileData.getItemString("name"));
     }
 
-    private byte[] decodeString(String str) {
+    protected byte[] decodeString(String str) {
         return Base64.getDecoder().decode(str);
     }
 }

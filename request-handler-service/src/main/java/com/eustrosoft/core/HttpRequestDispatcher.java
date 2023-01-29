@@ -1,6 +1,8 @@
 package com.eustrosoft.core;
 
 import com.eustrosoft.core.handlers.Handler;
+import com.eustrosoft.core.handlers.file.ChunkFileHandler;
+import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.FileHandler;
 import com.eustrosoft.core.handlers.file.FileRequestBlock;
 import com.eustrosoft.core.handlers.requests.QTisRequestObject;
@@ -22,6 +24,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.eustrosoft.core.Constants.PARAMETERS;
+import static com.eustrosoft.core.Constants.QTISEND;
+import static com.eustrosoft.core.Constants.QTISVER;
+import static com.eustrosoft.core.Constants.REQUEST;
+import static com.eustrosoft.core.Constants.REQUESTS;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_SQL;
+import static com.eustrosoft.core.Constants.SUBSYSTEM;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
 
 @WebServlet(
         name = "EustrosoftRequestDispatcher",
@@ -62,25 +76,32 @@ public class HttpRequestDispatcher extends HttpServlet {
         QJson qJson = new QJson();
         qJson.parseJSONReader(request.getReader());
         RequestObject requestObject = new QTisRequestObject();
-        requestObject.setqTisEnd((Boolean) qJson.getItem("qtisend"));
-        requestObject.setqTisVer((Long) qJson.getItem("qtisver"));
+        requestObject.setqTisEnd((Boolean) qJson.getItem(QTISEND));
+        requestObject.setqTisVer((Long) qJson.getItem(QTISVER));
 
-        QJson requestsArray = qJson.getItemQJson("requests");
+        QJson requestsArray = qJson.getItemQJson(REQUESTS);
         List<RequestBlock> requestBlocks = new ArrayList<>();
 
         for (int i = 0; i < requestsArray.size(); i++) {
             QJson reqst = requestsArray.getItemQJson(i);
-            String subSystem = reqst.getItemString("subsystem");
+            String subSystem = reqst.getItemString(SUBSYSTEM);
+            String requestType = reqst.getItemString(REQUEST);
             RequestBlock requestBlock;
-            QJson params = reqst.getItemQJson("parameters");
+            QJson params = reqst.getItemQJson(PARAMETERS);
             switch (subSystem) {
-                case "sql":
+                case SUBSYSTEM_SQL:
                     requestBlock = new SQLRequestBlock(params);
                     requestBlocks.add(requestBlock);
                     break;
-                case "file":
-                    requestBlock = new FileRequestBlock(params);
-                    requestBlocks.add(requestBlock);
+                case SUBSYSTEM_FILE:
+                    if (requestType.equals(REQUEST_FILE_UPLOAD)) {
+                        requestBlock = new FileRequestBlock(params);
+                        requestBlocks.add(requestBlock);
+                    }
+                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD)) {
+                        requestBlock = new ChunkFileRequestBlock(params);
+                        requestBlocks.add(requestBlock);
+                    }
                     break;
                 default:
                     break;
@@ -94,11 +115,14 @@ public class HttpRequestDispatcher extends HttpServlet {
             Handler handler;
             String requestType = block.getRequest();
             switch (requestType) {
-                case "sql":
+                case REQUEST_SQL:
                     handler = new SQLHandler();
                     break;
-                case "upload":
+                case REQUEST_FILE_UPLOAD:
                     handler = new FileHandler();
+                    break;
+                case REQUEST_CHUNKS_FILE_UPLOAD:
+                    handler = new ChunkFileHandler();
                     break;
                 default:
                     handler = null;

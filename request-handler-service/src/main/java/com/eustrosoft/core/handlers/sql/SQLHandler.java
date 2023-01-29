@@ -1,5 +1,6 @@
 package com.eustrosoft.core.handlers.sql;
 
+import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
@@ -17,10 +18,10 @@ public final class SQLHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock, HttpServletRequest request) throws Exception {
         UsersContext usersContext = UsersContext.getInstance();
-        UsersContext.SQLUser user = usersContext.getSQLUser(request.getSession(false).getId());
+        User user = usersContext.getSQLUser(request.getSession(false).getId());
 
         this.dbUrl = request.getServletContext().getInitParameter("dbUrl");
-        this.dbWrapper = DBWrapper.getInstance(user.getUser(), user.getPassword(), this.dbUrl);
+        this.dbWrapper = DBWrapper.getInstance(user.getUserName(), user.getPassword(), this.dbUrl);
         SQLRequestBlock sqlRequest = (SQLRequestBlock) requestBlock;
         String query = sqlRequest.getQuery();
 

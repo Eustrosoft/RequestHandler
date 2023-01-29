@@ -3,6 +3,9 @@ package com.eustrosoft.core.handlers.sql;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
+import static com.eustrosoft.core.Constants.REQUEST_SQL;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
+
 public final class SQLRequestBlock implements RequestBlock {
     private String query;
     private String method;
@@ -25,12 +28,12 @@ public final class SQLRequestBlock implements RequestBlock {
 
     @Override
     public String getSubsystem() {
-        return "sql";
+        return SUBSYSTEM_SQL;
     }
 
     @Override
     public String getRequest() {
-        return "sql";
+        return REQUEST_SQL;
     }
 
     public SQLRequestBlock() {

@@ -8,7 +8,7 @@ public final class UsersContext {
     private final static int EXPIRE_TIMEOUT = 6_000_000;
 
     private static Map<String, Connection> connections;
-    private static Map<String, SQLUser> usersDetails;
+    private static Map<String, User> usersDetails;
     private static UsersContext usersContext;
 
     private UsersContext() {
@@ -23,15 +23,15 @@ public final class UsersContext {
         return usersContext;
     }
 
-    public Map<String, SQLUser> getUserDetails() {
+    public Map<String, User> getUserDetails() {
         return usersDetails;
     }
 
-    public void setUserDetails(String sessionId, SQLUser userDetails) {
+    public void setUserDetails(String sessionId, User userDetails) {
         usersDetails.put(sessionId, userDetails);
     }
 
-    public SQLUser getSQLUser(String sessionId) {
+    public User getSQLUser(String sessionId) {
         return usersDetails.get(sessionId);
     }
 
@@ -57,35 +57,5 @@ public final class UsersContext {
 
     public Map<String, Connection> getConnections() {
         return connections;
-    }
-
-    public static class SQLUser {
-        private String user;
-        private String password;
-
-        public SQLUser(String user, String password) {
-            this.user = user;
-            this.password = password;
-        }
-
-        public SQLUser() {
-
-        }
-
-        public String getUser() {
-            return user;
-        }
-
-        public void setUser(String user) {
-            this.user = user;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
     }
 }
