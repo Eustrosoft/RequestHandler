@@ -19,7 +19,7 @@ public class FileHandler implements Handler {
             throws IOException {
         User user = UsersContext.getInstance().getSQLUser(request.getSession(false).getId());
         if (user.getSessionPath() == null || user.getSessionPath().isEmpty()) {
-            UserStorage storage = new UserStorage(user);
+            UserStorage storage = UserStorage.getInstanceForUser(user);
             user.setSessionPath(storage.createAndGetNewStoragePath());
         }
         FileRequestBlock fileRequestBlock = (FileRequestBlock) requestBlock;
