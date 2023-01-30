@@ -1,0 +1,19 @@
+<div class="container-fluid">
+  <div class="row gx-3">
+    <div class="col-2">
+      <app-input-file [control]="control" [multiple]="true"></app-input-file>
+    </div>
+    <div class="col-2">
+      <app-button
+        [buttonType]="'button'"
+        [buttonStyleType]="'stroked'"
+        [buttonText]="'Upload files'"
+        (click)="uploadFiles()"
+      >
+      </app-button>
+    </div>
+    <ng-container *ngIf="uploadResult$ | async as result">
+      <p>{{ result | json }}</p>
+    </ng-container>
+  </div>
+</div>

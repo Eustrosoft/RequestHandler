@@ -4,21 +4,15 @@ import {
   SqlQuery,
   TisQuery,
 } from '../interfaces/request.interfaces';
-import {
-  combineLatest,
-  forkJoin,
-  mergeMap,
-  Observable,
-  of,
-  ReplaySubject,
-} from 'rxjs';
+import { combineLatest, mergeMap, Observable, of } from 'rxjs';
 import { QueryTypes } from '../constants/enums/query-types.enum';
 import { FormArray, FormGroup } from '@angular/forms';
 import { SingleRequestForm } from '../types/request.types';
+import { FileBase64Service } from '../../core/services/file-base64.service';
 
 @Injectable()
 export class RequestBuilderService {
-  constructor() {}
+  constructor(private fileBase64Service: FileBase64Service) {}
 
   buildQuery(
     forms: FormArray<FormGroup<SingleRequestForm>>
@@ -27,14 +21,14 @@ export class RequestBuilderService {
       (control: FormGroup<SingleRequestForm>) => {
         switch (control.value.queryType as QueryTypes) {
           case QueryTypes.FILE:
-            return this.buildFileQuery(control.value.file as File);
+            return this.buildFileQuery(control.value.file!.pop() as File);
           case QueryTypes.SQL:
             return this.buildSqlQuery(control.value.request as string);
         }
       }
     );
 
-    return forkJoin(requests).pipe(
+    return combineLatest(requests).pipe(
       mergeMap((value: (FileQuery | SqlQuery)[]) =>
         of({
           qtisver: 1,
@@ -54,9 +48,9 @@ export class RequestBuilderService {
   }
 
   private buildFileQuery(file: File): Observable<FileQuery> {
-    return combineLatest([this.fileToBase64(file)]).pipe(
-      mergeMap(([base64]) => {
-        return of({
+    return this.fileBase64Service.fileToBase64(file).pipe(
+      mergeMap((base64: string) =>
+        of({
           parameters: {
             data: {
               file: base64,
@@ -67,17 +61,8 @@ export class RequestBuilderService {
           },
           request: 'upload',
           subsystem: 'file',
-        });
-      })
+        })
+      )
     );
-  }
-
-  private fileToBase64(file: File): Observable<string> {
-    const result = new ReplaySubject<string>(1);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) =>
-      result.next(event.target!.result!.toString().replace(/^.*,/, ''));
-    return result.asObservable();
   }
 }

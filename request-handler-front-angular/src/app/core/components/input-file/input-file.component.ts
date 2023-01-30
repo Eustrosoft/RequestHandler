@@ -1,9 +1,11 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
   Input,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -14,24 +16,49 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./input-file.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InputFileComponent implements OnDestroy {
+export class InputFileComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() control!: FormControl;
-  @ViewChild('fileInput') fileInput!: ElementRef;
+  @Input() buttonText: string = 'Select files';
+  @Input() multiple: boolean = false;
 
-  filename: string = '';
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  files: File[] = [];
+
+  ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
+    this.files = this.control.value;
+    this.patchInput();
+  }
 
   change(e: Event): void {
     const target = e.target as HTMLInputElement;
-    const file = target.files!.item(0);
-    this.control.patchValue(file);
-    this.filename = file!.name;
+    const filesArray = Array.from(target.files!);
+    if (filesArray.length > 1) {
+      this.control.patchValue(filesArray);
+      this.files = filesArray;
+    } else {
+      this.control.patchValue([filesArray[0]]);
+      this.files = [filesArray[0]];
+    }
+  }
+
+  delete(index: number): void {
+    this.files.splice(index, 1);
+    this.control.patchValue(this.files);
+    this.patchInput();
   }
 
   clear(): void {
-    const el = this.fileInput.nativeElement as HTMLInputElement;
-    el.files = new DataTransfer().files;
-    this.filename = '';
-    this.control.reset();
+    this.fileInput.nativeElement.files = new DataTransfer().files;
+    this.files = [];
+  }
+
+  patchInput(): void {
+    const dt = new DataTransfer();
+    this.files.forEach((file: File) => dt.items.add(file));
+    this.fileInput.nativeElement.files = dt.files;
   }
 
   ngOnDestroy(): void {

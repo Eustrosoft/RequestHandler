@@ -8,6 +8,6 @@ export type RequestsForm = {
 
 export type SingleRequestForm = {
   request: FormControl<string | null>;
-  file: FormControl<File | null>;
+  file: FormControl<File[] | null>;
   queryType: FormControl<QueryTypes | null>;
 };

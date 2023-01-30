@@ -54,7 +54,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       .login(this.form.value.login, this.form.value.password)
       .pipe(takeUntil(this.destroyed$))
       .subscribe({
-        next: () => this.router.navigate(['request']),
+        next: () => this.router.navigate(['apps']),
         error: () => {
           this.form.get('submit')?.enable();
           this.cd.markForCheck();

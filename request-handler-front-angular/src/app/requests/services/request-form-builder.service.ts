@@ -14,14 +14,14 @@ export class RequestFormBuilderService {
           request: this.fb.control(
             'select * from tis.samusers;select * from tis.files;'
           ),
-          file: this.fb.control(null),
+          file: this.fb.control([]),
           queryType: this.fb.control(QueryTypes.SQL),
         }),
         this.fb.group<SingleRequestForm>({
           request: this.fb.control(
             'select * from tis.samacl;select * from tis.comments;'
           ),
-          file: this.fb.control(null),
+          file: this.fb.control([]),
           queryType: this.fb.control(QueryTypes.SQL),
         }),
       ]),
@@ -32,7 +32,7 @@ export class RequestFormBuilderService {
   makeNewRequestForm(): FormGroup<SingleRequestForm> {
     return this.fb.group<SingleRequestForm>({
       request: this.fb.control(''),
-      file: this.fb.control(null),
+      file: this.fb.control([]),
       queryType: this.fb.control(QueryTypes.SQL),
     });
   }

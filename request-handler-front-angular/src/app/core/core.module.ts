@@ -21,6 +21,8 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { PreloaderComponent } from './components/preloader/preloader.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormArrayPipe } from './pipes/form-array.pipe';
+import { HoverShadowDirective } from './directives/hover-shadow/hover-shadow.directive';
+import { FileBase64Service } from './services/file-base64.service';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { FormArrayPipe } from './pipes/form-array.pipe';
     NotFoundComponent,
     PreloaderComponent,
     FormArrayPipe,
+    HoverShadowDirective,
   ],
   imports: [
     CommonModule,
@@ -54,10 +57,12 @@ import { FormArrayPipe } from './pipes/form-array.pipe';
     TextareaComponent,
     PreloaderComponent,
     FormArrayPipe,
+    HoverShadowDirective,
   ],
   providers: [
     AuthenticationGuard,
     AuthenticationService,
+    FileBase64Service,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: UnauthenticatedInterceptor,

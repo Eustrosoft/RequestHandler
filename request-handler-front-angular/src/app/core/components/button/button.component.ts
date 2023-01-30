@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 
 @Component({
@@ -26,10 +20,4 @@ export class ButtonComponent {
   @Input() buttonText?: string;
   @Input() disabled: boolean = false;
   @Input() iconName: string = '';
-
-  @Output() buttonClicked = new EventEmitter<void>();
-
-  click(): void {
-    this.buttonClicked.emit();
-  }
 }

@@ -6,7 +6,7 @@ export interface TisResponse {
 
 export interface TisQuery {
   qtisver: number;
-  requests: Array<SqlQuery | FileQuery>;
+  requests: Array<SqlQuery | FileQuery | ChunkedFileQuery>;
   qtisend: boolean;
 }
 
@@ -44,6 +44,21 @@ export interface FileQuery {
       file: string;
       name: string;
       ext: string;
+    };
+  };
+}
+
+export interface ChunkedFileQuery {
+  subsystem: string;
+  request: string;
+  parameters: {
+    method: string;
+    data: {
+      file: Blob;
+      name: string;
+      ext: string;
+      chunk: number;
+      all_chunks: number;
     };
   };
 }

@@ -3,27 +3,34 @@
   hidden="true"
   type="file"
   name="file"
+  [multiple]="multiple"
   (change)="change($event)"
 />
-<div class="d-flex align-items-center pb-3">
-  <app-button
-    [buttonType]="'button'"
-    [buttonStyleType]="'stroked'"
-    [buttonText]="'Upload'"
-    (buttonClicked)="fileInput.click()"
-    class="mr-2"
+
+<app-button
+  [buttonType]="'button'"
+  [buttonStyleType]="'stroked'"
+  [buttonText]="buttonText"
+  (click)="fileInput.click()"
+>
+</app-button>
+
+<div class="d-flex flex-column">
+  <div
+    *ngFor="let file of files; let i = index"
+    class="d-flex align-items-center"
   >
-  </app-button>
-  <span>{{ filename }}</span>
-  <app-button
-    *ngIf="control.value"
-    [buttonType]="'button'"
-    [buttonStyleType]="'icon'"
-    [iconName]="'delete'"
-    [buttonText]="'Upload'"
-    [color]="'warn'"
-    (click)="clear()"
-    class="ml-2"
-  >
-  </app-button>
+    <span>{{ file.name }}</span>
+    <app-button
+      *ngIf="control.value"
+      [buttonType]="'button'"
+      [buttonStyleType]="'icon'"
+      [iconName]="'delete'"
+      [buttonText]="'Delete file'"
+      [color]="'warn'"
+      (click)="delete(i)"
+      class="ml-2"
+    >
+    </app-button>
+  </div>
 </div>

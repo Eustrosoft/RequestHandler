@@ -8,29 +8,27 @@ import { LoginService } from './login-page/login.service';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
-import { RequestsComponent } from './requests/requests.component';
-import { RequestBuilderService } from './requests/services/request-builder.service';
-import { RequestService } from './requests/services/request.service';
 import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { HeaderComponent } from './header/header.component';
-import { MatIconModule } from '@angular/material/icon';
+import {
+  MAT_ICON_DEFAULT_OPTIONS,
+  MatIconDefaultOptions,
+  MatIconModule,
+} from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
 import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatSnackBarConfig,
 } from '@angular/material/snack-bar';
-import { RequestFormBuilderService } from './requests/services/request-form-builder.service';
-import { RequestComponent } from './requests/components/request/request.component';
-import { MatDividerModule } from '@angular/material/divider';
+import { RequestsModule } from './requests/requests.module';
+import { ApplicationsComponent } from './applications/applications.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
-    RequestsComponent,
     HeaderComponent,
-    RequestComponent,
+    ApplicationsComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,14 +40,10 @@ import { MatDividerModule } from '@angular/material/divider';
     CoreModule,
     MatIconModule,
     MatButtonModule,
-    MatTableModule,
-    MatDividerModule,
+    RequestsModule,
   ],
   providers: [
     LoginService,
-    RequestBuilderService,
-    RequestFormBuilderService,
-    RequestService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpErrorInterceptor,
@@ -61,6 +55,12 @@ import { MatDividerModule } from '@angular/material/divider';
         duration: 3000,
         panelClass: 'snackbar',
       } as MatSnackBarConfig,
+    },
+    {
+      provide: MAT_ICON_DEFAULT_OPTIONS,
+      useValue: {
+        fontSet: 'material-symbols-outlined',
+      } as MatIconDefaultOptions,
     },
   ],
   bootstrap: [AppComponent],
