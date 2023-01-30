@@ -21,15 +21,16 @@ public class ChunkFileHandler implements Handler {
             throws IOException {
         User user = UsersContext.getInstance().getSQLUser(request.getSession(false).getId());
         this.storage = new UserStorage(user);
-        String uploadPath = this.storage.createAndGetNewStoragePath();
+        String uploadPath = this.storage.getExistedPathOrCreate();
         String answer = "";
 
         if (uploadPath != null && !uploadPath.isEmpty()) {
             ChunkFileRequestBlock fileRequestBlock = (ChunkFileRequestBlock) requestBlock;
             byte[] fileBytes = fileRequestBlock.getFileBytes();
             String fileName = fileRequestBlock.getFileName();
+            Long chunk = fileRequestBlock.getChunkNumber();
             try (BufferedOutputStream bos = new BufferedOutputStream(
-                    new FileOutputStream(new File(uploadPath, fileName)))
+                    new FileOutputStream(new File(uploadPath, String.format("%s_%d", fileName, chunk))))
             ) {
                 bos.write(fileBytes);
                 bos.flush();
@@ -43,8 +44,6 @@ public class ChunkFileHandler implements Handler {
                 ex.printStackTrace();
                 answer = ex.getMessage();
             }
-
-
         }
         return new FileResponseBlock(answer);
     }

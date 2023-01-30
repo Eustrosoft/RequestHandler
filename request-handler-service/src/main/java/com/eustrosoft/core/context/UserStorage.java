@@ -24,7 +24,7 @@ public class UserStorage implements StorageContext {
     }
 
     @Override
-    public void clearCurrentStorage() {
+    public synchronized void clearCurrentStorage() {
         String path = getCurrentUserStoragePath();
         if (path != null && !path.isEmpty()) {
             File directoryToClear = new File(path);
@@ -33,22 +33,31 @@ public class UserStorage implements StorageContext {
     }
 
     @Override
-    public String getStoragePath() {
+    public synchronized String getStoragePath() {
         return this.currentUserStoragePath;
     }
 
     @Override
-    public String createAndGetNewStoragePath() {
+    public synchronized String createAndGetNewStoragePath() {
         File newStoragePath = new File(baseUploadPath, getUserDirectory());
+        newStoragePath.mkdirs();
         setCurrentUserStoragePath(newStoragePath.getAbsolutePath());
         return this.currentUserStoragePath;
     }
 
-    private String getCurrentUserStoragePath() {
+    public synchronized String getExistedPathOrCreate() {
+        File newStoragePath = new File(baseUploadPath, getUserDirectory());
+        if (newStoragePath.exists()) {
+            return newStoragePath.getAbsolutePath();
+        }
+        return createAndGetNewStoragePath();
+    }
+
+    private synchronized String getCurrentUserStoragePath() {
         return this.currentUserStoragePath;
     }
 
-    private void setCurrentUserStoragePath(String path) {
+    private synchronized void setCurrentUserStoragePath(String path) {
         this.currentUserStoragePath = path;
     }
 
@@ -56,7 +65,7 @@ public class UserStorage implements StorageContext {
         return String.format("%s_%d", user.getUserName(), System.currentTimeMillis());
     }
 
-    private void setUploadFilePath() throws IOException {
+    private synchronized void setUploadFilePath() throws IOException {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(SYSTEM_FILE_NAME)) {
             systemProperties.load(input);
             this.baseUploadPath = systemProperties.getProperty(PROPERTY_UPLOAD_DIRECTORY);
