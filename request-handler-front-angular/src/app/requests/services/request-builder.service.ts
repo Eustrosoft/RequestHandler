@@ -48,12 +48,12 @@ export class RequestBuilderService {
   }
 
   private buildFileQuery(file: File): Observable<FileQuery> {
-    return this.fileBase64Service.fileToBase64(file).pipe(
-      mergeMap((base64: string) =>
+    return this.fileBase64Service.blobToBase64(file).pipe(
+      mergeMap((base64) =>
         of({
           parameters: {
             data: {
-              file: base64,
+              file: base64 as string,
               name: file.name,
               ext: file.name.split('.').pop() as string,
             },

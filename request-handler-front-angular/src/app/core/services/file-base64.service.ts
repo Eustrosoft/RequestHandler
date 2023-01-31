@@ -1,16 +1,26 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 
 @Injectable()
 export class FileBase64Service {
   constructor() {}
 
-  fileToBase64(file: File): Observable<string> {
-    const result = new ReplaySubject<string>(1);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) =>
-      result.next(event.target!.result!.toString().replace(/^.*,/, ''));
-    return result.asObservable();
+  blobToBase64(blob: Blob | File): Observable<string | ArrayBuffer | null> {
+    return new Observable((obs: Subscriber<string | ArrayBuffer | null>) => {
+      if (!(blob instanceof Blob)) {
+        obs.error(new Error('`blob` must be an instance of File or Blob.'));
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onerror = (err) => obs.error(err);
+      reader.onabort = (err) => obs.error(err);
+      reader.onload = () =>
+        obs.next(reader.result!.toString().replace(/^.*,/, ''));
+      reader.onloadend = () => obs.complete();
+
+      return reader.readAsDataURL(blob);
+    });
   }
 }

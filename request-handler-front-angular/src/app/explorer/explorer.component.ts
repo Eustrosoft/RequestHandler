@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { FileSplitterService } from './services/file-splitter.service';
-import { mergeMap, Observable, tap } from 'rxjs';
+import { concatMap, mergeMap, Observable, tap } from 'rxjs';
 import { ExplorerRequestBuilderService } from './services/explorer-request-builder.service';
+import { ExplorerService } from './services/explorer.service';
+import { TisQuery } from '../requests/interfaces/request.interfaces';
 
 @Component({
   selector: 'app-explorer',
@@ -16,17 +18,19 @@ export class ExplorerComponent {
 
   constructor(
     private fileSplitterService: FileSplitterService,
-    private explorerRequestBuilderService: ExplorerRequestBuilderService
+    private explorerRequestBuilderService: ExplorerRequestBuilderService,
+    private explorerService: ExplorerService
   ) {}
 
   uploadFiles() {
     this.uploadResult$ = this.fileSplitterService
       .split(this.control.value)
       .pipe(
-        mergeMap((fc: { file: File; chunks: Blob[] }[]) =>
+        mergeMap((fc: { file: File; chunks: string[] }[]) =>
           this.explorerRequestBuilderService.buildChunkRequest(fc)
         ),
-        tap(console.log)
+        tap(console.log),
+        concatMap((query: TisQuery) => this.explorerService.upload(query))
       );
   }
 }

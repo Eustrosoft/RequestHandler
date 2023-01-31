@@ -13,7 +13,7 @@
       </app-button>
     </div>
     <ng-container *ngIf="uploadResult$ | async as result">
-      <p>{{ result | json }}</p>
+      <pre>{{ result | json }}</pre>
     </ng-container>
   </div>
 </div>

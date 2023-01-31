@@ -54,7 +54,7 @@ export interface ChunkedFileQuery {
   parameters: {
     method: string;
     data: {
-      file: Blob;
+      file: string;
       name: string;
       ext: string;
       chunk: number;
