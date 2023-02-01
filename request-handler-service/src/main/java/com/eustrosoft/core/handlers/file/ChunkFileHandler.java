@@ -6,16 +6,15 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.tools.FileUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.Base64;
 
 public class ChunkFileHandler implements Handler {
     private final char SEPARATOR = '_';
@@ -32,14 +31,15 @@ public class ChunkFileHandler implements Handler {
 
         if (uploadPath != null && !uploadPath.isEmpty()) {
             ChunkFileRequestBlock fileRequestBlock = (ChunkFileRequestBlock) requestBlock;
-            byte[] fileBytes = fileRequestBlock.getFileBytes();
+            byte[] fileBytes = fileRequestBlock.getFileBytes(); // TODO: chunks uploading wit bytes may be used
+            String fileString = fileRequestBlock.getFileString();
             String fileName = fileRequestBlock.getFileName();
             Long chunk = fileRequestBlock.getChunkNumber();
             Long allChunks = fileRequestBlock.getChunkCount();
             try (BufferedOutputStream bos = new BufferedOutputStream(
                     new FileOutputStream(new File(uploadPath, String.format("%s%c%d", fileName, SEPARATOR, chunk))))
             ) {
-                bos.write(fileBytes);
+                bos.write(fileString.getBytes());
                 bos.flush();
                 if (mergeIfAllChunksCollected(allChunks)) {
                     answer = "File was merged.";
@@ -71,6 +71,7 @@ public class ChunkFileHandler implements Handler {
         }
         if (chunksCount == chunkFiles.length) {
             mergeFiles(chunkFiles);
+            this.storage.clearPathOfCurrentStoragePath();
             return true;
         }
         return false;
@@ -78,36 +79,31 @@ public class ChunkFileHandler implements Handler {
 
     private void mergeFiles(File[] filesToMerge) throws IOException {
         int[] chunksPositions = new int[filesToMerge.length];
+        String fileNameWithoutIndex = "";
         for (int i = 0; i < filesToMerge.length; i++) {
             String fileName = filesToMerge[i].getName();
             int separatorIndex = fileName.lastIndexOf(SEPARATOR);
             int fileIndex = Integer.parseInt(fileName.substring(separatorIndex + 1));
-            chunksPositions[i] = fileIndex;
+            fileNameWithoutIndex = fileName.substring(0, separatorIndex);
+            chunksPositions[fileIndex] = i;
         }
-        File file = filesToMerge[chunksPositions[0]];
-        for (int i = 1; i < chunksPositions.length; i++) {
-            File mergedFile = filesToMerge[chunksPositions[i]];
-            merge(file.getAbsolutePath(), mergedFile.getAbsolutePath());
-        }
+        File tempFile = new File(filesToMerge[0].getParentFile(), fileNameWithoutIndex);
+        tempFile.createNewFile();
+        merge(tempFile, filesToMerge, chunksPositions);
     }
 
-    private void merge(String firstFile, String secondFile)
+    private void merge(File tempFile, File[] filesToMerge, int[] chunksPositions)
             throws IOException {
-        PrintWriter pw = new PrintWriter(firstFile);
-        BufferedReader br = new BufferedReader(new FileReader(firstFile));
-        String line = br.readLine();
-        while (line != null) {
-            pw.println(line);
-            line = br.readLine();
+        FileOutputStream fos = new FileOutputStream(tempFile, true);
+        for (int i = 0; i < chunksPositions.length; i++) {
+            String str = new String(
+                    FileUtils.readFileToByteArray(
+                            filesToMerge[chunksPositions[i]]
+                    )
+            );
+            fos.write(Base64.getDecoder().decode(str.getBytes()));
         }
-        br = new BufferedReader(new FileReader(secondFile));
-        line = br.readLine();
-        while (line != null) {
-            pw.println(line);
-            line = br.readLine();
-        }
-        pw.flush();
-        br.close();
-        pw.close();
+        fos.flush();
+        fos.close();
     }
 }

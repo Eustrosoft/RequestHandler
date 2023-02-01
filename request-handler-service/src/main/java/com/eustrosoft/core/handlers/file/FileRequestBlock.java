@@ -11,6 +11,7 @@ import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
 public class FileRequestBlock implements RequestBlock {
     private byte[] fileBytes;
     private String fileName;
+    private String fileString;
 
 
     public FileRequestBlock(QJson qJson) {
@@ -41,6 +42,14 @@ public class FileRequestBlock implements RequestBlock {
         this.fileBytes = fileBytes;
     }
 
+    public String getFileString() {
+        return this.fileString;
+    }
+
+    public void setFileString(String fileString) {
+        this.fileString = fileString;
+    }
+
     @Override
     public String getSubsystem() {
         return SUBSYSTEM_FILE;
@@ -57,6 +66,7 @@ public class FileRequestBlock implements RequestBlock {
         }
         QJson fileData = qJson.getItemQJson("data");
         setFileBytes(decodeString(fileData.getItemString("file")));
+        setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
     }
 

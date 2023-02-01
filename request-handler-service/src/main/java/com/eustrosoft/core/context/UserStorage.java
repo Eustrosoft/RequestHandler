@@ -63,12 +63,21 @@ public class UserStorage implements StorageContext {
     }
 
     public synchronized String getExistedPathOrCreate() {
-        File newStoragePath = new File(baseUploadPath, getUserDirectory());
+        String storagePath = getCurrentUserStoragePath();
+        if (storagePath == null || storagePath.isEmpty()) {
+            File newStoragePath = new File(baseUploadPath, getUserDirectory());
+            setCurrentUserStoragePath(newStoragePath.getAbsolutePath());
+        }
+        File newStoragePath = new File(storagePath);
         if (newStoragePath.exists()) {
             // TODO think about getting path from local variable
             return newStoragePath.getAbsolutePath();
         }
         return createAndGetNewStoragePath();
+    }
+
+    public void clearPathOfCurrentStoragePath() {
+        this.currentUserStoragePath = "";
     }
 
     private synchronized String getCurrentUserStoragePath() {
