@@ -1,10 +1,10 @@
 <input
   #fileInput
+  [multiple]="multiple"
+  (change)="change($event)"
   hidden="true"
   type="file"
   name="file"
-  [multiple]="multiple"
-  (change)="change($event)"
 />
 
 <app-button
@@ -14,23 +14,3 @@
   (click)="fileInput.click()"
 >
 </app-button>
-
-<div class="d-flex flex-column">
-  <div
-    *ngFor="let file of files; let i = index"
-    class="d-flex align-items-center"
-  >
-    <span>{{ file.name }}</span>
-    <app-button
-      *ngIf="control.value"
-      [buttonType]="'button'"
-      [buttonStyleType]="'icon'"
-      [iconName]="'delete'"
-      [buttonText]="'Delete file'"
-      [color]="'warn'"
-      (click)="delete(i)"
-      class="ml-2"
-    >
-    </app-button>
-  </div>
-</div>

@@ -16,7 +16,7 @@ import {
 } from 'rxjs';
 import { RequestBuilderService } from './services/request-builder.service';
 import {
-  TisQuery,
+  TisRequest,
   TisResponse,
   TisResponseBody,
   TisTableResult,
@@ -66,7 +66,7 @@ export class RequestsComponent implements OnInit {
     this.requestResult$ = this.requestBuilderService
       .buildQuery(this.form.controls.forms)
       .pipe(
-        mergeMap((query: TisQuery) => this.requestService.dispatch(query)),
+        mergeMap((query: TisRequest) => this.requestService.dispatch(query)),
         map((response: TisResponse) => {
           this.tables = response.responses.map((res: TisResponseBody) =>
             res.result.map((result: TisTableResult) => {

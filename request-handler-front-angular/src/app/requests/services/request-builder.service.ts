@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
 import {
-  FileQuery,
-  SqlQuery,
-  TisQuery,
+  FileRequest,
+  SqlRequest,
+  TisRequest,
 } from '../interfaces/request.interfaces';
 import { combineLatest, mergeMap, Observable, of } from 'rxjs';
 import { QueryTypes } from '../constants/enums/query-types.enum';
 import { FormArray, FormGroup } from '@angular/forms';
 import { SingleRequestForm } from '../types/request.types';
-import { FileBase64Service } from '../../core/services/file-base64.service';
+import { FileReaderService } from '../../core/services/file-reader.service';
 
 @Injectable()
 export class RequestBuilderService {
-  constructor(private fileBase64Service: FileBase64Service) {}
+  constructor(private fileReaderService: FileReaderService) {}
 
   buildQuery(
     forms: FormArray<FormGroup<SingleRequestForm>>
-  ): Observable<TisQuery> {
+  ): Observable<TisRequest> {
     const requests = forms.controls.map(
       (control: FormGroup<SingleRequestForm>) => {
         switch (control.value.queryType as QueryTypes) {
@@ -29,17 +29,17 @@ export class RequestBuilderService {
     );
 
     return combineLatest(requests).pipe(
-      mergeMap((value: (FileQuery | SqlQuery)[]) =>
+      mergeMap((value: (FileRequest | SqlRequest)[]) =>
         of({
           qtisver: 1,
           requests: value,
           qtisend: true,
-        } as TisQuery)
+        } as TisRequest)
       )
     );
   }
 
-  private buildSqlQuery(query: string): Observable<SqlQuery> {
+  private buildSqlQuery(query: string): Observable<SqlRequest> {
     return of({
       parameters: { method: 'plain/text', query: query },
       request: 'sql',
@@ -47,8 +47,8 @@ export class RequestBuilderService {
     });
   }
 
-  private buildFileQuery(file: File): Observable<FileQuery> {
-    return this.fileBase64Service.blobToBase64(file).pipe(
+  private buildFileQuery(file: File): Observable<FileRequest> {
+    return this.fileReaderService.blobToBase64(file).pipe(
       mergeMap((base64) =>
         of({
           parameters: {

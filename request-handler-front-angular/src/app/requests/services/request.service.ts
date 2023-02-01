@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { TisQuery, TisResponse } from '../interfaces/request.interfaces';
+import { TisRequest, TisResponse } from '../interfaces/request.interfaces';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 export class RequestService {
   constructor(private http: HttpClient) {}
 
-  dispatch(query: TisQuery): Observable<TisResponse> {
+  dispatch(query: TisRequest): Observable<TisResponse> {
     return this.http.post<TisResponse>(
       `${environment.apiUrl}/api/dispatch`,
       query

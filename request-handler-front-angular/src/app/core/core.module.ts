@@ -22,7 +22,8 @@ import { PreloaderComponent } from './components/preloader/preloader.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormArrayPipe } from './pipes/form-array.pipe';
 import { HoverShadowDirective } from './directives/hover-shadow/hover-shadow.directive';
-import { FileBase64Service } from './services/file-base64.service';
+import { FileReaderService } from './services/file-reader.service';
+import { FileListComponent } from './components/file-list/file-list.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { FileBase64Service } from './services/file-base64.service';
     PreloaderComponent,
     FormArrayPipe,
     HoverShadowDirective,
+    FileListComponent,
   ],
   imports: [
     CommonModule,
@@ -58,11 +60,12 @@ import { FileBase64Service } from './services/file-base64.service';
     PreloaderComponent,
     FormArrayPipe,
     HoverShadowDirective,
+    FileListComponent,
   ],
   providers: [
     AuthenticationGuard,
     AuthenticationService,
-    FileBase64Service,
+    FileReaderService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: UnauthenticatedInterceptor,

@@ -19,4 +19,9 @@
     [control]="form.get('file')! | formControl"
     class="col-12"
   ></app-input-file>
+  <app-file-list
+    [files]="(form.get('file')! | formControl).value"
+    (deleteFile)="deleteFile($event)"
+    class="col-12"
+  ></app-file-list>
 </div>

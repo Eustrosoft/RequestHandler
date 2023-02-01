@@ -4,9 +4,9 @@ export interface TisResponse {
   qtisend: boolean;
 }
 
-export interface TisQuery {
+export interface TisRequest {
   qtisver: number;
-  requests: Array<SqlQuery | FileQuery | ChunkedFileQuery>;
+  requests: Array<SqlRequest | FileRequest | ChunkedFileRequest>;
   qtisend: boolean;
 }
 
@@ -26,7 +26,7 @@ export interface TisTableResult {
   rows_count: number;
 }
 
-export interface SqlQuery {
+export interface SqlRequest {
   subsystem: string;
   request: string;
   parameters: {
@@ -35,7 +35,7 @@ export interface SqlQuery {
   };
 }
 
-export interface FileQuery {
+export interface FileRequest {
   subsystem: string;
   request: string;
   parameters: {
@@ -48,7 +48,7 @@ export interface FileQuery {
   };
 }
 
-export interface ChunkedFileQuery {
+export interface ChunkedFileRequest {
   subsystem: string;
   request: string;
   parameters: {

@@ -12,8 +12,23 @@
       >
       </app-button>
     </div>
+  </div>
+  <div class="row gx-3">
+    <app-file-list
+      [files]="control.value"
+      (deleteFile)="deleteFile($event)"
+      class="col-12"
+    ></app-file-list>
     <ng-container *ngIf="uploadResult$ | async as result">
-      <pre>{{ result | json }}</pre>
+      <ng-container *ngIf="showProgressBar">
+        <div>
+          <span>{{ currentFile }}</span>
+          <mat-progress-bar
+            [mode]="'determinate'"
+            [value]="progressBarValue"
+          ></mat-progress-bar>
+        </div>
+      </ng-container>
     </ng-container>
   </div>
 </div>
