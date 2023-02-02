@@ -1,6 +1,6 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ViewChild,
 } from '@angular/core';
@@ -43,10 +43,15 @@ export class ExplorerComponent {
     private fileReaderService: FileReaderService,
     private explorerRequestBuilderService: ExplorerRequestBuilderService,
     private explorerService: ExplorerService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cd: ChangeDetectorRef
   ) {}
 
-  uploadFiles() {
+  uploadFiles(): void {
+    if (this.control.value.length === 0) {
+      this.snackBar.open('Select a files first', 'Close');
+      return;
+    }
     let uploadError = false;
     this.uploadResult$ = this.fileReaderService.split(this.control.value).pipe(
       mergeMap((fc: { file: File; chunks: string[] }) =>
@@ -72,15 +77,18 @@ export class ExplorerComponent {
       ),
       catchError((err) => {
         uploadError = true;
-        this.showProgressBar = false;
         console.error(err);
         this.snackBar.open('Error making request', 'Close');
+        this.showProgressBar = false;
         return EMPTY;
       }),
       finalize(() => {
         if (!uploadError) {
           this.snackBar.open('Upload completed', 'Close');
           this.showProgressBar = false;
+          this.control.patchValue([]);
+          this.inputFileComponent.patchInput();
+          this.cd.markForCheck();
         }
         window.performance.mark('reader:end');
         console.log(
@@ -92,6 +100,11 @@ export class ExplorerComponent {
         );
       })
     );
+  }
+
+  filesDropped(files: File[]): void {
+    this.control.patchValue(files);
+    this.inputFileComponent.patchInput();
   }
 
   deleteFile(index: number): void {

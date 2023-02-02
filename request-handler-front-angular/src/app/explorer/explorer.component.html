@@ -1,8 +1,5 @@
 <div class="container-fluid">
-  <div class="row gx-3">
-    <div class="col-2">
-      <app-input-file [control]="control" [multiple]="true"></app-input-file>
-    </div>
+  <div class="row gx-3 mb-3">
     <div class="col-2">
       <app-button
         [buttonType]="'button'"
@@ -11,6 +8,22 @@
         (click)="uploadFiles()"
       >
       </app-button>
+    </div>
+  </div>
+  <div class="row gx-3 justify-content-center">
+    <div class="col-12">
+      <div
+        filesDragAndDrop
+        (filesDropped)="filesDropped($event)"
+        class="vh-25 border border-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+      >
+        <h1>Drop files here or</h1>
+        <app-input-file
+          [control]="control"
+          [multiple]="true"
+          class="col-2"
+        ></app-input-file>
+      </div>
     </div>
   </div>
   <div class="row gx-3">
