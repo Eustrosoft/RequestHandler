@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <div class="row gx-3 mb-3">
+    <div class="col-2">
+      <app-button
+        [buttonType]="'button'"
+        [buttonStyleType]="'stroked'"
+        [buttonText]="'Upload files'"
+        (click)="uploadFiles()"
+      >
+      </app-button>
+    </div>
+  </div>
+  <div class="row gx-3 justify-content-center">
+    <div class="col-12">
+      <div
+        filesDragAndDrop
+        (filesDropped)="filesDropped($event)"
+        class="vh-25 border border-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+      >
+        <h1>Drop files here or</h1>
+        <app-input-file
+          [control]="control"
+          [multiple]="true"
+          class="col-2"
+        ></app-input-file>
+      </div>
+    </div>
+  </div>
+  <div class="row gx-3">
+    <app-file-list
+      [files]="control.value"
+      (deleteFile)="deleteFile($event)"
+      class="col-12"
+    ></app-file-list>
+    <ng-container *ngIf="uploadResult$ | async as result">
+      <ng-container *ngIf="showProgressBar">
+        <div>
+          <span>{{ currentFile }}</span>
+          <mat-progress-bar
+            [mode]="'determinate'"
+            [value]="progressBarValue"
+          ></mat-progress-bar>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,128 @@
+{
+  "name": "request-handler",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "generators": {
+    "@schematics/angular:component": {
+      "changeDetection": "OnPush",
+      "style": "scss"
+    }
+  },
+  "sourceRoot": "apps/request-handler/src",
+  "prefix": "eustrosoft-front",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/request-handler",
+        "index": "apps/request-handler/src/index.html",
+        "main": "apps/request-handler/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/request-handler/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/request-handler/src/favicon.ico",
+          "apps/request-handler/src/assets"
+        ],
+        "styles": ["apps/request-handler/src/styles.scss"],
+        "scripts": [],
+        "customWebpackConfig": {
+          "path": "apps/request-handler/webpack.config.js"
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "apps/request-handler/webpack.prod.config.js"
+          }
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nrwl/angular:webpack-dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "request-handler:build:production"
+        },
+        "development": {
+          "browserTarget": "request-handler:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4201,
+        "publicHost": "http://localhost:4201"
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "request-handler:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "apps/request-handler/**/*.ts",
+          "apps/request-handler/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/request-handler/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "serve-static": {
+      "executor": "@nrwl/angular:file-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "request-handler:build",
+        "port": 4201
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "request-handler:build:development"
+        },
+        "production": {
+          "buildTarget": "request-handler:build:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
