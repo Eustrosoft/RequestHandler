@@ -19,7 +19,7 @@ export class FileReaderService {
   // 26214400 - 25 MB
   // 52428800 - 50 MB
   // 104857600 - 100 MB
-  split(
+  splitBase64(
     files: File[],
     chunkSize: number = 1048576
   ): Observable<{ file: File; chunks: string[] }> {
@@ -48,6 +48,31 @@ export class FileReaderService {
                 )
               )
             );
+            return of({ file: file, chunks: chunks });
+          })
+        );
+      })
+    );
+  }
+
+  splitBinary(
+    files: File[],
+    chunkSize: number = 1048576
+  ): Observable<{ file: File; chunks: Blob[] }> {
+    return from(files).pipe(
+      mergeMap((file: File) => {
+        const buffer = this.blobToArrayBuffer(file);
+        return combineLatest([of(file), buffer]).pipe(
+          mergeMap(([file, buff]) => {
+            let startPointer = 0;
+            let endPointer = buff.byteLength;
+            let chunks = [];
+            while (startPointer < endPointer) {
+              let newStartPointer = startPointer + chunkSize;
+              const chunk = buff.slice(startPointer, newStartPointer);
+              chunks.push(new Blob([chunk]));
+              startPointer = newStartPointer;
+            }
             return of({ file: file, chunks: chunks });
           })
         );

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import {
   ChunkedFileRequest,
   TisRequest,
   TisResponse,
   TisResponseBody,
 } from '../../requests/interfaces/request.interfaces';
-import { mergeMap, Observable, of } from 'rxjs';
+import { delay, mergeMap, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable()
@@ -35,5 +35,15 @@ export class ExplorerService {
           });
         })
       );
+  }
+
+  uploadChunks(
+    body: FormData,
+    headers: { [p: string]: string | string[] }
+  ): Observable<HttpResponse<Response>> {
+    return this.http.post<any>(`${environment.apiUrl}/upload/chunks`, body, {
+      headers: new HttpHeaders(headers),
+      observe: 'response',
+    });
   }
 }

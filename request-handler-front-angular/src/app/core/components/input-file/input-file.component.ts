@@ -26,10 +26,11 @@ export class InputFileComponent implements OnDestroy {
 
   change(e: Event): void {
     const target = e.target as HTMLInputElement;
-    if (!target.files) {
+    if (target!.files!.length === 0) {
+      this.control.patchValue([]);
       return;
     }
-    const filesArray = Array.from(target.files);
+    const filesArray = Array.from(target!.files!);
     if (filesArray.length > 1) {
       this.control.patchValue(filesArray);
     } else {

@@ -22,15 +22,10 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "baseHref": "/dispatcher/",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "node_modules/bootstrap/scss/bootstrap.scss",
@@ -81,7 +76,7 @@
         },
         "serve": {
           "options": {
-            "port": 4500
+            "port": 4200
           },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
@@ -104,16 +99,10 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "@angular/material/prebuilt-themes/deeppurple-amber.css",
               "node_modules/bootstrap/scss/bootstrap.scss",

@@ -7,11 +7,14 @@ import {
 import { FormControl } from '@angular/forms';
 import {
   catchError,
+  combineLatest,
   concatMap,
   EMPTY,
   finalize,
+  from,
   mergeMap,
   Observable,
+  of,
   tap,
 } from 'rxjs';
 import { ExplorerRequestBuilderService } from './services/explorer-request-builder.service';
@@ -47,59 +50,112 @@ export class ExplorerComponent {
     private cd: ChangeDetectorRef
   ) {}
 
-  uploadFiles(): void {
+  uploadFilesBase64(): void {
     if (this.control.value.length === 0) {
-      this.snackBar.open('Select a files first', 'Close');
+      this.snackBar.open('Select files first', 'Close');
       return;
     }
     let uploadError = false;
-    this.uploadResult$ = this.fileReaderService.split(this.control.value).pipe(
-      mergeMap((fc: { file: File; chunks: string[] }) =>
-        this.explorerRequestBuilderService.buildChunkRequest(fc).pipe()
-      ),
-      tap((request: TisRequest) => {
-        console.log(request);
-        this.showProgressBar = true;
-      }),
-      concatMap((query: TisRequest) => this.explorerService.upload(query)),
-      tap(
-        (response: {
-          request: TisRequest;
-          response: TisResponse;
-          totalChunks: number;
-          currentChunk: number;
-        }) => {
-          const req = response.request.requests[0] as ChunkedFileRequest;
-          this.currentFile = req.parameters.data.name;
-          this.progressBarValue =
-            100 * ((response.currentChunk + 1) / response.totalChunks);
-        }
-      ),
-      catchError((err) => {
-        uploadError = true;
-        console.error(err);
-        this.snackBar.open('Error making request', 'Close');
-        this.showProgressBar = false;
-        return EMPTY;
-      }),
-      finalize(() => {
-        if (!uploadError) {
-          this.snackBar.open('Upload completed', 'Close');
+    this.uploadResult$ = this.fileReaderService
+      .splitBase64(this.control.value)
+      .pipe(
+        mergeMap((fc: { file: File; chunks: string[] }) =>
+          this.explorerRequestBuilderService.buildChunkRequest(fc).pipe()
+        ),
+        tap((request: TisRequest) => {
+          console.log(request);
+          this.showProgressBar = true;
+        }),
+        concatMap((query: TisRequest) => this.explorerService.upload(query)),
+        tap(
+          (response: {
+            request: TisRequest;
+            response: TisResponse;
+            totalChunks: number;
+            currentChunk: number;
+          }) => {
+            const req = response.request.requests[0] as ChunkedFileRequest;
+            this.currentFile = req.parameters.data.name;
+            this.progressBarValue =
+              100 * ((response.currentChunk + 1) / response.totalChunks);
+          }
+        ),
+        catchError((err) => {
+          uploadError = true;
+          console.error(err);
+          this.snackBar.open('Error making request', 'Close');
           this.showProgressBar = false;
-          this.control.patchValue([]);
-          this.inputFileComponent.patchInput();
-          this.cd.markForCheck();
-        }
-        window.performance.mark('reader:end');
-        console.log(
-          'Duration: ',
-          Math.ceil(
-            window.performance.measure('reader', 'reader:start', 'reader:end')
-              .duration
+          return EMPTY;
+        }),
+        finalize(() => {
+          if (!uploadError) {
+            this.snackBar.open('Upload completed', 'Close');
+            this.showProgressBar = false;
+            this.control.patchValue([]);
+            this.inputFileComponent.patchInput();
+            this.cd.markForCheck();
+          }
+          window.performance.mark('reader:end');
+          console.log(
+            'Duration: ',
+            Math.ceil(
+              window.performance.measure('reader', 'reader:start', 'reader:end')
+                .duration
+            )
+          );
+        })
+      );
+  }
+
+  uploadFilesBinary(): void {
+    if (this.control.value.length === 0) {
+      this.snackBar.open('Select files first', 'Close');
+      return;
+    }
+    let uploadError = false;
+    this.uploadResult$ = this.fileReaderService
+      .splitBinary(this.control.value)
+      .pipe(
+        tap(() => {
+          this.showProgressBar = true;
+        }),
+        mergeMap((fc: { file: File; chunks: Blob[] }) =>
+          from(fc.chunks).pipe(
+            concatMap((chunk: Blob, currentChunk: number) => {
+              const formData = new FormData();
+              formData.set('file', chunk);
+              return combineLatest([
+                this.explorerService.uploadChunks(formData, {
+                  'Content-Disposition': `form-data; name="file"; filename="${fc.file.name}"`,
+                }),
+                of(fc),
+                of(currentChunk),
+              ]);
+            }),
+            tap(([response, fc, currentChunk]) => {
+              this.currentFile = fc.file.name;
+              this.progressBarValue =
+                100 * ((currentChunk + 1) / fc.chunks.length);
+            }),
+            catchError((err) => {
+              uploadError = true;
+              console.error(err);
+              this.snackBar.open('Error making request', 'Close');
+              this.showProgressBar = false;
+              return EMPTY;
+            }),
+            finalize(() => {
+              if (!uploadError) {
+                this.snackBar.open('Upload completed', 'Close');
+                this.showProgressBar = false;
+                this.control.patchValue([]);
+                this.inputFileComponent.patchInput();
+                this.cd.markForCheck();
+              }
+            })
           )
-        );
-      })
-    );
+        )
+      );
   }
 
   filesDropped(files: File[]): void {

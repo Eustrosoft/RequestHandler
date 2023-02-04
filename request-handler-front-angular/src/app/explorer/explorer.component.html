@@ -1,16 +1,5 @@
 <div class="container-fluid">
-  <div class="row gx-3 mb-3">
-    <div class="col-2">
-      <app-button
-        [buttonType]="'button'"
-        [buttonStyleType]="'stroked'"
-        [buttonText]="'Upload files'"
-        (click)="uploadFiles()"
-      >
-      </app-button>
-    </div>
-  </div>
-  <div class="row gx-3 justify-content-center">
+  <div class="row gx-3 mb-3 justify-content-center">
     <div class="col-12">
       <div
         filesDragAndDrop
@@ -24,6 +13,28 @@
           class="col-2"
         ></app-input-file>
       </div>
+    </div>
+  </div>
+  <div class="row gx-3 justify-content-center">
+    <div class="col-4">
+      <app-button
+        [buttonType]="'button'"
+        [buttonStyleType]="'stroked'"
+        [buttonText]="'Upload files using base64'"
+        [color]="'primary'"
+        (click)="uploadFilesBase64()"
+      >
+      </app-button>
+    </div>
+    <div class="col-4">
+      <app-button
+        [buttonType]="'button'"
+        [buttonStyleType]="'stroked'"
+        [buttonText]="'Upload files using binary'"
+        [color]="'primary'"
+        (click)="uploadFilesBinary()"
+      >
+      </app-button>
     </div>
   </div>
   <div class="row gx-3">

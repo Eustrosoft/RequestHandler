@@ -23,7 +23,10 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           this.snackBar.open(error.error.answer, 'Close');
           return throwError(() => error);
         }
-        if (error.url?.includes('api/dispatch')) {
+        if (
+          error.url?.includes('api/dispatch') ||
+          error.url?.includes('upload/chunks')
+        ) {
           this.snackBar.open('Error making request', 'Close');
           return throwError(() => error);
         }
