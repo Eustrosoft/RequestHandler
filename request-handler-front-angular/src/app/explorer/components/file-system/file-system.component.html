@@ -1,0 +1,22 @@
+<mat-list>
+  <div mat-subheader>Structure</div>
+  <ng-container *ngFor="let folder of folders | async">
+    <ng-container [ngSwitch]="folder.type">
+      <mat-list-item
+        *ngSwitchCase="fsObjTypes.FOLDER"
+        (dblclick)="folderClick(folder)"
+        mat-ripple
+      >
+        <mat-icon matListItemIcon>folder</mat-icon>
+        <div matListItemTitle>{{ folder.title }}</div>
+        <div matListItemLine>{{ folder.info.modified | date }}</div>
+      </mat-list-item>
+
+      <mat-list-item *ngSwitchCase="fsObjTypes.FILE" mat-ripple>
+        <mat-icon matListItemIcon>draft</mat-icon>
+        <div matListItemTitle>{{ folder.title }}</div>
+        <div matListItemLine>{{ folder.info.modified | date }}</div>
+      </mat-list-item>
+    </ng-container>
+  </ng-container>
+</mat-list>

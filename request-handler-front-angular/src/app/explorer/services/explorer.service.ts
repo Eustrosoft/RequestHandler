@@ -21,7 +21,19 @@ export class ExplorerService {
         id: '1',
         title: 'folder 1',
         type: FileSystemObjectTypes.FOLDER,
-        child: [],
+        child: [
+          {
+            id: '11',
+            title: 'folder 11',
+            type: FileSystemObjectTypes.FOLDER,
+            child: [],
+            info: {
+              created: '11',
+              modified: '11',
+              owner: '11',
+            },
+          },
+        ],
         info: {
           created: '1',
           modified: '1',

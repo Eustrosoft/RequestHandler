@@ -58,9 +58,7 @@ export class ExplorerComponent {
     private explorerRequestBuilderService: ExplorerRequestBuilderService,
     private explorerService: ExplorerService,
     private snackBar: MatSnackBar,
-    private cd: ChangeDetectorRef,
-    private route: ActivatedRoute,
-    private router: Router
+    private cd: ChangeDetectorRef
   ) {}
 
   uploadFilesBase64(): void {
