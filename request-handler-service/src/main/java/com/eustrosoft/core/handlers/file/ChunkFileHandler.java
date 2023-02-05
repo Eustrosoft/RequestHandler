@@ -8,7 +8,6 @@ import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.tools.FileUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,9 +21,9 @@ public class ChunkFileHandler implements Handler {
     private UserStorage storage;
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock, HttpServletRequest request)
+    public ResponseBlock processRequest(RequestBlock requestBlock)
             throws IOException {
-        User user = UsersContext.getInstance().getSQLUser(request.getSession(false).getId());
+        User user = UsersContext.getInstance().getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
         this.storage = UserStorage.getInstanceForUser(user);
         String uploadPath = this.storage.getExistedPathOrCreate();
         String answer = "";

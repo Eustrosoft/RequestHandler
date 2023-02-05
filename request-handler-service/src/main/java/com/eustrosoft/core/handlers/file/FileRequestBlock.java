@@ -3,6 +3,7 @@ package com.eustrosoft.core.handlers.file;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 
 import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
@@ -12,18 +13,21 @@ public class FileRequestBlock implements RequestBlock {
     private byte[] fileBytes;
     private String fileName;
     private String fileString;
+    private final HttpServletRequest request;
 
 
-    public FileRequestBlock(QJson qJson) {
+    public FileRequestBlock(HttpServletRequest request, QJson qJson) {
+        this.request = request;
         parseQJson(qJson);
     }
 
-    public FileRequestBlock(byte[] fileBytes) {
+    public FileRequestBlock(HttpServletRequest request, byte[] fileBytes) {
+        this.request = request;
         this.fileBytes = fileBytes;
     }
 
-    public FileRequestBlock() {
-        this(new byte[0]);
+    public FileRequestBlock(HttpServletRequest request) {
+        this(request, new byte[0]);
     }
 
     public String getFileName() {
@@ -58,6 +62,11 @@ public class FileRequestBlock implements RequestBlock {
     @Override
     public String getRequest() {
         return REQUEST_FILE_UPLOAD;
+    }
+
+    @Override
+    public HttpServletRequest getHttpRequest() {
+        return null;
     }
 
     protected void parseQJson(QJson qJson) {

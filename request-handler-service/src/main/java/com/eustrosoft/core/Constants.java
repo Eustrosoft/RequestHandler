@@ -14,6 +14,7 @@ public final class Constants {
     public static final String REQUEST_SQL = "sql";
     public static final String REQUEST_FILE_UPLOAD = "upload";
     public static final String REQUEST_CHUNKS_FILE_UPLOAD = "upload_chunks";
+    public static final String REQUEST_CHUNKS_BINARY_FILE_UPLOAD = "upload_chunks_binary";
 
     public static final Integer SESSION_TIMEOUT = 100 * 60;
 

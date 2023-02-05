@@ -2,13 +2,16 @@ package com.eustrosoft.core.handlers.file;
 
 import com.eustrosoft.core.tools.QJson;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
 
 public final class ChunkFileRequestBlock extends FileRequestBlock {
     private Long chunkNumber;
     private Long chunksCount;
 
-    public ChunkFileRequestBlock(QJson qJson) {
+    public ChunkFileRequestBlock(HttpServletRequest request, QJson qJson) {
+        super(request);
         parseQJson(qJson);
     }
 

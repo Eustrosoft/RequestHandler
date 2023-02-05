@@ -3,12 +3,15 @@ package com.eustrosoft.core.handlers.sql;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.eustrosoft.core.Constants.REQUEST_SQL;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
 
 public final class SQLRequestBlock implements RequestBlock {
     private String query;
     private String method;
+    private final HttpServletRequest request;
 
     public String getQuery() {
         return this.query;
@@ -18,11 +21,13 @@ public final class SQLRequestBlock implements RequestBlock {
         this.query = query;
     }
 
-    public SQLRequestBlock(QJson qJson) {
+    public SQLRequestBlock(HttpServletRequest request, QJson qJson) {
+        this.request = request;
         parseQJson(qJson);
     }
 
-    public SQLRequestBlock(String query) {
+    public SQLRequestBlock(HttpServletRequest request, String query) {
+        this.request = request;
         this.query = query;
     }
 
@@ -36,8 +41,13 @@ public final class SQLRequestBlock implements RequestBlock {
         return REQUEST_SQL;
     }
 
-    public SQLRequestBlock() {
-        this("");
+    public SQLRequestBlock(HttpServletRequest request) {
+        this(request, "");
+    }
+
+    @Override
+    public HttpServletRequest getHttpRequest() {
+        return null;
     }
 
     public String getMethod() {

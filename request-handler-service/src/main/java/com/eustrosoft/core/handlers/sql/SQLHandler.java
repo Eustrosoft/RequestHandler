@@ -16,7 +16,8 @@ public final class SQLHandler implements Handler {
     private String dbUrl;
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock, HttpServletRequest request) throws Exception {
+    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+        HttpServletRequest request = requestBlock.getHttpRequest();
         UsersContext usersContext = UsersContext.getInstance();
         User user = usersContext.getSQLUser(request.getSession(false).getId());
 

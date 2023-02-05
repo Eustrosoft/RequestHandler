@@ -7,7 +7,6 @@ import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,9 +14,9 @@ import java.io.IOException;
 
 public class FileHandler implements Handler {
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock, HttpServletRequest request)
+    public ResponseBlock processRequest(RequestBlock requestBlock)
             throws IOException {
-        User user = UsersContext.getInstance().getSQLUser(request.getSession(false).getId());
+        User user = UsersContext.getInstance().getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
         if (user.getSessionPath() == null || user.getSessionPath().isEmpty()) {
             UserStorage storage = UserStorage.getInstanceForUser(user);
             user.setSessionPath(storage.createAndGetNewStoragePath());

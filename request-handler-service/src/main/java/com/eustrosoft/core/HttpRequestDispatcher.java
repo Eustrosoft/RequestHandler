@@ -1,6 +1,7 @@
 package com.eustrosoft.core;
 
 import com.eustrosoft.core.handlers.Handler;
+import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
 import com.eustrosoft.core.handlers.file.ChunkFileHandler;
 import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.FileHandler;
@@ -16,6 +17,7 @@ import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +32,7 @@ import static com.eustrosoft.core.Constants.QTISEND;
 import static com.eustrosoft.core.Constants.QTISVER;
 import static com.eustrosoft.core.Constants.REQUEST;
 import static com.eustrosoft.core.Constants.REQUESTS;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.REQUEST_SQL;
@@ -41,6 +44,11 @@ import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
         name = "EustrosoftRequestDispatcher",
         description = "Dispatches request depending on it's body dispatch value",
         urlPatterns = {"/api/dispatch"}
+)
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 1024,
+        maxRequestSize = 1024 * 1024 * 1024
 )
 public class HttpRequestDispatcher extends HttpServlet {
 
@@ -90,16 +98,17 @@ public class HttpRequestDispatcher extends HttpServlet {
             QJson params = reqst.getItemQJson(PARAMETERS);
             switch (subSystem) {
                 case SUBSYSTEM_SQL:
-                    requestBlock = new SQLRequestBlock(params);
+                    requestBlock = new SQLRequestBlock(request, params);
                     requestBlocks.add(requestBlock);
                     break;
                 case SUBSYSTEM_FILE:
                     if (requestType.equals(REQUEST_FILE_UPLOAD)) {
-                        requestBlock = new FileRequestBlock(params);
+                        requestBlock = new FileRequestBlock(request, params);
                         requestBlocks.add(requestBlock);
                     }
-                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD)) {
-                        requestBlock = new ChunkFileRequestBlock(params);
+                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
+                            requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
+                        requestBlock = new ChunkFileRequestBlock(request, params);
                         requestBlocks.add(requestBlock);
                     }
                     break;
@@ -124,6 +133,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case REQUEST_CHUNKS_FILE_UPLOAD:
                     handler = new ChunkFileHandler();
                     break;
+                case REQUEST_CHUNKS_BINARY_FILE_UPLOAD:
+                    handler = new BytesChunkFileHandler();
+                    break;
                 default:
                     handler = null;
                     break;
@@ -132,7 +144,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                 int exCount = 0;
                 StringBuilder exceptionsBuilder = new StringBuilder();
                 try {
-                    ResponseBlock respBlock = handler.processRequest(block, request);
+                    ResponseBlock respBlock = handler.processRequest(block);
                     responses.add(respBlock);
                 } catch (Exception ex) {
                     exCount += 1;
