@@ -47,7 +47,7 @@ public final class SQLRequestBlock implements RequestBlock {
 
     @Override
     public HttpServletRequest getHttpRequest() {
-        return null;
+        return this.request;
     }
 
     public String getMethod() {

@@ -66,7 +66,7 @@ public class FileRequestBlock implements RequestBlock {
 
     @Override
     public HttpServletRequest getHttpRequest() {
-        return null;
+        return this.request;
     }
 
     protected void parseQJson(QJson qJson) {

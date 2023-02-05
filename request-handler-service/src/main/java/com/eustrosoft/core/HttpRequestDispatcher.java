@@ -2,6 +2,7 @@ package com.eustrosoft.core;
 
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
+import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.ChunkFileHandler;
 import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.FileHandler;
@@ -22,7 +23,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,47 +81,34 @@ public class HttpRequestDispatcher extends HttpServlet {
         writer.close();
     }
 
-    private Response processRequest(HttpServletRequest request) throws IOException {
+    private Response processRequest(HttpServletRequest request) throws IOException, ServletException {
         // Parsing query and getting request blocks
-
+        Part jsonPart = request.getPart("json");
         QJson qJson = new QJson();
-        qJson.parseJSONReader(request.getReader());
+
+        if (jsonPart != null) {
+            qJson.parseJSONReader(new InputStreamReader(jsonPart.getInputStream()));
+        } else {
+            qJson.parseJSONReader(request.getReader());
+        }
+
         RequestObject requestObject = new QTisRequestObject();
         requestObject.setqTisEnd((Boolean) qJson.getItem(QTISEND));
         requestObject.setqTisVer((Long) qJson.getItem(QTISVER));
-
         QJson requestsArray = qJson.getItemQJson(REQUESTS);
-        List<RequestBlock> requestBlocks = new ArrayList<>();
 
-        for (int i = 0; i < requestsArray.size(); i++) {
-            QJson reqst = requestsArray.getItemQJson(i);
-            String subSystem = reqst.getItemString(SUBSYSTEM);
-            String requestType = reqst.getItemString(REQUEST);
-            RequestBlock requestBlock;
-            QJson params = reqst.getItemQJson(PARAMETERS);
-            switch (subSystem) {
-                case SUBSYSTEM_SQL:
-                    requestBlock = new SQLRequestBlock(request, params);
-                    requestBlocks.add(requestBlock);
-                    break;
-                case SUBSYSTEM_FILE:
-                    if (requestType.equals(REQUEST_FILE_UPLOAD)) {
-                        requestBlock = new FileRequestBlock(request, params);
-                        requestBlocks.add(requestBlock);
-                    }
-                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
-                            requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
-                        requestBlock = new ChunkFileRequestBlock(request, params);
-                        requestBlocks.add(requestBlock);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
+        List<RequestBlock> requestBlocks = getRequestBlocks(request, requestsArray);
 
         // Processing request blocks
         QTisResponse qTisResponse = new QTisResponse();
+        List<ResponseBlock> responses = processRequestBlocks(requestBlocks);
+        qTisResponse.setResponseBlocks(responses);
+        return qTisResponse;
+    }
+
+    private List<ResponseBlock> processRequestBlocks(
+            List<RequestBlock> requestBlocks
+    ) {
         List<ResponseBlock> responses = new ArrayList<>();
         for (RequestBlock block : requestBlocks) {
             Handler handler;
@@ -155,9 +145,44 @@ public class HttpRequestDispatcher extends HttpServlet {
                                 exCount, exceptionsBuilder)
                 );
             }
-
         }
-        qTisResponse.setResponseBlocks(responses);
-        return qTisResponse;
+        return responses;
+    }
+
+    private List<RequestBlock> getRequestBlocks(
+            HttpServletRequest request, QJson requestsArray
+    ) {
+        List<RequestBlock> requestBlocks = new ArrayList<>();
+        for (int i = 0; i < requestsArray.size(); i++) {
+            QJson reqst = requestsArray.getItemQJson(i);
+            String subSystem = reqst.getItemString(SUBSYSTEM);
+            String requestType = reqst.getItemString(REQUEST);
+            RequestBlock requestBlock;
+            QJson params = reqst.getItemQJson(PARAMETERS);
+            switch (subSystem) {
+                case SUBSYSTEM_SQL:
+                    requestBlock = new SQLRequestBlock(request, params);
+                    requestBlocks.add(requestBlock);
+                    break;
+                case SUBSYSTEM_FILE:
+                    if (requestType.equals(REQUEST_FILE_UPLOAD)) {
+                        requestBlock = new FileRequestBlock(request, params);
+                        requestBlocks.add(requestBlock);
+                    }
+                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
+                            requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
+                        requestBlock = new ChunkFileRequestBlock(request, params);
+                        requestBlocks.add(requestBlock);
+                    }
+                    if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
+                        requestBlock = new BytesChunkFileRequestBlock(request, params);
+                        requestBlocks.add(requestBlock);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return requestBlocks;
     }
 }

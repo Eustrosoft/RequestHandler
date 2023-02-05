@@ -25,7 +25,7 @@ public class BytesChunkFileHandler implements Handler {
     public ResponseBlock processRequest(RequestBlock requestBlock)
             throws IOException, ServletException {
         HttpServletRequest request = requestBlock.getHttpRequest();
-        ChunkFileRequestBlock requestBl = (ChunkFileRequestBlock) requestBlock;
+        BytesChunkFileRequestBlock requestBl = (BytesChunkFileRequestBlock) requestBlock;
         User user = UsersContext.getInstance()
                 .getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
         this.storage = UserStorage.getInstanceForUser(user);
@@ -34,11 +34,11 @@ public class BytesChunkFileHandler implements Handler {
 
         if (uploadPath != null && !uploadPath.isEmpty()) {
             Part part = request.getPart("file");
-            String fileName = part.getSubmittedFileName();
+            String fileName = requestBl.getFileName();
             InputStream inputStream = part.getInputStream();
             saveUploadFile(inputStream, new File(uploadPath, fileName));
             answer = "Part was uploaded.";
-            if (requestBl.getChunkNumber().equals(requestBl.getChunkCount())) {
+            if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
                 this.storage.clearPathOfCurrentStoragePath();
             }
         }
