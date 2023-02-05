@@ -2,20 +2,29 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import {
+  asapScheduler,
+  BehaviorSubject,
   catchError,
   combineLatest,
   concatMap,
+  delay,
+  delayWhen,
   EMPTY,
   finalize,
   from,
+  interval,
+  map,
   mergeMap,
   Observable,
   of,
   tap,
+  timer,
+  zip,
 } from 'rxjs';
 import { ExplorerRequestBuilderService } from './services/explorer-request-builder.service';
 import { ExplorerService } from './services/explorer.service';
@@ -27,6 +36,8 @@ import {
 import { FileReaderService } from '../core/services/file-reader.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputFileComponent } from '../core/components/input-file/input-file.component';
+import { HttpHeaders } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-explorer',
@@ -40,14 +51,16 @@ export class ExplorerComponent {
   uploadResult$!: Observable<any>;
   progressBarValue: number = 0;
   currentFile: string = '';
-  showProgressBar: boolean = false;
+  showProgressBar = new BehaviorSubject<boolean>(false);
 
   constructor(
     private fileReaderService: FileReaderService,
     private explorerRequestBuilderService: ExplorerRequestBuilderService,
     private explorerService: ExplorerService,
     private snackBar: MatSnackBar,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   uploadFilesBase64(): void {
@@ -64,7 +77,7 @@ export class ExplorerComponent {
         ),
         tap((request: TisRequest) => {
           console.log(request);
-          this.showProgressBar = true;
+          this.showProgressBar.next(true);
         }),
         concatMap((query: TisRequest) => this.explorerService.upload(query)),
         tap(
@@ -84,25 +97,17 @@ export class ExplorerComponent {
           uploadError = true;
           console.error(err);
           this.snackBar.open('Error making request', 'Close');
-          this.showProgressBar = false;
+          this.showProgressBar.next(false);
           return EMPTY;
         }),
         finalize(() => {
           if (!uploadError) {
             this.snackBar.open('Upload completed', 'Close');
-            this.showProgressBar = false;
+            this.showProgressBar.next(false);
             this.control.patchValue([]);
             this.inputFileComponent.patchInput();
             this.cd.markForCheck();
           }
-          window.performance.mark('reader:end');
-          console.log(
-            'Duration: ',
-            Math.ceil(
-              window.performance.measure('reader', 'reader:start', 'reader:end')
-                .duration
-            )
-          );
         })
       );
   }
@@ -117,44 +122,53 @@ export class ExplorerComponent {
       .splitBinary(this.control.value)
       .pipe(
         tap(() => {
-          this.showProgressBar = true;
+          this.showProgressBar.next(true);
         }),
-        mergeMap((fc: { file: File; chunks: Blob[] }) =>
-          from(fc.chunks).pipe(
+        concatMap(({ file, chunks }) => {
+          return from(chunks).pipe(
             concatMap((chunk: Blob, currentChunk: number) => {
+              const request =
+                this.explorerRequestBuilderService.buildBinaryChunkRequest(
+                  file,
+                  chunk,
+                  currentChunk,
+                  chunks.length
+                );
               const formData = new FormData();
               formData.set('file', chunk);
+              formData.set('json', JSON.stringify(request));
+
               return combineLatest([
                 this.explorerService.uploadChunks(formData, {
-                  'Content-Disposition': `form-data; name="file"; filename="${fc.file.name}"`,
+                  'Content-Disposition': `form-data; name="file"; filename="${file.name}"`,
                 }),
-                of(fc),
+                of(file),
+                of(chunks),
                 of(currentChunk),
               ]);
-            }),
-            tap(([response, fc, currentChunk]) => {
-              this.currentFile = fc.file.name;
-              this.progressBarValue =
-                100 * ((currentChunk + 1) / fc.chunks.length);
-            }),
-            catchError((err) => {
-              uploadError = true;
-              console.error(err);
-              this.snackBar.open('Error making request', 'Close');
-              this.showProgressBar = false;
-              return EMPTY;
-            }),
-            finalize(() => {
-              if (!uploadError) {
-                this.snackBar.open('Upload completed', 'Close');
-                this.showProgressBar = false;
-                this.control.patchValue([]);
-                this.inputFileComponent.patchInput();
-                this.cd.markForCheck();
-              }
             })
-          )
-        )
+          );
+        }),
+        tap(([response, file, chunks, currentChunk]) => {
+          this.currentFile = file.name;
+          this.progressBarValue = 100 * ((currentChunk + 1) / chunks.length);
+        }),
+        catchError((err) => {
+          uploadError = true;
+          console.error(err);
+          this.snackBar.open('Error making request', 'Close');
+          this.showProgressBar.next(false);
+          return EMPTY;
+        }),
+        finalize(() => {
+          if (!uploadError) {
+            this.snackBar.open('Upload completed', 'Close');
+            this.showProgressBar.next(false);
+            this.control.patchValue([]);
+            this.inputFileComponent.patchInput();
+            this.cd.markForCheck();
+          }
+        })
       );
   }
 

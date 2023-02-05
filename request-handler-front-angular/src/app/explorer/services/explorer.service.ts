@@ -8,10 +8,61 @@ import {
 } from '../../requests/interfaces/request.interfaces';
 import { delay, mergeMap, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { FileSystemObject } from '../interfaces/file-system-object.interface';
+import { FileSystemObjectTypes } from '../constants/enums/file-system-object-types.enum';
 
 @Injectable()
 export class ExplorerService {
   constructor(private http: HttpClient) {}
+
+  getFsObjects(): Observable<FileSystemObject[]> {
+    return of([
+      {
+        id: '1',
+        title: 'folder 1',
+        type: FileSystemObjectTypes.FOLDER,
+        child: [],
+        info: {
+          created: '1',
+          modified: '1',
+          owner: '1',
+        },
+      },
+      {
+        id: '2',
+        title: 'folder 2',
+        type: FileSystemObjectTypes.FOLDER,
+        child: [],
+        info: {
+          created: '2',
+          modified: '2',
+          owner: '2',
+        },
+      },
+      {
+        id: '3',
+        title: 'file 3',
+        type: FileSystemObjectTypes.FILE,
+        child: [],
+        info: {
+          created: '3',
+          modified: '3',
+          owner: '3',
+        },
+      },
+    ]);
+    // return this.http.get<FileSystemObject[]>(
+    //   `${environment.apiUrl}/api/folders`
+    // );
+  }
+
+  getFsObject(id: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/folders/${id}`);
+  }
+
+  createFsObject(obj: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/folders`, obj);
+  }
 
   upload(query: TisRequest): Observable<{
     request: TisRequest;
@@ -40,8 +91,12 @@ export class ExplorerService {
   uploadChunks(
     body: FormData,
     headers: { [p: string]: string | string[] }
-  ): Observable<HttpResponse<Response>> {
-    return this.http.post<any>(`${environment.apiUrl}/upload/chunks`, body, {
+  ): Observable<any> {
+    return of({
+      title: 'Simulating HTTP Requests',
+      content: 'This is off the hook!!',
+    }).pipe(delay(500));
+    return this.http.post<any>(`${environment.apiUrl}/api/dispatch`, body, {
       headers: new HttpHeaders(headers),
       observe: 'response',
     });

@@ -24,9 +24,6 @@ export class FileReaderService {
     chunkSize: number = 1048576
   ): Observable<{ file: File; chunks: string[] }> {
     return from(files).pipe(
-      tap(() => {
-        window.performance.mark('reader:start');
-      }),
       mergeMap((file: File) => {
         const buffer = this.blobToArrayBuffer(file);
         return combineLatest([of(file), buffer]).pipe(

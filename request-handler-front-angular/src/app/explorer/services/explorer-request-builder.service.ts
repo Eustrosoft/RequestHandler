@@ -37,4 +37,31 @@ export class ExplorerRequestBuilderService {
       })
     );
   }
+
+  buildBinaryChunkRequest(
+    file: File,
+    chunk: Blob,
+    chunkIndex: number,
+    totalChunks: number
+  ): TisRequest {
+    return {
+      qtisver: 1,
+      requests: [
+        {
+          parameters: {
+            data: {
+              file: '',
+              name: file.name,
+              ext: file.name.split('.').pop() as string,
+              chunk: chunkIndex,
+              all_chunks: totalChunks,
+            },
+          },
+          request: 'upload_chunks_binary',
+          subsystem: 'file',
+        },
+      ],
+      qtisend: true,
+    } as TisRequest;
+  }
 }

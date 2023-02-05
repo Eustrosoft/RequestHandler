@@ -44,7 +44,7 @@
       class="col-12"
     ></app-file-list>
     <ng-container *ngIf="uploadResult$ | async as result">
-      <ng-container *ngIf="showProgressBar">
+      <ng-container *ngIf="showProgressBar | async">
         <div>
           <span>{{ currentFile }}</span>
           <mat-progress-bar
