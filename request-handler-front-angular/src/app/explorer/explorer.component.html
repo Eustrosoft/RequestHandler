@@ -1,6 +1,33 @@
 <div class="container-fluid">
   <div class="row gx-3 mb-3 justify-content-center">
-    <router-outlet></router-outlet>
+    <p *ngIf="params$ | async as params">{{ params | json }}</p>
+    <mat-list>
+      <div mat-subheader>Structure</div>
+      <ng-container *ngIf="folders | async as fls">
+        <ng-container *ngFor="let folder of fls">
+          <ng-container [ngSwitch]="folder.type">
+            <mat-list-item
+              *ngSwitchCase="fsObjTypes.FOLDER"
+              (click)="openFolder(folder)"
+              rippleHover
+            >
+              <mat-icon matListItemIcon>folder</mat-icon>
+              <div matListItemTitle>{{ folder.title }}</div>
+              <div matListItemLine>{{ folder.info.modified | date }}</div>
+            </mat-list-item>
+
+            <mat-list-item *ngSwitchCase="fsObjTypes.FILE" rippleHover>
+              <mat-icon matListItemIcon>draft</mat-icon>
+              <div matListItemTitle>{{ folder.title }}</div>
+              <div matListItemLine>{{ folder.info.modified | date }}</div>
+            </mat-list-item>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="fls.length === 0">
+          <mat-list-item>Folder is empty</mat-list-item>
+        </ng-container>
+      </ng-container>
+    </mat-list>
   </div>
   <div class="row gx-3 mb-3 justify-content-center">
     <div class="col-12">

@@ -1,75 +1,145 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   ChunkedFileRequest,
   TisRequest,
   TisResponse,
   TisResponseBody,
 } from '../../requests/interfaces/request.interfaces';
-import { delay, mergeMap, Observable, of } from 'rxjs';
+import { mergeMap, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { FileSystemObject } from '../interfaces/file-system-object.interface';
 import { FileSystemObjectTypes } from '../constants/enums/file-system-object-types.enum';
 
 @Injectable()
 export class ExplorerService {
+  private fs: FileSystemObject[] = [
+    {
+      id: '1',
+      title: 'first-folder',
+      type: FileSystemObjectTypes.FOLDER,
+      children: [
+        {
+          id: '11',
+          title: 'first-child-of-first',
+          type: FileSystemObjectTypes.FOLDER,
+          children: [
+            {
+              id: '1',
+              title: '111',
+              type: FileSystemObjectTypes.FILE,
+              children: [],
+              info: {
+                created: '',
+                modified: '',
+                owner: '',
+              },
+            },
+            {
+              id: '2',
+              title: '222',
+              type: FileSystemObjectTypes.FILE,
+              children: [],
+              info: {
+                created: '',
+                modified: '',
+                owner: '',
+              },
+            },
+            {
+              id: '3',
+              title: '333',
+              type: FileSystemObjectTypes.FILE,
+              children: [],
+              info: {
+                created: '',
+                modified: '',
+                owner: '',
+              },
+            },
+          ],
+          info: {
+            created: '',
+            modified: '',
+            owner: '',
+          },
+        },
+        {
+          id: '22',
+          title: 'second-child-child-of-first',
+          type: FileSystemObjectTypes.FOLDER,
+          children: [],
+          info: {
+            created: '',
+            modified: '',
+            owner: '',
+          },
+        },
+      ],
+      info: {
+        created: '',
+        modified: '',
+        owner: '',
+      },
+    },
+    {
+      id: '2',
+      title: 'second-folder',
+      type: FileSystemObjectTypes.FOLDER,
+      children: [
+        {
+          id: '11',
+          title: 'first-child-child-of-second',
+          type: FileSystemObjectTypes.FOLDER,
+          children: [],
+          info: {
+            created: '',
+            modified: '',
+            owner: '',
+          },
+        },
+      ],
+      info: {
+        created: '',
+        modified: '',
+        owner: '',
+      },
+    },
+    {
+      id: '3',
+      title: 'first-file',
+      type: FileSystemObjectTypes.FILE,
+      children: [],
+      info: {
+        created: '',
+        modified: '',
+        owner: '',
+      },
+    },
+  ];
+
   constructor(private http: HttpClient) {}
 
-  getFsObjects(): Observable<FileSystemObject[]> {
-    return of([
-      {
-        id: '1',
-        title: 'folder 1',
-        type: FileSystemObjectTypes.FOLDER,
-        child: [
-          {
-            id: '11',
-            title: 'folder 11',
-            type: FileSystemObjectTypes.FOLDER,
-            child: [],
-            info: {
-              created: '11',
-              modified: '11',
-              owner: '11',
-            },
-          },
-        ],
-        info: {
-          created: '1',
-          modified: '1',
-          owner: '1',
-        },
-      },
-      {
-        id: '2',
-        title: 'folder 2',
-        type: FileSystemObjectTypes.FOLDER,
-        child: [],
-        info: {
-          created: '2',
-          modified: '2',
-          owner: '2',
-        },
-      },
-      {
-        id: '3',
-        title: 'file 3',
-        type: FileSystemObjectTypes.FILE,
-        child: [],
-        info: {
-          created: '3',
-          modified: '3',
-          owner: '3',
-        },
-      },
-    ]);
+  getFsObjects(path: string): Observable<FileSystemObject[]> {
+    if (path === '') {
+      return of(this.fs);
+    } else {
+      return of(this.findElement(path, this.fs));
+    }
     // return this.http.get<FileSystemObject[]>(
     //   `${environment.apiUrl}/api/folders`
     // );
   }
 
-  getFsObject(id: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/api/folders/${id}`);
+  findElement(path: string, ctx: FileSystemObject[]): FileSystemObject[] {
+    const pt = path.includes('/') ? path.split('/') : path;
+    if (Array.isArray(pt)) {
+      return this.findElement(
+        pt[1],
+        ctx.find((item) => item.title === pt[0])!.children
+      );
+    }
+    return ctx.find((item) => item.title === pt)!.children;
   }
 
   createFsObject(obj: any): Observable<any> {
@@ -104,10 +174,6 @@ export class ExplorerService {
     body: FormData,
     headers: { [p: string]: string | string[] }
   ): Observable<any> {
-    return of({
-      title: 'Simulating HTTP Requests',
-      content: 'This is off the hook!!',
-    }).pipe(delay(500));
     return this.http.post<any>(`${environment.apiUrl}/api/dispatch`, body, {
       headers: new HttpHeaders(headers),
       observe: 'response',

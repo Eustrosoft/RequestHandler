@@ -22,6 +22,8 @@ import {
   mergeMap,
   Observable,
   of,
+  switchMap,
+  take,
   tap,
   timer,
   zip,
@@ -38,6 +40,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputFileComponent } from '../core/components/input-file/input-file.component';
 import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FileSystemObject } from './interfaces/file-system-object.interface';
+import { FileSystemObjectTypes } from './constants/enums/file-system-object-types.enum';
 
 @Component({
   selector: 'app-explorer',
@@ -45,21 +49,41 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./explorer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExplorerComponent {
+export class ExplorerComponent implements OnInit {
   @ViewChild(InputFileComponent) inputFileComponent!: InputFileComponent;
-  control = new FormControl<File[]>([], { nonNullable: true });
   uploadResult$!: Observable<any>;
+  params$!: Observable<any>;
+  folders!: Observable<FileSystemObject[]>;
+
+  control = new FormControl<File[]>([], { nonNullable: true });
   progressBarValue: number = 0;
   currentFile: string = '';
   showProgressBar = new BehaviorSubject<boolean>(false);
+
+  fsObjTypes = FileSystemObjectTypes;
 
   constructor(
     private fileReaderService: FileReaderService,
     private explorerRequestBuilderService: ExplorerRequestBuilderService,
     private explorerService: ExplorerService,
     private snackBar: MatSnackBar,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.params$ = this.route.params;
+    this.folders = this.params$.pipe(
+      switchMap((params: { path: string }) =>
+        this.explorerService.getFsObjects(params.path)
+      )
+    );
+  }
+
+  openFolder(folder: FileSystemObject): void {
+    this.router.navigate([folder.title], { relativeTo: this.route });
+  }
 
   uploadFilesBase64(): void {
     if (this.control.value.length === 0) {

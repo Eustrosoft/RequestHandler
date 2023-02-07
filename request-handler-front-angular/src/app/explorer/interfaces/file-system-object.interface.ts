@@ -4,7 +4,7 @@ export interface FileSystemObject {
   id: string;
   title: string;
   type: FileSystemObjectTypes;
-  child: FileSystemObject[];
+  children: FileSystemObject[];
   info: {
     created: string;
     modified: string;

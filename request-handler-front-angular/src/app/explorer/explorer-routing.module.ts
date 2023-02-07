@@ -1,22 +1,32 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {
+  Route,
+  RouterModule,
+  Routes,
+  UrlMatchResult,
+  UrlSegment,
+  UrlSegmentGroup,
+} from '@angular/router';
 import { ExplorerComponent } from './explorer.component';
-import { FileSystemComponent } from './components/file-system/file-system.component';
 
 const routes: Routes = [
   {
-    path: '',
+    matcher: (
+      segments: UrlSegment[],
+      group: UrlSegmentGroup,
+      route: Route
+    ): UrlMatchResult | null => {
+      if ((group.segments[0].path = 'explorer')) {
+        return {
+          consumed: segments,
+          posParams: {
+            path: new UrlSegment(segments.slice().join('/'), {}),
+          },
+        };
+      }
+      return null;
+    },
     component: ExplorerComponent,
-    children: [
-      {
-        path: 'folders',
-        component: FileSystemComponent,
-      },
-      {
-        path: 'folders/:id',
-        component: FileSystemComponent,
-      },
-    ],
   },
 ];
 
