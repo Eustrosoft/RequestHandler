@@ -80,6 +80,24 @@ public class UserStorage implements StorageContext {
         this.currentUserStoragePath = "";
     }
 
+    public void clearChunksOfCurrentPath() {
+        File dirWithChunks = new File(this.currentUserStoragePath);
+        if (dirWithChunks.exists()) {
+            int smallestName = Integer.MAX_VALUE;
+            File[] files = dirWithChunks.listFiles();
+            for (File file : files) {
+                if (smallestName >= file.getName().length()) {
+                    smallestName = file.getName().length();
+                }
+            }
+            for (File file : files) {
+                if (file.getName().length() != smallestName) {
+                    file.delete();
+                }
+            }
+        }
+    }
+
     private synchronized String getCurrentUserStoragePath() {
         return this.currentUserStoragePath;
     }

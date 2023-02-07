@@ -39,6 +39,7 @@ public class BytesChunkFileHandler implements Handler {
             saveUploadFile(inputStream, new File(uploadPath, fileName));
             answer = "Part was uploaded.";
             if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
+                this.storage.clearChunksOfCurrentPath();
                 this.storage.clearPathOfCurrentStoragePath();
             }
         }
