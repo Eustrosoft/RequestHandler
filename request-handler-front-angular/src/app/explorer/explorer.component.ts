@@ -42,6 +42,8 @@ import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileSystemObject } from './interfaces/file-system-object.interface';
 import { FileSystemObjectTypes } from './constants/enums/file-system-object-types.enum';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-explorer',
@@ -54,6 +56,10 @@ export class ExplorerComponent implements OnInit {
   uploadResult$!: Observable<any>;
   params$!: Observable<any>;
   folders!: Observable<FileSystemObject[]>;
+
+  displayedColumns: string[] = ['select', 'name', 'lastModified', 'actions'];
+  dataSource = new MatTableDataSource<FileSystemObject>([]);
+  selection = new SelectionModel<FileSystemObject>(true, []);
 
   control = new FormControl<File[]>([], { nonNullable: true });
   progressBarValue: number = 0;
@@ -77,12 +83,32 @@ export class ExplorerComponent implements OnInit {
     this.folders = this.params$.pipe(
       switchMap((params: { path: string }) =>
         this.explorerService.getFsObjects(params.path)
-      )
+      ),
+      tap((result) => (this.dataSource.data = result))
     );
   }
 
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
   openFolder(folder: FileSystemObject): void {
-    this.router.navigate([folder.title], { relativeTo: this.route });
+    if (folder.children.length !== 0) {
+      this.router.navigate([folder.title], { relativeTo: this.route });
+    }
   }
 
   uploadFilesBase64(): void {

@@ -4,3 +4,7 @@
   background: $light-gray;
   transition: 0.2s background;
 }
+
+tr.table-row:hover {
+  background: whitesmoke;
+}

@@ -11,9 +11,16 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { RippleHoverDirective } from './directives/ripple-hover.directive';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
-  declarations: [ExplorerComponent, FilesDragAndDropDirective, RippleHoverDirective],
+  declarations: [
+    ExplorerComponent,
+    FilesDragAndDropDirective,
+    RippleHoverDirective,
+  ],
   imports: [
     CommonModule,
     ExplorerRoutingModule,
@@ -22,6 +29,9 @@ import { RippleHoverDirective } from './directives/ripple-hover.directive';
     MatListModule,
     MatIconModule,
     MatRippleModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatTableModule,
   ],
   providers: [ExplorerService, ExplorerRequestBuilderService],
 })

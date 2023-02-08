@@ -17,7 +17,7 @@ export class ButtonComponent {
     | 'icon'
     | 'fab'
     | 'mini-fab';
-  @Input() buttonText?: string;
+  @Input() buttonText: string = '';
   @Input() disabled: boolean = false;
   @Input() iconName: string = '';
 }
