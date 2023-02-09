@@ -17,9 +17,9 @@ pipelines:
             name: Build Front
             image: node:latest
             script:
-              - cd request-handler-front
+              - cd request-handler-front-angular
               - npm install
-              - npm run build
+              - npm run build:stage
               - cd ..
             after-script:
               - pipe: atlassian/checkstyle-report:0.3.0
