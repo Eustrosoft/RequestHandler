@@ -7,7 +7,6 @@ import { ExplorerService } from './services/explorer.service';
 import { ExplorerRequestBuilderService } from './services/explorer-request-builder.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FilesDragAndDropDirective } from './directives/files-drag-and-drop.directive';
-import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { RippleHoverDirective } from './directives/ripple-hover.directive';
@@ -26,7 +25,6 @@ import { MatTableModule } from '@angular/material/table';
     ExplorerRoutingModule,
     CoreModule,
     MatProgressBarModule,
-    MatListModule,
     MatIconModule,
     MatRippleModule,
     MatMenuModule,
