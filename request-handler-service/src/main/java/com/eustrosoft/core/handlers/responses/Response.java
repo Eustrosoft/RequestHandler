@@ -3,11 +3,11 @@ package com.eustrosoft.core.handlers.responses;
 import java.util.List;
 
 public interface Response {
-    long getQTisVer();
+    //long getQTisVer();
 
-    List<ResponseBlock> getResponses();
+    List<ResponseBlock> getR();
 
-    boolean getQTisEnd();
+    Long getT();
 
     String getJson();
 }

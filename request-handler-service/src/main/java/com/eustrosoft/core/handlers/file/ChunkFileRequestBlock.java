@@ -41,7 +41,7 @@ public final class ChunkFileRequestBlock extends FileRequestBlock {
     }
 
     @Override
-    public String getRequest() {
+    public String getR() {
         return REQUEST_CHUNKS_FILE_UPLOAD; // TODO make non static value
     }
 }

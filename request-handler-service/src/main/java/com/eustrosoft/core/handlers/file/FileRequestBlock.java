@@ -55,12 +55,12 @@ public class FileRequestBlock implements RequestBlock {
     }
 
     @Override
-    public String getSubsystem() {
+    public String getS() {
         return SUBSYSTEM_FILE;
     }
 
     @Override
-    public String getRequest() {
+    public String getR() {
         return REQUEST_FILE_UPLOAD;
     }
 

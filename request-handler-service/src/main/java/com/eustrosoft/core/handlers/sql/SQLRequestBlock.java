@@ -32,12 +32,12 @@ public final class SQLRequestBlock implements RequestBlock {
     }
 
     @Override
-    public String getSubsystem() {
+    public String getS() {
         return SUBSYSTEM_SQL;
     }
 
     @Override
-    public String getRequest() {
+    public String getR() {
         return REQUEST_SQL;
     }
 

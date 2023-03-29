@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eustrosoft.core.handlers.responses.ResponseLang.en_EN;
+
 public class SQLResponseBlock implements ResponseBlock {
     private String errMsg = "";
     private Short errCode = 0;
@@ -22,23 +24,13 @@ public class SQLResponseBlock implements ResponseBlock {
     }
 
     @Override
-    public String getSubsystem() {
+    public String getS() {
         return "sql";
     }
 
     @Override
-    public String getRequest() {
+    public String getR() {
         return "sql";
-    }
-
-    @Override
-    public Long getStatus() {
-        return status;
-    }
-
-    @Override
-    public Long getQId() {
-        return 723153492L;
     }
 
     public void setStatus(Long status) {
@@ -46,16 +38,21 @@ public class SQLResponseBlock implements ResponseBlock {
     }
 
     @Override
-    public String getErrMsg() {
+    public String getM() {
         return this.errMsg;
     }
 
     @Override
-    public Short getErrCode() {
+    public String getL() {
+        return en_EN;
+    }
+
+    @Override
+    public Short getE() {
         return errCode;
     }
 
-    public void setErrCode(int code) {
+    public void setE(int code) {
         errCode = (short) code;
     }
 
@@ -74,12 +71,10 @@ public class SQLResponseBlock implements ResponseBlock {
     @Override
     public String toJson() throws SQLException {
         JsonObject object = new JsonObject();
-        object.addProperty("subsystem", getSubsystem());
-        object.addProperty("status", getStatus());
-        object.addProperty("qid", getQId());
-        object.addProperty("err_code", getErrCode());
-        object.addProperty("err_msg", getErrMsg());
-        object.add("result", new Gson().toJsonTree(processResultSets()));
+        object.addProperty("s", getS());
+        object.addProperty("e", getE());
+        object.addProperty("m", this.getM());
+        object.add("r", new Gson().toJsonTree(processResultSets()));
         return new Gson().toJson(object);
     }
 

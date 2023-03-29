@@ -10,17 +10,7 @@
         <h1>Welcome to Request Dispatcher!</h1>
     </div>
     <div class="containerBody">
-        <div class="containerFormHeader">
-            <h3>Login page</h3>
-        </div>
-        <form action="login" method="post" class="containerForm">
-            <label>Login: </label>
-            <input type="text" placeholder="login" name="username">
-            <br/>
-            <label>Password: </label>
-            <input type="password" placeholder="password" name="password">
-            <input type="submit" content="Login!" id="sendLoginData">
-        </form>
+        <h1>This page isn't work. User login page in HTML format instead of jsp.</h1>
     </div>
 </div>
 </body>

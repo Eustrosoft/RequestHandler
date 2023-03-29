@@ -4,6 +4,7 @@ import java.util.List;
 
 public abstract class RequestObject implements Request {
     private long qTisVer = 0;
+    private long timeout = 0;
     private boolean qTisEnd = false;
     private List<RequestBlock> requestBlocks;
 
@@ -29,5 +30,13 @@ public abstract class RequestObject implements Request {
 
     public void setRequestBlocks(List<RequestBlock> requestBlocks) {
         this.requestBlocks = requestBlocks;
+    }
+
+    public Long getTimeout() {
+        return this.timeout;
+    }
+
+    public void setTimeout(Long timeout) {
+        this.timeout = timeout;
     }
 }

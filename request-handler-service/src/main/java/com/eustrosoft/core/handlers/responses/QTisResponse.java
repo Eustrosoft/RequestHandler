@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QTisResponse implements Response {
+    private Long timeout;
     private List<ResponseBlock> responseBlocks;
 
     public QTisResponse(List<ResponseBlock> responseBlocks) {
@@ -25,28 +26,31 @@ public class QTisResponse implements Response {
     public void addResponseBlock(ResponseBlock responseBlock) {
         this.responseBlocks.add(responseBlock);
     }
+//
+//    @Override
+//    public long getQTisVer() {
+//        return 0;
+//    }
 
     @Override
-    public long getQTisVer() {
-        return 0;
-    }
-
-    @Override
-    public List<ResponseBlock> getResponses() {
+    public List<ResponseBlock> getR() {
         return this.responseBlocks;
     }
 
     @Override
-    public boolean getQTisEnd() {
-        return true;
+    public Long getT() {
+        return this.timeout;
+    }
+
+    public void setT(Long timeout) {
+        this.timeout = timeout;
     }
 
     @Override
     public String getJson() {
         JsonObject object = new JsonObject();
-        object.addProperty("qtisver", String.valueOf(getQTisVer()));
-        object.add("responses", getResponsesString());
-        object.addProperty("qtisend", String.valueOf(getQTisEnd()));
+        object.add("r", getResponsesString());
+        object.addProperty("t", String.valueOf(getT()));
         return object.toString();
     }
 
@@ -57,7 +61,7 @@ public class QTisResponse implements Response {
                 jsonResponses.add(responseBlock.toJson());
             } catch (Exception ex) {
                 jsonResponses.add(
-                        "{\"err_msg\":\"Exception while processing block\"}"
+                        "{\"m\":\"Exception while processing block\"}"
                 );
             }
         }

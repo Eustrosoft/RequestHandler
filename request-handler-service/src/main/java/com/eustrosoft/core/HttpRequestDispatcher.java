@@ -112,7 +112,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         List<ResponseBlock> responses = new ArrayList<>();
         for (RequestBlock block : requestBlocks) {
             Handler handler;
-            String requestType = block.getRequest();
+            String requestType = block.getR();
             switch (requestType) {
                 case REQUEST_SQL:
                     handler = new SQLHandler();

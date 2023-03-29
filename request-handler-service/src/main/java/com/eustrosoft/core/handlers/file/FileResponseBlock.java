@@ -4,6 +4,7 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
 import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.handlers.responses.ResponseLang.en_EN;
 
 public class FileResponseBlock implements ResponseBlock {
     private String errMsg;
@@ -13,36 +14,32 @@ public class FileResponseBlock implements ResponseBlock {
     }
 
     @Override
-    public String getSubsystem() {
+    public String getS() {
         return SUBSYSTEM_FILE;
     }
 
     @Override
-    public String getRequest() {
+    public String getR() {
         return REQUEST_FILE_UPLOAD;
     }
 
     @Override
-    public Long getStatus() {
-        return 200L;
-    }
-
-    @Override
-    public Long getQId() {
-        return 723153493L;
-    }
-
-    @Override
-    public Short getErrCode() {
+    public Short getE() {
         return 0;
     }
 
     @Override
-    public String getErrMsg() {
+    public String getM() {
         return this.errMsg;
     }
 
-    public void setErrMsg(String errMsg) {
+    @Override
+    public String getL() {
+        return en_EN;
+    }
+
+
+    public void setM(String errMsg) {
         this.errMsg = errMsg;
     }
 }

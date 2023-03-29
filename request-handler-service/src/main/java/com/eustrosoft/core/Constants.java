@@ -1,12 +1,12 @@
 package com.eustrosoft.core;
 
 public final class Constants {
-    public static final String SUBSYSTEM = "subsystem";
-    public static final String REQUESTS = "requests";
-    public static final String REQUEST = "request";
-    public static final String PARAMETERS = "parameters";
-    public static final String QTISEND = "qtisend";
-    public static final String QTISVER = "qtisver";
+    public static final String SUBSYSTEM = "s";
+    public static final String REQUESTS = "r";
+    public static final String REQUEST = "r";
+    public static final String PARAMETERS = "p";
+    public static final String QTISEND = "qend";
+    public static final String QTISVER = "qver";
 
     public static final String SUBSYSTEM_SQL = "sql";
     public static final String SUBSYSTEM_FILE = "file";

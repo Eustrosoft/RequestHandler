@@ -42,7 +42,7 @@ public final class BytesChunkFileRequestBlock extends FileRequestBlock {
     }
 
     @Override
-    public String getRequest() {
+    public String getR() {
         return REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
     }
 }

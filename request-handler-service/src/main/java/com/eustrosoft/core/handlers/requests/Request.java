@@ -3,9 +3,7 @@ package com.eustrosoft.core.handlers.requests;
 import java.util.List;
 
 public interface Request {
-    long getqTisVer();
+    List<RequestBlock> getR();
 
-    List<RequestBlock> getRequests();
-
-    boolean getqTisEnd();
+    Long getT();
 }
