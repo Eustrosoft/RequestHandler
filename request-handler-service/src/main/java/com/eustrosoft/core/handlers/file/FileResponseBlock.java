@@ -1,12 +1,13 @@
 package com.eustrosoft.core.handlers.file;
 
+import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
 import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
-public class FileResponseBlock implements ResponseBlock {
+public class FileResponseBlock extends BasicResponse {
     private String errMsg;
 
     public FileResponseBlock(String answer) {

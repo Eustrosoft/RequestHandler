@@ -2,7 +2,8 @@ package com.eustrosoft.core;
 
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
-import com.eustrosoft.core.handlers.cms.CMSReuestBlock;
+import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
+import com.eustrosoft.core.handlers.cms.CMSResponseBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
 import com.eustrosoft.core.handlers.ping.PingRequestBlock;
 import com.eustrosoft.core.handlers.requests.QTisRequestObject;
@@ -20,8 +21,8 @@ import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.tools.QJson;
+import lombok.SneakyThrows;
 
-import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -75,7 +76,8 @@ public class HttpRequestDispatcher extends HttpServlet {
         writer.close();
     }
 
-    private Response processRequest(HttpServletRequest request) throws IOException, ServletException {
+    @SneakyThrows
+    private Response processRequest(HttpServletRequest request) {
         // Parsing query and getting request blocks
         Part jsonPart = null;
         long millis = System.currentTimeMillis();
@@ -106,6 +108,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         return qTisResponse;
     }
 
+    @SneakyThrows
     private List<ResponseBlock> processRequestBlocks(
             List<RequestBlock> requestBlocks
     ) {
@@ -125,7 +128,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     handler = new PingHandler();
                     break;
                 case SUBSYSTEM_CMS:
-                    handler = new CMSHandler();
+                    handler = new CMSHandler(requestType);
                     break;
                 default:
                     handler = null;
@@ -150,6 +153,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         return responses;
     }
 
+    @SneakyThrows
     private List<RequestBlock> getRequestBlocks(
             HttpServletRequest request, QJson requestsArray
     ) {
@@ -164,7 +168,6 @@ public class HttpRequestDispatcher extends HttpServlet {
                 System.err.println("Can not get Request type. " + ex.getMessage());
             }
             RequestBlock requestBlock = null;
-            QJson params = null;
             try {
                 reqst.getItemQJson(PARAMETERS);
             } catch (Exception ex) {System.err.println("Failed to get params");}
@@ -177,18 +180,19 @@ public class HttpRequestDispatcher extends HttpServlet {
                     break;
                 case SUBSYSTEM_FILE:
                     if (requestType.equals(REQUEST_FILE_UPLOAD)) {
-                        requestBlock = new FileRequestBlock(request, params);
+                        requestBlock = new FileRequestBlock(request, reqst);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
                             requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
-                        requestBlock = new ChunkFileRequestBlock(request, params);
+                        requestBlock = new ChunkFileRequestBlock(request, reqst);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
-                        requestBlock = new BytesChunkFileRequestBlock(request, params);
+                        requestBlock = new BytesChunkFileRequestBlock(request, reqst);
                     }
                     break;
                 case SUBSYSTEM_CMS:
-                    requestBlock = new CMSReuestBlock(request);
+                    requestBlock = new CMSRequestBlock(request, reqst);
+                    ((CMSRequestBlock)requestBlock).setRequestType(requestType);
                 default:
                     break;
             }

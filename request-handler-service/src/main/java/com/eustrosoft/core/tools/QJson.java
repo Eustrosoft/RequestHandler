@@ -229,7 +229,7 @@ public class QJson {
         IOException ioe = null;
 
         System.out.println("Hello type test JSON here:");
-        json.setDebug(out_writer);
+        setDebug(out_writer);
         try {
             json.parseJSONReader(new InputStreamReader(System.in));
         } catch (IOException e) {
@@ -237,7 +237,7 @@ public class QJson {
         }
         System.out.println("result:");
         json.writeJSONString(out_writer, 1);
-        System.out.println("");
+        System.out.println();
         if (ioe != null) {
             System.out.println(ioe);
         } else System.out.println("Ok!");
@@ -330,11 +330,19 @@ public class QJson {
     }
 
     public String getItemString(String name) {
-        return ((String) getItem(name));
+        try {
+            return ((String) getItem(name));
+        } catch (Exception ex) {
+            return null; // TODO
+        }
     }
 
     public String getItemString(int index) {
-        return ((String) getItem(index));
+        try {
+            return ((String) getItem(index));
+        } catch (Exception ex) {
+            return null; // TODO
+        }
     }
 
     public Long getItemLong(String name) {

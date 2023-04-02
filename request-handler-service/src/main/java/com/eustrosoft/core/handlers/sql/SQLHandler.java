@@ -32,13 +32,11 @@ public final class SQLHandler implements Handler {
         try {
             for (String targetQuery : queries) {
                 resultSet.add(this.dbWrapper.executeQuery(targetQuery));
-                responseBlock.setStatus(200L);
                 responseBlock.setE(0);
                 responseBlock.setErrMsg("No errors");
             }
         } catch (Exception ex) {
             responseBlock.setErrMsg(ex.getMessage());
-            responseBlock.setStatus(500L);
             responseBlock.setE(1);
         }
         responseBlock.setResultSet(resultSet);

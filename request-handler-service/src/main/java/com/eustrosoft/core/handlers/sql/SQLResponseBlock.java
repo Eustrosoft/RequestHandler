@@ -1,5 +1,6 @@
 package com.eustrosoft.core.handlers.sql;
 
+import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.sql.model.ResultSetAnswer;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
@@ -12,12 +13,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLResponseBlock implements ResponseBlock {
+public class SQLResponseBlock extends BasicResponse {
     private String errMsg = "";
     private Short errCode = 0;
 
     private List<ResultSet> resultSets;
-    private Long status = 200L;
 
     public SQLResponseBlock() {
     }
@@ -30,10 +30,6 @@ public class SQLResponseBlock implements ResponseBlock {
     @Override
     public String getR() {
         return "sql";
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
     }
 
     @Override
@@ -68,13 +64,10 @@ public class SQLResponseBlock implements ResponseBlock {
     }
 
     @Override
-    public String toJson() throws SQLException {
-        JsonObject object = new JsonObject();
-        object.addProperty("s", getS());
-        object.addProperty("e", getE());
-        object.addProperty("m", this.getM());
+    public JsonObject toJsonObject() throws Exception {
+        JsonObject object = super.toJsonObject();
         object.add("r", new Gson().toJsonTree(processResultSets()));
-        return new Gson().toJson(object);
+        return object;
     }
 
     private List<ResultSetAnswer> processResultSets() throws SQLException {

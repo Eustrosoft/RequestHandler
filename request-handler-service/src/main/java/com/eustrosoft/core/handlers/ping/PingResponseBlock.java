@@ -1,11 +1,10 @@
 package com.eustrosoft.core.handlers.ping;
 
-import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class PingResponseBlock implements ResponseBlock {
+public class PingResponseBlock extends BasicResponse {
     private Short errCode;
     private String message;
     private String userId;
@@ -70,11 +69,8 @@ public class PingResponseBlock implements ResponseBlock {
     }
 
     @Override
-    public String toJson() throws Exception {
-        JsonObject object = new JsonObject();
-        object.addProperty("s", getS());
-        object.addProperty("e", getE());
-        object.addProperty("m", getM());
+    public JsonObject toJsonObject() throws Exception {
+        JsonObject object = super.toJsonObject();
         if (getUserId() != null) {
             object.addProperty("userId", getUserId());
         }
@@ -84,6 +80,6 @@ public class PingResponseBlock implements ResponseBlock {
         if (getUsername() != null) {
             object.addProperty("username", getUsername());
         }
-        return new Gson().toJson(object);
+        return object;
     }
 }

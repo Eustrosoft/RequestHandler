@@ -22,6 +22,8 @@ public class PingHandler implements Handler {
             pingResponseBlock.setMessage(MSG_OK);
             if (httpRequest.getUserPrincipal() != null) {
                 pingResponseBlock.setFullName(httpRequest.getUserPrincipal().getName());
+            } else {
+                pingResponseBlock.setFullName(user.getUserName());
             }
             pingResponseBlock.setUsername(user.getUserName());
             pingResponseBlock.setUserId(httpRequest.getRequestedSessionId());

@@ -58,7 +58,9 @@ public class QTisResponse implements Response {
         List<String> jsonResponses = new ArrayList<>();
         for (ResponseBlock responseBlock : responseBlocks) {
             try {
-                jsonResponses.add(responseBlock.toJson());
+                jsonResponses.add(
+                        new Gson().toJson(responseBlock.toJsonObject())
+                );
             } catch (Exception ex) {
                 jsonResponses.add(
                         "{\"m\":\"Exception while processing block\"}"

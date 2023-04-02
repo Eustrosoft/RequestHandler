@@ -1,18 +1,10 @@
 package com.eustrosoft.core.handlers.responses;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public interface ResponseBlock {
-    String getS();
+public abstract class BasicResponse implements ResponseBlock {
 
-    String getR();
-    Short getE();
-
-    String getM();
-    String getL();
-
-    default JsonObject toJsonObject() throws Exception {
+    public JsonObject toJsonObject() throws Exception {
         JsonObject object = new JsonObject();
         object.addProperty("s", getS());
         object.addProperty("e", getE());

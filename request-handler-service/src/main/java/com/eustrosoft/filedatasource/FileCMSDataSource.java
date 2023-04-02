@@ -57,7 +57,28 @@ public class FileCMSDataSource implements CMSDataSource {
         }
         File directory = newFile.getParentFile();
         if (isFileExist(directory)) {
-            FileUtils.createFile(path, inputStream);
+            FileUtils.createFile(newFile.getAbsolutePath(), inputStream);
+        }
+        return MSG_FILE_NOT_CREATED;
+    }
+
+    @Override
+    public String createFile(String path, String name)
+            throws CMSException, IOException {
+        if (isNullOrEmpty(path)) {
+            throw new CMSException(MSG_NULL_PARAMS);
+        }
+        checkPathInjection(path);
+        checkPathInjection(name);
+        File directory = new File(getRootPath(), path);
+        if (directory.exists()) {
+            throw new CMSException(MSG_FILE_EXIST);
+        }
+        File newFile = new File(directory, name);
+        if (!newFile.exists()) {
+            if (newFile.createNewFile()) {
+                return newFile.getAbsolutePath().substring(getRootPath().length());
+            }
         }
         return MSG_FILE_NOT_CREATED;
     }

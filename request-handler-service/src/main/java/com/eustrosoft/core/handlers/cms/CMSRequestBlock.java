@@ -1,130 +1,96 @@
 package com.eustrosoft.core.handlers.cms;
 
-import com.eustrosoft.core.handlers.sql.model.ResultSetAnswer;
-import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.tools.QJson;
+import com.eustrosoft.datasource.sources.model.CMSType;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-public class CMSRequestBlock implements ResponseBlock {
-    private String errMsg = "";
-    private Short errCode = 0;
+import static com.eustrosoft.core.Constants.*;
 
-    private List<ResultSet> resultSets;
-    private Long status = 200L;
+public class CMSRequestBlock implements RequestBlock {
+    private final HttpServletRequest request;
+    private CMSType type;
+    private String requestType;
+    private String path;
+    private String fileName;
+    private String from;
+    private String to;
 
-    public CMSRequestBlock() {
+    public CMSRequestBlock(HttpServletRequest request, QJson qJson) {
+        this.request = request;
+        parseQJson(qJson);
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public CMSType getType() {
+        return type;
+    }
+
+    public void setType(CMSType type) {
+        this.type = type;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 
     @Override
     public String getS() {
-        return "sql";
+        return SUBSYSTEM_CMS;
     }
 
     @Override
     public String getR() {
-        return "sql";
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
+        return this.requestType;
     }
 
     @Override
-    public String getM() {
-        return this.errMsg;
+    public HttpServletRequest getHttpRequest() {
+        return this.request;
     }
 
-    @Override
-    public String getL() {
-        return ResponseLang.en_US;
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
     }
 
-    @Override
-    public Short getE() {
-        return errCode;
-    }
-
-    public void setE(int code) {
-        errCode = (short) code;
-    }
-
-    public List<ResultSet> getResultSets() {
-        return this.resultSets;
-    }
-
-    public void setResultSet(List<ResultSet> resultSets) {
-        this.resultSets = resultSets;
-    }
-
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
-    }
-
-    @Override
-    public String toJson() throws SQLException {
-        JsonObject object = new JsonObject();
-        object.addProperty("s", getS());
-        object.addProperty("e", getE());
-        object.addProperty("m", this.getM());
-        object.add("r", new Gson().toJsonTree(processResultSets()));
-        return new Gson().toJson(object);
-    }
-
-    private List<ResultSetAnswer> processResultSets() throws SQLException {
-        if (this.resultSets == null || this.resultSets.isEmpty()) {
-            return new ArrayList<>();
+    private void parseQJson(QJson qJson) {
+        if (qJson == null) {
+            throw new NullPointerException("QJson was null");
         }
-        List<ResultSet> resSets = this.resultSets;
-        List<ResultSetAnswer> sets = new ArrayList<>();
-
-        for (ResultSet set : resSets) {
-            ResultSetMetaData resultSetMetaData = set.getMetaData();
-            final int columnCount = resultSetMetaData.getColumnCount();
-
-            List<String> columnNames = getColumnNames(resultSetMetaData);
-            List<String> columnTypes = getColumnTypes(resultSetMetaData);
-            List<List<Object>> allRows = new ArrayList<>();
-
-            while (set.next()) {
-                List<Object> values = new ArrayList<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    values.add(set.getObject(i));
-                    set.getMetaData().getColumnType(i);
-                }
-                allRows.add(values);
-            }
-            ResultSetAnswer answer = new ResultSetAnswer();
-            answer.setColumns(columnNames);
-            answer.setData_types(columnTypes);
-            answer.setRows(allRows);
-            answer.setRows_count(allRows.size());
-            sets.add(answer);
+        setFileName(qJson.getItemString("fileName"));
+        if (CMSType.FILE.isInRange(qJson.getItemString("type"))) {
+            setType(CMSType.valueOf(qJson.getItemString("type")));
         }
-        return sets;
-    }
-
-    private List<String> getColumnNames(ResultSetMetaData metadata) throws SQLException {
-        final int columnCount = metadata.getColumnCount();
-        List<String> colNames = new ArrayList<>();
-        for (int i = 1; i <= columnCount; i++) {
-            colNames.add(metadata.getColumnName(i));
-        }
-        return colNames;
-    }
-
-    private List<String> getColumnTypes(ResultSetMetaData metadata) throws SQLException {
-        final int columnCount = metadata.getColumnCount();
-        List<String> colNames = new ArrayList<>();
-        for (int i = 1; i <= columnCount; i++) {
-            colNames.add(metadata.getColumnTypeName(i));
-        }
-        return colNames;
+        setFrom(qJson.getItemString("from"));
+        setTo(qJson.getItemString("to"));
+        setPath(qJson.getItemString("path"));
     }
 }

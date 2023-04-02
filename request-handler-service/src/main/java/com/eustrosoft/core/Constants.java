@@ -19,6 +19,7 @@ public final class Constants {
     public static final String REQUEST_CHUNKS_FILE_UPLOAD = "upload_chunks";
     public static final String REQUEST_CHUNKS_BINARY_FILE_UPLOAD = "upload_chunks_binary";
 
+    public static final String REQUEST_VIEW = "view";
     public static final String REQUEST_CREATE = "create";
     public static final String REQUEST_MOVE = "move";
     public static final String REQUEST_COPY = "copy";

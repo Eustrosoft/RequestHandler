@@ -1,5 +1,8 @@
 package com.eustrosoft.core.filter;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -12,8 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
 @WebFilter(
         urlPatterns = {"/api/*"},
@@ -43,7 +49,13 @@ public class AuthorizedRequestFilter implements Filter {
             HttpSession session = request.getSession(false);
             if (session == null) {
                 this.servletContext.log("Unauthorized access request");
-                response.sendError(200);
+                resp.setContentType("application/json");
+                PrintWriter writer = response.getWriter();
+                writer.println(new Gson().toJson(
+                        getUnauthorizedResponse()
+                ));
+                writer.flush();
+                writer.close();
             } else {
                 chain.doFilter(req, resp);
             }
@@ -53,4 +65,15 @@ public class AuthorizedRequestFilter implements Filter {
     public void destroy() {
     }
 
+    private JsonObject getUnauthorizedResponse() {
+        JsonObject object = new JsonObject();
+        object.addProperty("l", en_US);
+        JsonObject response = new JsonObject();
+        response.addProperty("m", "Unauthorized");
+        response.addProperty("e", 401);
+        response.addProperty("s", "login");
+        response.addProperty("r", "login");
+        object.add("r", response);
+        return object;
+    }
 }

@@ -23,6 +23,8 @@ public interface CMSDataSource {
 
     String createFile(String path, InputStream stream) throws CMSException, IOException;
 
+    String createFile(String path, String name) throws CMSException, IOException;
+
     String createDirectory(String path) throws CMSException;
 
     boolean update(String path, CMSObjectUpdateParameters data) throws CMSException;

@@ -16,7 +16,8 @@ public class FileHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock)
             throws IOException {
-        User user = UsersContext.getInstance().getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
+        User user = UsersContext.getInstance()
+                .getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
         if (user.getSessionPath() == null || user.getSessionPath().isEmpty()) {
             UserStorage storage = UserStorage.getInstanceForUser(user);
             user.setSessionPath(storage.createAndGetNewStoragePath());
