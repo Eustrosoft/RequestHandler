@@ -43,7 +43,7 @@ public class AuthorizedRequestFilter implements Filter {
             HttpSession session = request.getSession(false);
             if (session == null) {
                 this.servletContext.log("Unauthorized access request");
-                response.sendError(401);
+                response.sendError(200);
             } else {
                 chain.doFilter(req, resp);
             }

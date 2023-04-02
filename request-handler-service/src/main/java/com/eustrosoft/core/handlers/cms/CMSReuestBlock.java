@@ -1,4 +1,4 @@
-package com.eustrosoft.core.handlers.sql;
+package com.eustrosoft.core.handlers.cms;
 
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import static com.eustrosoft.core.Constants.REQUEST_SQL;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
 
-public final class SQLRequestBlock implements RequestBlock {
+public final class CMSReuestBlock implements RequestBlock {
     private String query;
     private String method;
     private final HttpServletRequest request;
@@ -21,12 +21,12 @@ public final class SQLRequestBlock implements RequestBlock {
         this.query = query;
     }
 
-    public SQLRequestBlock(HttpServletRequest request, QJson qJson) {
+    public CMSReuestBlock(HttpServletRequest request, QJson qJson) {
         this.request = request;
         parseQJson(qJson);
     }
 
-    public SQLRequestBlock(HttpServletRequest request, String query) {
+    public CMSReuestBlock(HttpServletRequest request, String query) {
         this.request = request;
         this.query = query;
     }
@@ -41,7 +41,7 @@ public final class SQLRequestBlock implements RequestBlock {
         return REQUEST_SQL;
     }
 
-    public SQLRequestBlock(HttpServletRequest request) {
+    public CMSReuestBlock(HttpServletRequest request) {
         this(request, "");
     }
 
@@ -63,5 +63,6 @@ public final class SQLRequestBlock implements RequestBlock {
             throw new NullPointerException("QJson was null");
         }
         setQuery(qJson.getItemString("query"));
+        setMethod(qJson.getItemString("method"));
     }
 }

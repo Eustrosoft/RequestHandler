@@ -1,4 +1,4 @@
-package com.eustrosoft.core.handlers.sql;
+package com.eustrosoft.core.handlers.cms;
 
 import com.eustrosoft.core.handlers.sql.model.ResultSetAnswer;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
@@ -12,14 +12,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLResponseBlock implements ResponseBlock {
+public class CMSRequestBlock implements ResponseBlock {
     private String errMsg = "";
     private Short errCode = 0;
 
     private List<ResultSet> resultSets;
     private Long status = 200L;
 
-    public SQLResponseBlock() {
+    public CMSRequestBlock() {
     }
 
     @Override

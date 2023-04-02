@@ -1,22 +1,27 @@
 package com.eustrosoft.core;
 
 import com.eustrosoft.core.handlers.Handler;
+import com.eustrosoft.core.handlers.cms.CMSHandler;
+import com.eustrosoft.core.handlers.cms.CMSReuestBlock;
+import com.eustrosoft.core.handlers.ping.PingHandler;
+import com.eustrosoft.core.handlers.ping.PingRequestBlock;
+import com.eustrosoft.core.handlers.requests.QTisRequestObject;
+import com.eustrosoft.core.handlers.sql.SQLHandler;
+import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
 import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.ChunkFileHandler;
 import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.FileHandler;
 import com.eustrosoft.core.handlers.file.FileRequestBlock;
-import com.eustrosoft.core.handlers.requests.QTisRequestObject;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.requests.RequestObject;
 import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.handlers.sql.SQLHandler;
-import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
+import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -30,18 +35,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.PARAMETERS;
-import static com.eustrosoft.core.Constants.QTISEND;
-import static com.eustrosoft.core.Constants.QTISVER;
-import static com.eustrosoft.core.Constants.REQUEST;
-import static com.eustrosoft.core.Constants.REQUESTS;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_SQL;
-import static com.eustrosoft.core.Constants.SUBSYSTEM;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
+import static com.eustrosoft.core.Constants.*;
 
 @WebServlet(
         name = "EustrosoftRequestDispatcher",
@@ -83,9 +77,15 @@ public class HttpRequestDispatcher extends HttpServlet {
 
     private Response processRequest(HttpServletRequest request) throws IOException, ServletException {
         // Parsing query and getting request blocks
-        Part jsonPart = request.getPart("json");
-        QJson qJson = new QJson();
+        Part jsonPart = null;
+        long millis = System.currentTimeMillis();
+        try {
+            jsonPart = request.getPart("json");
+        } catch (Exception ex) {
+            System.err.println("Failed parsing request with parts");
+        }
 
+        QJson qJson = new QJson();
         if (jsonPart != null) {
             qJson.parseJSONReader(new InputStreamReader(jsonPart.getInputStream()));
         } else {
@@ -93,8 +93,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         }
 
         RequestObject requestObject = new QTisRequestObject();
-        requestObject.setqTisEnd((Boolean) qJson.getItem(QTISEND));
-        requestObject.setqTisVer((Long) qJson.getItem(QTISVER));
+        requestObject.setTimeout((Long) qJson.getItem(TIMEOUT));
         QJson requestsArray = qJson.getItemQJson(REQUESTS);
 
         List<RequestBlock> requestBlocks = getRequestBlocks(request, requestsArray);
@@ -103,6 +102,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         QTisResponse qTisResponse = new QTisResponse();
         List<ResponseBlock> responses = processRequestBlocks(requestBlocks);
         qTisResponse.setResponseBlocks(responses);
+        qTisResponse.setT(System.currentTimeMillis() - millis);
         return qTisResponse;
     }
 
@@ -112,19 +112,20 @@ public class HttpRequestDispatcher extends HttpServlet {
         List<ResponseBlock> responses = new ArrayList<>();
         for (RequestBlock block : requestBlocks) {
             Handler handler;
+            String requestSubsystem = block.getS();
             String requestType = block.getR();
-            switch (requestType) {
-                case REQUEST_SQL:
-                    handler = new SQLHandler();
+            switch (requestSubsystem) {
+                case SUBSYSTEM_SQL:
+                    handler = getSQLHandler(requestType);
                     break;
-                case REQUEST_FILE_UPLOAD:
-                    handler = new FileHandler();
+                case SUBSYSTEM_FILE:
+                    handler = getFileHandler(requestType);
                     break;
-                case REQUEST_CHUNKS_FILE_UPLOAD:
-                    handler = new ChunkFileHandler();
+                case SUBSYSTEM_PING:
+                    handler = new PingHandler();
                     break;
-                case REQUEST_CHUNKS_BINARY_FILE_UPLOAD:
-                    handler = new BytesChunkFileHandler();
+                case SUBSYSTEM_CMS:
+                    handler = new CMSHandler();
                     break;
                 default:
                     handler = null;
@@ -156,33 +157,66 @@ public class HttpRequestDispatcher extends HttpServlet {
         for (int i = 0; i < requestsArray.size(); i++) {
             QJson reqst = requestsArray.getItemQJson(i);
             String subSystem = reqst.getItemString(SUBSYSTEM);
-            String requestType = reqst.getItemString(REQUEST);
-            RequestBlock requestBlock;
-            QJson params = reqst.getItemQJson(PARAMETERS);
+            String requestType = "";
+            try {
+                requestType = reqst.getItemString(REQUEST);
+            } catch (Exception ex) {
+                System.err.println("Can not get Request type. " + ex.getMessage());
+            }
+            RequestBlock requestBlock = null;
+            QJson params = null;
+            try {
+                reqst.getItemQJson(PARAMETERS);
+            } catch (Exception ex) {System.err.println("Failed to get params");}
             switch (subSystem) {
+                case SUBSYSTEM_PING:
+                    requestBlock = new PingRequestBlock(request);
+                    break;
                 case SUBSYSTEM_SQL:
-                    requestBlock = new SQLRequestBlock(request, params);
-                    requestBlocks.add(requestBlock);
+                    requestBlock = new SQLRequestBlock(request, reqst);
                     break;
                 case SUBSYSTEM_FILE:
                     if (requestType.equals(REQUEST_FILE_UPLOAD)) {
                         requestBlock = new FileRequestBlock(request, params);
-                        requestBlocks.add(requestBlock);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
                             requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
                         requestBlock = new ChunkFileRequestBlock(request, params);
-                        requestBlocks.add(requestBlock);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
                         requestBlock = new BytesChunkFileRequestBlock(request, params);
-                        requestBlocks.add(requestBlock);
                     }
                     break;
+                case SUBSYSTEM_CMS:
+                    requestBlock = new CMSReuestBlock(request);
                 default:
                     break;
             }
+            if (requestBlock != null) {
+                requestBlocks.add(requestBlock);
+            }
         }
         return requestBlocks;
+    }
+
+    // TODO: move to another class
+    private Handler getSQLHandler(String requestType) {
+        if (REQUEST_SQL.equals(requestType)) {
+            return new SQLHandler();
+        }
+        return null;
+    }
+
+    private Handler getFileHandler(String requestType) {
+        switch (requestType) {
+            case REQUEST_FILE_UPLOAD:
+                return new FileHandler();
+            case REQUEST_CHUNKS_FILE_UPLOAD:
+                return new ChunkFileHandler();
+            case REQUEST_CHUNKS_BINARY_FILE_UPLOAD:
+                return new BytesChunkFileHandler();
+            default:
+                return null;
+        }
     }
 }

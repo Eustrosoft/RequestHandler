@@ -2,8 +2,8 @@ package com.eustrosoft.core;
 
 import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UsersContext;
-import com.eustrosoft.core.exception.CredentialException;
 import com.eustrosoft.core.tools.QJson;
+import com.eustrosoft.core.exception.CredentialException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import static com.eustrosoft.core.Constants.SESSION_TIMEOUT;
 
 @WebServlet(
         name = "Login Servlet",
@@ -37,7 +35,7 @@ public class LoginServlet extends HttpServlet {
                 oldSession.invalidate();
             }
             HttpSession newSession = request.getSession(true);
-            newSession.setMaxInactiveInterval(SESSION_TIMEOUT);
+            newSession.setMaxInactiveInterval(Constants.SESSION_TIMEOUT);
             String cookie = response.getHeader("Set-Cookie");
             String[] cookies = cookie.split(";");
             cookie = String.format("%s; Path=/; %s", cookies[0], cookies[2]);

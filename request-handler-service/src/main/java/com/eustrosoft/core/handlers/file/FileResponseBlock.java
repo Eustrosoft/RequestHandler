@@ -4,7 +4,7 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 
 import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
-import static com.eustrosoft.core.handlers.responses.ResponseLang.en_EN;
+import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
 public class FileResponseBlock implements ResponseBlock {
     private String errMsg;
@@ -35,7 +35,7 @@ public class FileResponseBlock implements ResponseBlock {
 
     @Override
     public String getL() {
-        return en_EN;
+        return en_US;
     }
 
 
