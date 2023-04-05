@@ -8,7 +8,6 @@ import com.eustrosoft.datasource.sources.model.CMSFile;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
-import com.sun.javafx.fxml.PropertyNotFoundException;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -274,7 +273,7 @@ public class FileCMSDataSource implements CMSDataSource {
             properties.load(input);
             String cmsRootPath = properties.getProperty(PROPERTY_CMS_ROOT_PATH);
             if (cmsRootPath == null) {
-                throw new PropertyNotFoundException(
+                throw new Exception(
                         "Property file was found, but " +
                         ColorTextUtil.getColoredString("rootPath", ColorTextUtil.Color.GREEN) +
                         " property wasn't found."
