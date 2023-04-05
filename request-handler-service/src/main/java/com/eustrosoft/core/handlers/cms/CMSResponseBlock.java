@@ -2,7 +2,11 @@ package com.eustrosoft.core.handlers.cms;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
+import com.eustrosoft.datasource.sources.model.CMSObject;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import java.util.List;
 
 import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
 
@@ -10,8 +14,17 @@ public final class CMSResponseBlock extends BasicResponse {
     private String errMsg = "";
     private Short errCode = 0;
     private String responseType;
+    private List<CMSObject> content;
 
     public CMSResponseBlock() {
+    }
+
+    public List<CMSObject> getContent() {
+        return content;
+    }
+
+    public void setContent(List<CMSObject> content) {
+        this.content = content;
     }
 
     public void setResponseType(String responseType) {
@@ -53,6 +66,8 @@ public final class CMSResponseBlock extends BasicResponse {
 
     @Override
     public JsonObject toJsonObject() throws Exception {
-        return super.toJsonObject();
+        JsonObject object = super.toJsonObject();
+        object.add("content", new Gson().toJsonTree(content));
+        return object;
     }
 }

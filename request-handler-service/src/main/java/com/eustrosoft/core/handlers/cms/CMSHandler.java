@@ -29,11 +29,12 @@ public final class CMSHandler implements Handler {
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
         CMSResponseBlock responseBlock = new CMSResponseBlock();
+        responseBlock.setE(0);
+        responseBlock.setErrMsg("Ok.");
         switch (requestType) {
             case REQUEST_VIEW:
-                getDirectoryObjects(cmsRequestBlock.getPath());
-                responseBlock.setE(0);
-                responseBlock.setErrMsg("Ok.");
+                List<CMSObject> directoryObjects = getDirectoryObjects(cmsRequestBlock.getPath());
+                responseBlock.setContent(directoryObjects);
                 break;
             case REQUEST_CREATE:
                 if (CMSType.FILE.equals(cmsRequestBlock.getType())) {
@@ -48,23 +49,15 @@ public final class CMSHandler implements Handler {
                             cmsRequestBlock.getFileName()
                     );
                 }
-                responseBlock.setE(0);
-                responseBlock.setErrMsg("Ok.");
                 break;
             case REQUEST_COPY:
                 copyFile(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
-                responseBlock.setE(0);
-                responseBlock.setErrMsg("Ok.");
                 break;
             case REQUEST_MOVE:
                 move(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
-                responseBlock.setE(0);
-                responseBlock.setErrMsg("Ok.");
                 break;
             case REQUEST_DELETE:
                 delete(cmsRequestBlock.getPath());
-                responseBlock.setE(0);
-                responseBlock.setErrMsg("Ok.");
                 break;
             default:
                 responseBlock.setE(404);
