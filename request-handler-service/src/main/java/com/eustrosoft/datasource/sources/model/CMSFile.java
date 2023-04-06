@@ -20,6 +20,7 @@ public class CMSFile implements CMSObject {
     private Date modified;
     private long space;
     private String hash;
+    private String type;
 
     public CMSType getType() {
         return CMSType.FILE;

@@ -17,6 +17,7 @@ public class CMSDirectory implements CMSObject {
     private long space;
     private Date modified;
     private Date created;
+    private String type;
 
     public CMSType getType() {
         return CMSType.DIRECTORY;

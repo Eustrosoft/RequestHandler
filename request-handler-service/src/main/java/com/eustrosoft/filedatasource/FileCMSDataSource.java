@@ -6,6 +6,7 @@ import com.eustrosoft.datasource.sources.CMSDataSource;
 import com.eustrosoft.datasource.sources.model.CMSDirectory;
 import com.eustrosoft.datasource.sources.model.CMSFile;
 import com.eustrosoft.datasource.sources.model.CMSObject;
+import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -70,8 +71,8 @@ public class FileCMSDataSource implements CMSDataSource {
         checkPathInjection(path);
         checkPathInjection(name);
         File directory = new File(getRootPath(), path);
-        if (directory.exists()) {
-            throw new CMSException(MSG_FILE_EXIST);
+        if (!directory.exists()) {
+            throw new CMSException(MSG_DIR_NOT_EXIST);
         }
         File newFile = new File(directory, name);
         if (!newFile.exists()) {
@@ -126,7 +127,8 @@ public class FileCMSDataSource implements CMSDataSource {
                         new Date(attributes.creationTime().toMillis()),
                         new Date(file.lastModified()),
                         file.length(),
-                        String.valueOf(file.hashCode())
+                        String.valueOf(file.hashCode()),
+                        CMSType.FILE.toString()
                 );
             }
             if (file.isDirectory()) {
@@ -138,7 +140,8 @@ public class FileCMSDataSource implements CMSDataSource {
                         new ArrayList<String>(),
                         file.length(),
                         new Date(file.lastModified()),
-                        new Date(attributes.creationTime().toMillis())
+                        new Date(attributes.creationTime().toMillis()),
+                        CMSType.DIRECTORY.toString()
                 );
             }
             if (obj != null) {
