@@ -1,22 +1,24 @@
 package com.eustrosoft.core.handlers.ping;
 
-import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.Constants.*;
 
-public class PingRequestBlock implements RequestBlock {
-    private final HttpServletRequest request;
-
-    public PingRequestBlock(HttpServletRequest request, QJson qJson) {
-        this.request = request;
+public class PingRequestBlock extends BasicRequest {
+    public PingRequestBlock(HttpServletRequest request,
+                            HttpServletResponse response,
+                            QJson qJson) {
+        super(request, response);
         parseQJson(qJson);
     }
 
-    public PingRequestBlock(HttpServletRequest request) {
-        this.request = request;
+    public PingRequestBlock(HttpServletRequest request,
+                            HttpServletResponse response) {
+        super(request, response);
     }
 
     @Override
@@ -26,12 +28,7 @@ public class PingRequestBlock implements RequestBlock {
 
     @Override
     public String getR() {
-        return "";
-    }
-
-    @Override
-    public HttpServletRequest getHttpRequest() {
-        return this.request;
+        return SUBSYSTEM_PING;
     }
 
     private void parseQJson(QJson qJson) {

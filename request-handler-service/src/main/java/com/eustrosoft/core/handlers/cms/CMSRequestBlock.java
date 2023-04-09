@@ -1,15 +1,15 @@
 package com.eustrosoft.core.handlers.cms;
 
-import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
 import com.eustrosoft.datasource.sources.model.CMSType;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.Constants.*;
 
-public class CMSRequestBlock implements RequestBlock {
-    private final HttpServletRequest request;
+public class CMSRequestBlock extends BasicRequest {
     private CMSType type;
     private String requestType;
     private String path;
@@ -17,8 +17,10 @@ public class CMSRequestBlock implements RequestBlock {
     private String from;
     private String to;
 
-    public CMSRequestBlock(HttpServletRequest request, QJson qJson) {
-        this.request = request;
+    public CMSRequestBlock(HttpServletRequest request,
+                           HttpServletResponse response,
+                           QJson qJson) {
+        super(request, response);
         parseQJson(qJson);
     }
 

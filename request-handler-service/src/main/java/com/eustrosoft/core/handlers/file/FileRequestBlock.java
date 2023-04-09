@@ -1,33 +1,40 @@
 package com.eustrosoft.core.handlers.file;
 
+import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
+import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
 import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
 
-public class FileRequestBlock implements RequestBlock {
+public class FileRequestBlock extends BasicRequest {
     private byte[] fileBytes;
     private String fileName;
     private String fileString;
-    private final HttpServletRequest request;
 
 
-    public FileRequestBlock(HttpServletRequest request, QJson qJson) {
-        this.request = request;
+    public FileRequestBlock(HttpServletRequest request,
+                            HttpServletResponse response,
+                            QJson qJson) {
+        super(request, response);
         parseQJson(qJson);
     }
 
-    public FileRequestBlock(HttpServletRequest request, byte[] fileBytes) {
-        this.request = request;
+    public FileRequestBlock(HttpServletResponse response,
+                            HttpServletRequest request,
+                            byte[] fileBytes) {
+        super(request, response);
         this.fileBytes = fileBytes;
     }
 
-    public FileRequestBlock(HttpServletRequest request) {
-        this(request, new byte[0]);
+    public FileRequestBlock(HttpServletRequest request,
+                            HttpServletResponse response) {
+        this(response, request, new byte[0]);
     }
 
     public String getFileName() {
@@ -62,11 +69,6 @@ public class FileRequestBlock implements RequestBlock {
     @Override
     public String getR() {
         return REQUEST_FILE_UPLOAD;
-    }
-
-    @Override
-    public HttpServletRequest getHttpRequest() {
-        return this.request;
     }
 
     protected void parseQJson(QJson qJson) {

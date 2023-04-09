@@ -13,6 +13,7 @@ public final class Constants {
     public static final String SUBSYSTEM_FILE = "file";
     public static final String SUBSYSTEM_PING = "ping";
     public static final String SUBSYSTEM_CMS = "cms";
+    public static final String SUBSYSTEM_LOGIN = "login";
 
     public static final String REQUEST_SQL = "sql";
     public static final String REQUEST_FILE_UPLOAD = "upload";
@@ -25,6 +26,8 @@ public final class Constants {
     public static final String REQUEST_COPY = "copy";
     public static final String REQUEST_DELETE = "delete";
     public static final String REQUEST_RENAME = "rename";
+    public static final String REQUEST_LOGIN = "login";
+    public static final String REQUEST_LOGOUT = "logout";
 
     public static final Integer SESSION_TIMEOUT = 100 * 60;
 

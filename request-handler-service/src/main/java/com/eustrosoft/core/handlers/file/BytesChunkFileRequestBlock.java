@@ -3,6 +3,7 @@ package com.eustrosoft.core.handlers.file;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
 
@@ -10,8 +11,10 @@ public final class BytesChunkFileRequestBlock extends FileRequestBlock {
     private Long chunkNumber;
     private Long chunksCount;
 
-    public BytesChunkFileRequestBlock(HttpServletRequest request, QJson qJson) {
-        super(request);
+    public BytesChunkFileRequestBlock(HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      QJson qJson) {
+        super(request, response);
         parseQJson(qJson);
     }
 

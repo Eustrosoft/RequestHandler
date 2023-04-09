@@ -1,9 +1,12 @@
 package com.eustrosoft.core;
 
+import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
 import com.eustrosoft.core.handlers.cms.CMSResponseBlock;
+import com.eustrosoft.core.handlers.login.LoginHandler;
+import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
 import com.eustrosoft.core.handlers.ping.PingRequestBlock;
 import com.eustrosoft.core.handlers.requests.QTisRequestObject;
@@ -37,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
 @WebServlet(
         name = "EustrosoftRequestDispatcher",
@@ -53,7 +57,7 @@ public class HttpRequestDispatcher extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        Response resp = processRequest(request);
+        Response resp = processRequest(request, response);
         response.setContentType("application/json");
         response.setHeader("Cache-Control", "nocache");
         response.setCharacterEncoding("UTF-8");
@@ -77,7 +81,7 @@ public class HttpRequestDispatcher extends HttpServlet {
     }
 
     @SneakyThrows
-    private Response processRequest(HttpServletRequest request) {
+    private Response processRequest(HttpServletRequest request, HttpServletResponse response) {
         // Parsing query and getting request blocks
         Part jsonPart = null;
         long millis = System.currentTimeMillis();
@@ -98,7 +102,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         requestObject.setTimeout((Long) qJson.getItem(TIMEOUT));
         QJson requestsArray = qJson.getItemQJson(REQUESTS);
 
-        List<RequestBlock> requestBlocks = getRequestBlocks(request, requestsArray);
+        List<RequestBlock> requestBlocks = getRequestBlocks(request, response, requestsArray);
 
         // Processing request blocks
         QTisResponse qTisResponse = new QTisResponse();
@@ -118,6 +122,9 @@ public class HttpRequestDispatcher extends HttpServlet {
             String requestSubsystem = block.getS();
             String requestType = block.getR();
             switch (requestSubsystem) {
+                case SUBSYSTEM_LOGIN:
+                    handler = new LoginHandler(requestType);
+                    break;
                 case SUBSYSTEM_SQL:
                     handler = getSQLHandler(requestType);
                     break;
@@ -143,6 +150,13 @@ public class HttpRequestDispatcher extends HttpServlet {
                 } catch (Exception ex) {
                     exCount += 1;
                     exceptionsBuilder.append(ex.getMessage()).append("\n");
+                    responses.add(new ExceptionBlock(
+                            ex.getMessage(),
+                            (short) 500,
+                            en_US,
+                            requestSubsystem,
+                            requestType
+                    ));
                 }
                 System.out.println(
                         String.format("%d exceptions occurred\n%s errors msgs",
@@ -155,44 +169,51 @@ public class HttpRequestDispatcher extends HttpServlet {
 
     @SneakyThrows
     private List<RequestBlock> getRequestBlocks(
-            HttpServletRequest request, QJson requestsArray
+            HttpServletRequest request,
+            HttpServletResponse response,
+            QJson requestsArray
     ) {
         List<RequestBlock> requestBlocks = new ArrayList<>();
         for (int i = 0; i < requestsArray.size(); i++) {
-            QJson reqst = requestsArray.getItemQJson(i);
-            String subSystem = reqst.getItemString(SUBSYSTEM);
+            QJson qJson = requestsArray.getItemQJson(i);
+            String subSystem = qJson.getItemString(SUBSYSTEM);
             String requestType = "";
             try {
-                requestType = reqst.getItemString(REQUEST);
+                requestType = qJson.getItemString(REQUEST);
             } catch (Exception ex) {
                 System.err.println("Can not get Request type. " + ex.getMessage());
             }
             RequestBlock requestBlock = null;
             try {
-                reqst.getItemQJson(PARAMETERS);
-            } catch (Exception ex) {System.err.println("Failed to get params");}
+                qJson.getItemQJson(PARAMETERS);
+            } catch (Exception ex) {
+                System.err.println("Failed to get params");
+            }
             switch (subSystem) {
+                case SUBSYSTEM_LOGIN:
+                    requestBlock = new LoginRequestBlock(request, response, qJson);
+                    break;
                 case SUBSYSTEM_PING:
-                    requestBlock = new PingRequestBlock(request);
+                    requestBlock = new PingRequestBlock(request, response);
                     break;
                 case SUBSYSTEM_SQL:
-                    requestBlock = new SQLRequestBlock(request, reqst);
+                    requestBlock = new SQLRequestBlock(request, response, qJson);
                     break;
                 case SUBSYSTEM_FILE:
                     if (requestType.equals(REQUEST_FILE_UPLOAD)) {
-                        requestBlock = new FileRequestBlock(request, reqst);
+                        requestBlock = new FileRequestBlock(request, response, qJson);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
                             requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
-                        requestBlock = new ChunkFileRequestBlock(request, reqst);
+                        requestBlock = new ChunkFileRequestBlock(request, response, qJson);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
-                        requestBlock = new BytesChunkFileRequestBlock(request, reqst);
+                        requestBlock = new BytesChunkFileRequestBlock(request, response, qJson);
                     }
                     break;
                 case SUBSYSTEM_CMS:
-                    requestBlock = new CMSRequestBlock(request, reqst);
-                    ((CMSRequestBlock)requestBlock).setRequestType(requestType);
+                    requestBlock = new CMSRequestBlock(request, response, qJson);
+                    ((CMSRequestBlock) requestBlock).setRequestType(requestType);
                 default:
                     break;
             }

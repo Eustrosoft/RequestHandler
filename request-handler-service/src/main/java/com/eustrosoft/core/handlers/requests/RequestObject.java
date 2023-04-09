@@ -8,18 +8,22 @@ public abstract class RequestObject implements Request {
     private boolean qTisEnd = false;
     private List<RequestBlock> requestBlocks;
 
+    @Deprecated
     public boolean getqTisEnd() {
         return this.qTisEnd;
     }
 
+    @Deprecated
     public void setqTisEnd(boolean qTisEnd) {
         this.qTisEnd = qTisEnd;
     }
 
+    @Deprecated
     public long getqTisVer() {
         return qTisVer;
     }
 
+    @Deprecated
     public void setqTisVer(long qTisVer) {
         this.qTisVer = qTisVer;
     }

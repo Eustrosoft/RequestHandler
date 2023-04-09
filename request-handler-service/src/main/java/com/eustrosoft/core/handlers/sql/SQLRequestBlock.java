@@ -1,17 +1,18 @@
 package com.eustrosoft.core.handlers.sql;
 
+import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.Constants.REQUEST_SQL;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
 
-public final class SQLRequestBlock implements RequestBlock {
+public final class SQLRequestBlock extends BasicRequest {
     private String query;
     private String method;
-    private final HttpServletRequest request;
 
     public String getQuery() {
         return this.query;
@@ -21,14 +22,22 @@ public final class SQLRequestBlock implements RequestBlock {
         this.query = query;
     }
 
-    public SQLRequestBlock(HttpServletRequest request, QJson qJson) {
-        this.request = request;
+    public SQLRequestBlock(HttpServletRequest request,
+                           HttpServletResponse response,
+                           QJson qJson) {
+        super(request, response);
         parseQJson(qJson);
     }
 
-    public SQLRequestBlock(HttpServletRequest request, String query) {
-        this.request = request;
+    public SQLRequestBlock(HttpServletRequest request,
+                           HttpServletResponse response,
+                           String query) {
+        super(request, response);
         this.query = query;
+    }
+
+    public SQLRequestBlock(HttpServletRequest request, HttpServletResponse response) {
+        this(request, response, "");
     }
 
     @Override
@@ -39,15 +48,6 @@ public final class SQLRequestBlock implements RequestBlock {
     @Override
     public String getR() {
         return REQUEST_SQL;
-    }
-
-    public SQLRequestBlock(HttpServletRequest request) {
-        this(request, "");
-    }
-
-    @Override
-    public HttpServletRequest getHttpRequest() {
-        return this.request;
     }
 
     public String getMethod() {
