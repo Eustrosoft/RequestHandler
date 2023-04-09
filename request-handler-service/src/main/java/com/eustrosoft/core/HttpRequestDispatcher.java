@@ -24,20 +24,21 @@ import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.tools.QJson;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
@@ -183,6 +184,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             } catch (Exception ex) {
                 System.err.println("Can not get Request type. " + ex.getMessage());
             }
+            checkLogin(request, response, subSystem); // main filter for logging user
             RequestBlock requestBlock = null;
             try {
                 qJson.getItemQJson(PARAMETERS);
@@ -243,5 +245,43 @@ public class HttpRequestDispatcher extends HttpServlet {
             default:
                 return null;
         }
+    }
+
+    @SneakyThrows
+    private void checkLogin(HttpServletRequest request,
+                            HttpServletResponse response,
+                            String subsystem) {
+        if (hasSession(request) || isLoginSubsystem(subsystem)) {
+            return;
+        } else {
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.println(new Gson().toJson(
+                    getUnauthorizedResponse()
+            ));
+            writer.flush();
+            writer.close();
+        }
+    }
+
+    private boolean hasSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return session != null;
+    }
+
+    private boolean isLoginSubsystem(String subsystem) {
+        return SUBSYSTEM_LOGIN.equalsIgnoreCase(subsystem);
+    }
+
+    private JsonObject getUnauthorizedResponse() {
+        JsonObject object = new JsonObject();
+        object.addProperty("l", en_US);
+        JsonObject response = new JsonObject();
+        response.addProperty("m", "Unauthorized");
+        response.addProperty("e", 401);
+        response.addProperty("s", "login");
+        response.addProperty("r", "login");
+        object.add("r", response);
+        return object;
     }
 }
