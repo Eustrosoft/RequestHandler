@@ -186,14 +186,10 @@ public class HttpRequestDispatcher extends HttpServlet {
             }
             checkLogin(request, response, subSystem); // main filter for logging user
             RequestBlock requestBlock = null;
-            try {
-                qJson.getItemQJson(PARAMETERS);
-            } catch (Exception ex) {
-                System.err.println("Failed to get params");
-            }
             switch (subSystem) {
                 case SUBSYSTEM_LOGIN:
                     requestBlock = new LoginRequestBlock(request, response, qJson);
+                    ((LoginRequestBlock) requestBlock).setRequestType(requestType);
                     break;
                 case SUBSYSTEM_PING:
                     requestBlock = new PingRequestBlock(request, response);

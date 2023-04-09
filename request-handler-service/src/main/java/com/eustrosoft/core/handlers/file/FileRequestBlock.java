@@ -9,14 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
-import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.Constants.*;
 
 public class FileRequestBlock extends BasicRequest {
     private byte[] fileBytes;
     private String fileName;
     private String fileString;
-
+    private QJson parameters;
 
     public FileRequestBlock(HttpServletRequest request,
                             HttpServletResponse response,
@@ -71,11 +70,16 @@ public class FileRequestBlock extends BasicRequest {
         return REQUEST_FILE_UPLOAD;
     }
 
+    private void setParameters(QJson qJson) {
+        this.parameters = qJson;
+    }
+
     protected void parseQJson(QJson qJson) {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
         }
-        QJson fileData = qJson.getItemQJson("data");
+        setParameters(qJson.getItemQJson(PARAMETERS));
+        QJson fileData = getParameters();
         setFileBytes(decodeString(fileData.getItemString("file")));
         setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
@@ -83,5 +87,9 @@ public class FileRequestBlock extends BasicRequest {
 
     protected byte[] decodeString(String str) {
         return Base64.getDecoder().decode(str);
+    }
+
+    protected QJson getParameters() {
+        return this.parameters;
     }
 }

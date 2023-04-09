@@ -5,7 +5,7 @@ public final class Constants {
     public static final String REQUESTS = "r";
     public static final String REQUEST = "r";
     public static final String TIMEOUT = "t";
-    public static final String PARAMETERS = "p";
+    public static final String PARAMETERS = "parameters";
     public static final String QTISEND = "qend";
     public static final String QTISVER = "qver";
 
