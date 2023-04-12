@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.eustrosoft.core.filter.Constants.PROPERTY_UPLOAD_DIRECTORY;
-import static com.eustrosoft.core.filter.Constants.SYSTEM_FILE_NAME;
+import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_UPLOAD_DIRECTORY;
+import static com.eustrosoft.core.tools.PropertiesConstants.SYSTEM_FILE_NAME;
 
 public class UserStorage implements StorageContext {
     private static final Properties systemProperties = new Properties();

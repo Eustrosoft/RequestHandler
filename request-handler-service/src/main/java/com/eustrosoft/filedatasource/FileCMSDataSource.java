@@ -19,7 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import static com.eustrosoft.core.filter.Constants.*;
+import static com.eustrosoft.core.tools.PropertiesConstants.*;
 import static com.eustrosoft.filedatasource.constants.Messages.*;
 
 public class FileCMSDataSource implements CMSDataSource {

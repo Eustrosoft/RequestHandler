@@ -19,8 +19,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.eustrosoft.core.filter.Constants.LOGGING_FILE_NAME;
-import static com.eustrosoft.core.filter.Constants.PROPERTY_LOG_FILE;
+import static com.eustrosoft.core.tools.PropertiesConstants.LOGGING_FILE_NAME;
+import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_LOG_FILE;
 
 @WebFilter(
         urlPatterns = {"/*"},

@@ -3,27 +3,14 @@ package com.eustrosoft.core.handlers.login;
 import com.eustrosoft.core.Constants;
 import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UsersContext;
-import com.eustrosoft.core.exception.CredentialException;
 import com.eustrosoft.core.handlers.Handler;
-import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.datasource.exception.CMSException;
-import com.eustrosoft.datasource.sources.CMSDataSource;
-import com.eustrosoft.datasource.sources.model.CMSObject;
-import com.eustrosoft.datasource.sources.model.CMSType;
-import com.eustrosoft.filedatasource.FileCMSDataSource;
-import lombok.SneakyThrows;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.List;
 
 import static com.eustrosoft.core.Constants.*;
 

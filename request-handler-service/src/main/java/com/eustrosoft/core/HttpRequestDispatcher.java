@@ -4,7 +4,6 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import com.eustrosoft.core.handlers.cms.CMSResponseBlock;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
@@ -29,7 +28,6 @@ import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequestWrapper;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -38,7 +36,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
@@ -65,18 +62,6 @@ public class HttpRequestDispatcher extends HttpServlet {
         PrintWriter writer = response.getWriter();
         writer.print(resp.getJson());
         response.setStatus(200);
-        writer.flush();
-        writer.close();
-    }
-
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
-        response.setContentType("text/html");
-        writer.println(
-                "<form action=\"dispatch\" method=\"post\">\n" +
-                        "<input type=\"submit\" value=\"Logout\" >\n" +
-                        "</form>");
         writer.flush();
         writer.close();
     }
