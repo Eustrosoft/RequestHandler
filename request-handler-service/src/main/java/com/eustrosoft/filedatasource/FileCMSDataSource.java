@@ -195,7 +195,7 @@ public class FileCMSDataSource implements CMSDataSource {
             throw new CMSException(MSG_FILE_NOT_EXIST);
         }
         File directionDirectory = new File(getRootPath(), direction);
-        if (isFileExist(directionDirectory)) {
+        if (!isFileExist(directionDirectory)) {
             directionDirectory = new File(directionDirectory, sourceFile.getName());
             if (sourceFile.isFile()) {
                 org.apache.commons.io.FileUtils.copyFile(sourceFile, directionDirectory);
