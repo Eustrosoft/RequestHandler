@@ -16,12 +16,21 @@ public class CMSRequestBlock extends BasicRequest {
     private String fileName;
     private String from;
     private String to;
+    private String ticket;
 
     public CMSRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
         super(request, response);
         parseQJson(qJson);
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
     }
 
     public String getPath() {
@@ -94,5 +103,6 @@ public class CMSRequestBlock extends BasicRequest {
         setFrom(qJson.getItemString("from"));
         setTo(qJson.getItemString("to"));
         setPath(qJson.getItemString("path"));
+        setTicket(qJson.getItemString("ticket"));
     }
 }

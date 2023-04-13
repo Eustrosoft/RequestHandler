@@ -27,6 +27,8 @@ public interface CMSDataSource {
 
     String createDirectory(String path) throws CMSException;
 
+    String getFullPath(String source) throws IOException, CMSException;
+
     boolean update(String path, CMSObjectUpdateParameters data) throws CMSException;
 
     boolean copy(String source, String direction) throws IOException, CMSException;

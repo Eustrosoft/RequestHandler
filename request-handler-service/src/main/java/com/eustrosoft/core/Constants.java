@@ -25,6 +25,8 @@ public final class Constants {
     public static final String REQUEST_MOVE = "move";
     public static final String REQUEST_COPY = "copy";
     public static final String REQUEST_DELETE = "delete";
+    public static final String REQUEST_TICKET = "ticket";
+    public static final String REQUEST_DOWNLOAD = "download";
     public static final String REQUEST_RENAME = "rename";
     public static final String REQUEST_LOGIN = "login";
     public static final String REQUEST_LOGOUT = "logout";

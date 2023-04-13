@@ -445,3 +445,46 @@ Response:
 ],
 "t": 0
 }
+
+// Get file/folder ticket
+Request:
+{
+"r": [
+{
+"s": "cms",
+"r": "ticket",
+"path" : "/some"
+}
+],
+"t": 0
+}
+
+Response:
+{
+"r": [
+{
+"s": "cms",
+"m": "12345432542dkfmsdkfms",
+"r": "ticket",
+"l" : "en-US",
+"e" : 0
+}
+],
+"t": 0
+}
+
+// Download by ticket
+Request:
+{
+"r": [
+{
+"s": "cms",
+"r": "download",
+"ticket" : "asdad1231asda"
+}
+],
+"t": 0
+}
+
+Response:
+dinary data

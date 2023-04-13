@@ -9,6 +9,7 @@ import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
+import lombok.val;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -231,6 +232,12 @@ public class FileCMSDataSource implements CMSDataSource {
     }
 
     @Override
+    public String getFullPath(String source) throws IOException, CMSException {
+        checkPathInjection(source);
+        return new File(getRootPath(), source).getAbsolutePath(); // Admin tool
+    }
+
+    @Override
     public boolean delete(String path) throws IOException, CMSException {
         checkPathInjection(path);
         if (isNullOrEmpty(path)) {
@@ -240,8 +247,9 @@ public class FileCMSDataSource implements CMSDataSource {
         if (entry.exists()) {
             if (entry.isDirectory()) {
                 org.apache.commons.io.FileUtils.deleteDirectory(entry);
+            } else {
+                org.apache.commons.io.FileUtils.delete(entry);
             }
-            org.apache.commons.io.FileUtils.delete(entry);
             return true;
         }
         return false;

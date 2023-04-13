@@ -1,17 +1,24 @@
 package com.eustrosoft.core.handlers.cms;
 
+import com.eustrosoft.core.context.UserStorage;
+import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.tools.FileDownloadService;
+import com.eustrosoft.core.tools.ZipService;
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.filedatasource.FileCMSDataSource;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.nio.file.Path;
 import java.util.List;
 
 import static com.eustrosoft.core.Constants.*;
@@ -19,6 +26,8 @@ import static com.eustrosoft.core.Constants.*;
 public final class CMSHandler implements Handler {
     private CMSDataSource cmsDataSource;
     private String requestType;
+    private UserStorage userStorage;
+    private UsersContext usersContext;
 
     public CMSHandler(String requestType) throws Exception {
         this.requestType = requestType;
@@ -59,6 +68,43 @@ public final class CMSHandler implements Handler {
             case REQUEST_DELETE:
                 delete(cmsRequestBlock.getPath());
                 break;
+            case REQUEST_TICKET:
+                String session = requestBlock.getHttpRequest().getSession(false).getId();
+                this.usersContext = UsersContext.getInstance();
+                this.userStorage = UserStorage.getInstanceForUser(usersContext.getSQLUser(session));
+                FileTicket downloadPathDetails = getDownloadPathDetails(
+                        ((CMSRequestBlock) requestBlock).getPath(),
+                        this.userStorage.getExistedPathOrCreate()
+                );
+                responseBlock.setErrMsg(downloadPathDetails.getTicket());
+                break;
+            case REQUEST_DOWNLOAD:
+                FileDownloadService fds = FileDownloadService.getInstance();
+                DownloadFileDetails fileInfo
+                        = fds.getFileInfoAndEndConversation(((CMSRequestBlock) requestBlock).getTicket());
+                HttpServletResponse httpResponse = requestBlock.getHttpResponse();
+                httpResponse.setContentType("application/octet-stream");
+                httpResponse.setHeader(
+                        "Content-Disposition",
+                        String.format(
+                                "attachment; filename=%s",
+                                fileInfo.getFileName()
+                        )
+                );
+                OutputStream os = httpResponse.getOutputStream();
+                try (InputStream inputStream = fileInfo.getInputStream()) {
+                    byte[] buf = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buf)) != -1) {
+                        os.write(buf, 0, bytesRead);
+                    }
+                }
+                finally {
+                    os.flush();
+                    os.close();
+                    // TODO: make delete action
+                }
+                break;
             default:
                 responseBlock.setE(404);
                 responseBlock.setErrMsg("Not yet implemented.");
@@ -67,44 +113,41 @@ public final class CMSHandler implements Handler {
         return responseBlock;
     }
 
-//    @SneakyThrows
-//    public FileTicket getDownloadPathDetails(String filePath) {
-//        if (filePath == null || filePath.isEmpty()) {
-//            checkPathInjection(filePath);
-//        }
-//        File file = new File(rootPath, filePath);
-//        if (!file.exists()) {
-//            throw new CMSException("File is not exist.");
-//        }
-//        InputStream inputStream;
-//        String fileName;
-//        if (file.isDirectory()) {
-//            File temporaryFolder = temporaryStorageService.getTemporaryFolder();
-//            folderDAO.copyDirectory(
-//                    filePath,
-//                    temporaryFolder.getAbsolutePath().substring(rootPath.length())
-//            );
-//            String zipFileName = String.format("archive_%d.zip", System.currentTimeMillis());
-//            Path path = zipService.createZipOfDirectory(
-//                    zipFileName,
-//                    temporaryFolder.getAbsolutePath(),
-//                    temporaryFolder.getAbsolutePath()
-//            );
-//            fileName = zipFileName;
-//            inputStream = new FileInputStream(path.toFile());
-//        } else if (file.isFile()) {
-//            inputStream = new FileInputStream(file);
-//            fileName = file.getName();
-//        } else {
-//            throw new CMSException("File type is not recognized");
-//        }
-//        return fileDownloadService.beginConversation(
-//                new DownloadFileDetails(
-//                        inputStream,
-//                        fileName
-//                )
-//        );
-//    }
+    @SneakyThrows
+    public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) {
+        if (pathToDownload == null || pathToDownload.isEmpty()) {
+            checkPathInjection(pathToDownload);
+        }
+        File file = new File(this.cmsDataSource.getFullPath(pathToDownload));
+        if (!file.exists()) {
+            throw new CMSException("File is not exist.");
+        }
+        InputStream inputStream;
+        String fileName;
+        if (file.isDirectory()) {
+            File temporaryFolder = new File(userDir);
+            FileUtils.copyDirectory(file, new File(temporaryFolder.getAbsolutePath(), file.getName()));
+            String zipFileName = String.format("archive_%d.zip", System.currentTimeMillis());
+            Path path = ZipService.createZipOfDirectory(
+                    zipFileName,
+                    temporaryFolder.getAbsolutePath(),
+                    temporaryFolder.getAbsolutePath()
+            );
+            fileName = zipFileName;
+            inputStream = new FileInputStream(path.toFile());
+        } else if (file.isFile()) {
+            inputStream = new FileInputStream(file);
+            fileName = file.getName();
+        } else {
+            throw new CMSException("File type is not recognized");
+        }
+        return FileDownloadService.getInstance().beginConversation(
+                new DownloadFileDetails(
+                        inputStream,
+                        fileName
+                )
+        );
+    }
 
     private void checkPathInjection(String... params) throws CMSException {
         for (String param : params) {
