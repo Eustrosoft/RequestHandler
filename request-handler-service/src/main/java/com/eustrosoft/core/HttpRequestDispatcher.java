@@ -4,24 +4,25 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import com.eustrosoft.core.handlers.login.LoginHandler;
-import com.eustrosoft.core.handlers.login.LoginRequestBlock;
-import com.eustrosoft.core.handlers.ping.PingHandler;
-import com.eustrosoft.core.handlers.ping.PingRequestBlock;
-import com.eustrosoft.core.handlers.requests.QTisRequestObject;
-import com.eustrosoft.core.handlers.sql.SQLHandler;
-import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
 import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.ChunkFileHandler;
 import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.FileHandler;
 import com.eustrosoft.core.handlers.file.FileRequestBlock;
+import com.eustrosoft.core.handlers.login.LoginHandler;
+import com.eustrosoft.core.handlers.login.LoginRequestBlock;
+import com.eustrosoft.core.handlers.ping.PingHandler;
+import com.eustrosoft.core.handlers.ping.PingRequestBlock;
+import com.eustrosoft.core.handlers.requests.QTisRequestObject;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.requests.RequestObject;
 import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.handlers.sql.SQLHandler;
+import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
+import com.eustrosoft.core.tools.Json;
 import com.eustrosoft.core.tools.QJson;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -30,20 +31,38 @@ import lombok.SneakyThrows;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.REQUEST;
+import static com.eustrosoft.core.Constants.REQUESTS;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_SQL;
+import static com.eustrosoft.core.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.Constants.SUBSYSTEM;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
+import static com.eustrosoft.core.Constants.TIMEOUT;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
 @WebServlet(
         name = "EustrosoftRequestDispatcher",
         description = "Dispatches request depending on it's body dispatch value",
-        urlPatterns = {"/api/dispatch"}
+        urlPatterns = {"/api/dispatch", "/api/download"}
 )
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
@@ -64,6 +83,50 @@ public class HttpRequestDispatcher extends HttpServlet {
         response.setStatus(200);
         writer.flush();
         writer.close();
+    }
+
+    private static void downloadFile(HttpServletRequest req, HttpServletResponse resp, String ticket)
+            throws IOException {
+        Json.JsonBuilder builder = new Json().builder();
+        builder.addKeyValue("s", SUBSYSTEM_CMS);
+        if (ticket != null && !ticket.isEmpty()) {
+            Json json = builder.addKeyValue("ticket", ticket)
+                    .addKeyValue("r", REQUEST_DOWNLOAD)
+                    .build();
+            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
+            try {
+                new CMSHandler(REQUEST_DOWNLOAD)
+                        .processRequest(cmsRequestBlock);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        checkLogin(req, resp, SUBSYSTEM_CMS);
+        String path = req.getParameter("path");
+        String ticket = req.getParameter("ticket");
+        if (ticket != null && !ticket.isEmpty()) {
+            downloadFile(req, resp, ticket);
+        }
+        if (path != null || !path.isEmpty()) {
+            Json json = new Json().builder()
+                    .addKeyValue("path", path)
+                    .addKeyValue("r", REQUEST_TICKET)
+                    .build();
+            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
+            try {
+                ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
+                        .processRequest(cmsRequestBlock);
+                String newTicket = responseBlock.getM();
+                downloadFile(req, resp, newTicket);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @SneakyThrows

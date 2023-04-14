@@ -16,12 +16,21 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.REQUEST_COPY;
+import static com.eustrosoft.core.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_MOVE;
+import static com.eustrosoft.core.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.Constants.REQUEST_VIEW;
 
 public final class CMSHandler implements Handler {
     private CMSDataSource cmsDataSource;
@@ -115,9 +124,7 @@ public final class CMSHandler implements Handler {
 
     @SneakyThrows
     public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) {
-        if (pathToDownload == null || pathToDownload.isEmpty()) {
-            checkPathInjection(pathToDownload);
-        }
+        checkPathInjection(pathToDownload);
         File file = new File(this.cmsDataSource.getFullPath(pathToDownload));
         if (!file.exists()) {
             throw new CMSException("File is not exist.");
