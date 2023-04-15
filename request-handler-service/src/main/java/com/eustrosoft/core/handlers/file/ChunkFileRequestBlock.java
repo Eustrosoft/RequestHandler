@@ -21,7 +21,7 @@ public final class ChunkFileRequestBlock extends FileRequestBlock {
     @Override
     protected void parseQJson(QJson qJson) throws NullPointerException {
         super.parseQJson(qJson);
-        QJson fileData = getParameters().getItemQJson("data");
+        QJson fileData = getParameters();
         setChunkNumber(fileData.getItemLong("chunk"));
         setChunksCount(fileData.getItemLong("all_chunks"));
     }

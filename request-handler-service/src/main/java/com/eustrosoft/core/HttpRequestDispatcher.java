@@ -249,8 +249,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                     if (requestType.equals(REQUEST_FILE_UPLOAD)) {
                         requestBlock = new FileRequestBlock(request, response, qJson);
                     }
-                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD) ||
-                            requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
+                    if (requestType.equals(REQUEST_CHUNKS_FILE_UPLOAD)) {
                         requestBlock = new ChunkFileRequestBlock(request, response, qJson);
                     }
                     if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {

@@ -1,8 +1,6 @@
 package com.eustrosoft.core.handlers.file;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
-import com.eustrosoft.core.handlers.requests.RequestBlock;
-import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +78,9 @@ public class FileRequestBlock extends BasicRequest {
         }
         setParameters(qJson.getItemQJson(PARAMETERS));
         QJson fileData = getParameters();
-        setFileBytes(decodeString(fileData.getItemString("file")));
+        try {
+            setFileBytes(decodeString(fileData.getItemString("file")));
+        } catch (Exception ex) {}
         setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
     }

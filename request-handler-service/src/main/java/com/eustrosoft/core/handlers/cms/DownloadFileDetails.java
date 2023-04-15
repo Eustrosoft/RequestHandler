@@ -12,4 +12,5 @@ import java.io.InputStream;
 public class DownloadFileDetails {
     private InputStream inputStream;
     private String fileName;
+    private Long fileLength;
 }

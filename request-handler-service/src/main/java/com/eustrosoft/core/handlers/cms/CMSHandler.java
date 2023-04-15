@@ -100,6 +100,7 @@ public final class CMSHandler implements Handler {
                                 fileInfo.getFileName()
                         )
                 );
+                httpResponse.setContentLengthLong(fileInfo.getFileLength());
                 OutputStream os = httpResponse.getOutputStream();
                 try (InputStream inputStream = fileInfo.getInputStream()) {
                     byte[] buf = new byte[1024];
@@ -151,7 +152,8 @@ public final class CMSHandler implements Handler {
         return FileDownloadService.getInstance().beginConversation(
                 new DownloadFileDetails(
                         inputStream,
-                        fileName
+                        fileName,
+                        file.length()
                 )
         );
     }
