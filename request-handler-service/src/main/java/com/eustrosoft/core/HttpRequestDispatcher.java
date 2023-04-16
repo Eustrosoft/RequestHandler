@@ -85,7 +85,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         writer.close();
     }
 
-    private static void downloadFile(HttpServletRequest req, HttpServletResponse resp, String ticket)
+    private void downloadFile(HttpServletRequest req, HttpServletResponse resp, String ticket)
             throws IOException {
         Json.JsonBuilder builder = new Json().builder();
         builder.addKeyValue("s", SUBSYSTEM_CMS);
@@ -98,7 +98,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                 new CMSHandler(REQUEST_DOWNLOAD)
                         .processRequest(cmsRequestBlock);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                printError(resp, getExceptionResponse("Error while downloading file occurred.", SUBSYSTEM_CMS, REQUEST_DOWNLOAD));
             }
         }
     }
@@ -106,7 +106,12 @@ public class HttpRequestDispatcher extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        checkLogin(req, resp, SUBSYSTEM_CMS);
+        try {
+            checkLogin(req, resp, SUBSYSTEM_CMS);
+        } catch (Exception ex) {
+            System.err.println("Unauthorized access.");
+            return;
+        }
         String path = req.getParameter("path");
         String ticket = req.getParameter("ticket");
         if (ticket != null && !ticket.isEmpty()) {
@@ -124,7 +129,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                 String newTicket = responseBlock.getM();
                 downloadFile(req, resp, newTicket);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                printError(resp, getExceptionResponse("File does not exist.", SUBSYSTEM_CMS, REQUEST_TICKET));
             }
         }
     }
@@ -232,7 +237,12 @@ public class HttpRequestDispatcher extends HttpServlet {
             } catch (Exception ex) {
                 System.err.println("Can not get Request type. " + ex.getMessage());
             }
-            checkLogin(request, response, subSystem); // main filter for logging user
+            try {
+                checkLogin(request, response, subSystem); // main filter for logging user
+            } catch (Exception ex) {
+                System.err.println("Unauthorized access.");
+                return null;
+            }
             RequestBlock requestBlock = null;
             switch (subSystem) {
                 case SUBSYSTEM_LOGIN:
@@ -304,6 +314,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             ));
             writer.flush();
             writer.close();
+            throw new Exception("Unauthorized");
         }
     }
 
@@ -316,6 +327,14 @@ public class HttpRequestDispatcher extends HttpServlet {
         return SUBSYSTEM_LOGIN.equalsIgnoreCase(subsystem);
     }
 
+    private void printError(HttpServletResponse resp, JsonObject exceptionBlock) throws IOException {
+        resp.setContentType("application/json");
+        PrintWriter writer = resp.getWriter();
+        writer.println(new Gson().toJson(exceptionBlock));
+        writer.flush();
+        writer.close();
+    }
+
     private JsonObject getUnauthorizedResponse() {
         JsonObject object = new JsonObject();
         object.addProperty("l", en_US);
@@ -324,6 +343,18 @@ public class HttpRequestDispatcher extends HttpServlet {
         response.addProperty("e", 401);
         response.addProperty("s", "login");
         response.addProperty("r", "login");
+        object.add("r", response);
+        return object;
+    }
+
+    private JsonObject getExceptionResponse(String message, String subsystem, String request) {
+        JsonObject object = new JsonObject();
+        object.addProperty("l", en_US);
+        JsonObject response = new JsonObject();
+        response.addProperty("m", message);
+        response.addProperty("e", 500);
+        response.addProperty("s", subsystem);
+        response.addProperty("r", request);
         object.add("r", response);
         return object;
     }

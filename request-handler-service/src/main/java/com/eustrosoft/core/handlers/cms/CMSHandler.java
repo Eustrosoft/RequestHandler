@@ -31,6 +31,7 @@ import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
 import static com.eustrosoft.core.Constants.REQUEST_MOVE;
 import static com.eustrosoft.core.Constants.REQUEST_TICKET;
 import static com.eustrosoft.core.Constants.REQUEST_VIEW;
+import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
 public final class CMSHandler implements Handler {
     private CMSDataSource cmsDataSource;
@@ -92,6 +93,7 @@ public final class CMSHandler implements Handler {
                 DownloadFileDetails fileInfo
                         = fds.getFileInfoAndEndConversation(((CMSRequestBlock) requestBlock).getTicket());
                 HttpServletResponse httpResponse = requestBlock.getHttpResponse();
+                httpResponse.reset();
                 httpResponse.setContentType("application/octet-stream");
                 httpResponse.setHeader(
                         "Content-Disposition",
@@ -101,6 +103,8 @@ public final class CMSHandler implements Handler {
                         )
                 );
                 httpResponse.setContentLengthLong(fileInfo.getFileLength());
+                httpResponse.setBufferSize(DEFAULT_BUFFER_SIZE);
+                httpResponse.setHeader("Accept-Ranges", "bytes");
                 OutputStream os = httpResponse.getOutputStream();
                 try (InputStream inputStream = fileInfo.getInputStream()) {
                     byte[] buf = new byte[1024];
