@@ -11,10 +11,6 @@ public final class Json {
     private Map<String, Object> jsonMap = new HashMap<>();
     private JsonBuilder jsonBuilder;
 
-    public Json() {
-
-    }
-
     public JsonBuilder builder() {
         this.jsonBuilder = new JsonBuilder();
         return this.jsonBuilder;
