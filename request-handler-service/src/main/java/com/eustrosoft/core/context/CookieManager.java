@@ -58,7 +58,10 @@ public final class CookieManager {
     }
 
     private synchronized void setupCookies() {
-        this.cookies = Arrays.stream(this.request.getCookies())
-                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+        Cookie[] cookies = this.request.getCookies();
+        if (cookies != null) {
+            this.cookies = Arrays.stream(cookies)
+                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+        }
     }
 }
