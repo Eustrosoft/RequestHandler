@@ -86,7 +86,7 @@ public final class LoginHandler implements Handler {
         String password = requestBlock.getPassword();
         QDBPool dbPool = DBPoolContext.getInstance(
                 "DBPool1",
-                "jdbc:postgresql://fudo.eustrosoft.org:5432/tisexmpldb",
+                "jdbc:postgresql://test:55432/test",
                 "org.postgresql.Driver"
         );
         QDBPSession dbps = new QDBPSession("DBPool1", null);

@@ -312,7 +312,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         String cookieValue = qTisCookie.getCookieValue();
         QDBPool dbPool = DBPoolContext.getInstance(
                 "DBPool1",
-                "jdbc:postgresql://fudo.eustrosoft.org:5432/tisexmpldb",
+                "jdbc:postgresql://test:5432/test",
                 "org.postgresql.Driver"
         );
         QDBPSession session = dbPool.logon(cookieValue);
