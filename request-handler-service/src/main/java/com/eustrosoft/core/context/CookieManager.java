@@ -65,11 +65,8 @@ public final class CookieManager {
             for (Cookie cookie : cookies) {
                 if (cookie.getName() == null)
                     continue; // TODO: ??
-                List<String> keyCookies = this.cookies.get(cookie.getName());
-                if (keyCookies == null) {
-                    keyCookies = new ArrayList<>();
-                    this.cookies.put(cookie.getName(), keyCookies);
-                }
+                List<String> keyCookies =
+                        this.cookies.computeIfAbsent(cookie.getName(), k -> new ArrayList<>());
                 keyCookies.add(cookie.getValue());
             }
         }
