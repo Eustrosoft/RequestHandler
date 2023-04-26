@@ -1,5 +1,6 @@
 package com.eustrosoft.core;
 
+import com.eustrosoft.core.context.DBPoolContext;
 import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
@@ -27,6 +28,9 @@ import com.eustrosoft.core.tools.QJson;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -304,7 +308,16 @@ public class HttpRequestDispatcher extends HttpServlet {
     private void checkLogin(HttpServletRequest request,
                             HttpServletResponse response,
                             String subsystem) {
-        if (hasSession(request) || isLoginSubsystem(subsystem)) {
+        QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
+        String cookieValue = qTisCookie.getCookieValue();
+        QDBPool dbPool = DBPoolContext.getInstance(
+                "DBPool1",
+                "jdbc:postgresql://fudo.eustrosoft.org:5432/tisexmpldb",
+                "org.postgresql.Driver"
+        );
+        QDBPSession session = dbPool.logon(cookieValue);
+
+        if (session != null || isLoginSubsystem(subsystem)) {
             return;
         } else {
             response.setContentType("application/json");

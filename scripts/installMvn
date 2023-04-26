@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile={path} -DgroupId=org.eustrosoft -DartifactId={name} -Dversion={version} -Dpackaging=jar -DgeneratePom=true
