@@ -1,7 +1,6 @@
 package com.eustrosoft.core.handlers.login;
 
 import com.eustrosoft.core.Constants;
-import com.eustrosoft.core.context.CookieManager;
 import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
@@ -12,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Random;
 
 import static com.eustrosoft.core.Constants.REQUEST_LOGIN;
 import static com.eustrosoft.core.Constants.REQUEST_LOGOUT;
@@ -67,9 +65,6 @@ public final class LoginHandler implements Handler {
                 newSession.getId(),
                 new User(login, password, request.getRequestedSessionId())
         );
-        // test create cookie
-        CookieManager manager = new CookieManager(request, requestBlock.getHttpResponse());
-        manager.setCookie(String.valueOf(new Random().nextInt()), false, true);
     }
 
     public void doLogout(LoginRequestBlock requestBlock) throws ServletException {
@@ -81,8 +76,5 @@ public final class LoginHandler implements Handler {
             session.invalidate();
         }
         request.logout();
-        // test delete cookie
-        CookieManager manager = new CookieManager(request, requestBlock.getHttpResponse());
-        manager.deleteCookie();
     }
 }
