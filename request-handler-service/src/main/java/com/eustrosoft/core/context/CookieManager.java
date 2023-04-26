@@ -3,14 +3,15 @@ package com.eustrosoft.core.context;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class CookieManager {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
-    private Map<String, String> cookies;
+    private Map<String, List<String>> cookies;
     private String cookieName = "EustrosoftCookie";
     private int expirationTime = 24 * 60 * 60;
     private String path = "/";
@@ -18,6 +19,7 @@ public final class CookieManager {
     public CookieManager(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
+        this.cookies = new HashMap<>(4);
         setupCookies();
     }
 
@@ -35,7 +37,7 @@ public final class CookieManager {
         this.response.addCookie(newCookie);
     }
 
-    public synchronized String getCookieValue() {
+    public synchronized List<String> getCookieValues() {
         return this.cookies.get(this.cookieName);
     }
 
@@ -60,8 +62,16 @@ public final class CookieManager {
     private synchronized void setupCookies() {
         Cookie[] cookies = this.request.getCookies();
         if (cookies != null) {
-            this.cookies = Arrays.stream(cookies)
-                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+            for (Cookie cookie : cookies) {
+                if (cookie.getName() == null)
+                    continue; // TODO: ??
+                List<String> keyCookies = this.cookies.get(cookie.getName());
+                if (keyCookies == null) {
+                    keyCookies = new ArrayList<>();
+                    this.cookies.put(cookie.getName(), keyCookies);
+                }
+                keyCookies.add(cookie.getValue());
+            }
         }
     }
 }
