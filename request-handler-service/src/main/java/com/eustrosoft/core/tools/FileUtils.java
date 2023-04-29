@@ -1,5 +1,7 @@
 package com.eustrosoft.core.tools;
 
+import com.eustrosoft.datasource.exception.CMSException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,4 +35,16 @@ public final class FileUtils {
         fis.close();
         return arr;
     }
+
+    public static void checkPathInjection(String... params) throws CMSException {
+        for (String param : params) {
+            if (param == null || param.isEmpty()) {
+                throw new CMSException("Param was null or empty.");
+            }
+            if (param.contains("..")) {
+                throw new CMSException("Path Injection Detected.");
+            }
+        }
+    }
+
 }

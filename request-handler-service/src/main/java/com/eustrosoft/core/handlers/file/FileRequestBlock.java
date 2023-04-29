@@ -1,16 +1,20 @@
 package com.eustrosoft.core.handlers.file;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
+import com.eustrosoft.core.tools.Json;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.PARAMETERS;
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
 
 public class FileRequestBlock extends BasicRequest {
     private byte[] fileBytes;
+    private String path;
     private String fileName;
     private String fileString;
     private QJson parameters;
@@ -58,6 +62,14 @@ public class FileRequestBlock extends BasicRequest {
         this.fileString = fileString;
     }
 
+    public String getPath() {
+        return this.path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     @Override
     public String getS() {
         return SUBSYSTEM_FILE;
@@ -81,6 +93,7 @@ public class FileRequestBlock extends BasicRequest {
         try {
             setFileBytes(decodeString(fileData.getItemString("file")));
         } catch (Exception ex) {}
+        setPath(Json.tryGetQJsonParam(fileData, "path"));
         setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
     }

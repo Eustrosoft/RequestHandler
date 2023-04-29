@@ -6,6 +6,7 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.datasource.exception.CMSException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,31 +18,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
+
 public class BytesChunkFileHandler implements Handler {
     public static final int BUF_SIZE = 2 * 1024;
     private UserStorage storage;
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock)
-            throws IOException, ServletException {
+            throws IOException, ServletException, CMSException {
         HttpServletRequest request = requestBlock.getHttpRequest();
         BytesChunkFileRequestBlock requestBl = (BytesChunkFileRequestBlock) requestBlock;
         User user = UsersContext.getInstance()
                 .getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
         this.storage = UserStorage.getInstanceForUser(user);
-        String uploadPath = this.storage.getExistedPathOrCreate();
+        String storagePath = this.storage.getStoragePath();
+        if (storagePath == null || storagePath.isEmpty()) {
+            throw new IOException("Storage path is not defined for this user.");
+        }
         String answer = "";
+        String uploadPath = requestBl.getPath();
+        checkPathInjection(uploadPath);
 
-        if (uploadPath != null && !uploadPath.isEmpty()) {
-            Part part = request.getPart("file");
-            String fileName = requestBl.getFileName();
-            InputStream inputStream = part.getInputStream();
-            saveUploadFile(inputStream, new File(uploadPath, fileName));
-            answer = "Part was uploaded.";
-            if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
-                this.storage.clearChunksOfCurrentPath();
-                this.storage.clearPathOfCurrentStoragePath();
-            }
+        Part part = request.getPart("file");
+        String fileName = requestBl.getFileName();
+        InputStream inputStream = part.getInputStream();
+        saveUploadFile(inputStream, new File(
+                        new File(storagePath, uploadPath),
+                        fileName
+                )
+        );
+        answer = String.format(
+                "Part was uploaded in %s path with file name %s.",
+                uploadPath,
+                fileName
+        );
+        if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
+            this.storage.clearChunksOfCurrentPath();
+            this.storage.clearPathOfCurrentStoragePath();
         }
         return new FileResponseBlock(answer);
     }

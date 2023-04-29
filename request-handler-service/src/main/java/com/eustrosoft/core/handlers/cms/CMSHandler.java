@@ -31,6 +31,7 @@ import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
 import static com.eustrosoft.core.Constants.REQUEST_MOVE;
 import static com.eustrosoft.core.Constants.REQUEST_TICKET;
 import static com.eustrosoft.core.Constants.REQUEST_VIEW;
+import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
 public final class CMSHandler implements Handler {
@@ -160,17 +161,6 @@ public final class CMSHandler implements Handler {
                         file.length()
                 )
         );
-    }
-
-    private void checkPathInjection(String... params) throws CMSException {
-        for (String param : params) {
-            if (param == null || param.isEmpty()) {
-                throw new CMSException("Param was null or empty.");
-            }
-            if (param.contains("..")) {
-                throw new CMSException("Path Injection Detected.");
-            }
-        }
     }
 
     public boolean move(String from, String to)

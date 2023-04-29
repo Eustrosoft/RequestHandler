@@ -24,6 +24,16 @@ public final class Json {
         this.jsonMap.put(key, val);
     }
 
+    public static String tryGetQJsonParam(QJson qJson, String key) {
+        String value = null;
+        try {
+            value = qJson.getItemString(key);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return value;
+    }
+
     public String toString() {
         Gson gson = new Gson();
         JsonObject object = new JsonObject();
