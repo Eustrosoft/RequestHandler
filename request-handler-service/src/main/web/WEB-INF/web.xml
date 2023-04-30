@@ -7,4 +7,8 @@
         <param-name>dbUrl</param-name>
         <param-value>fudo.eustrosoft.org:55432/tisexmpldb</param-value>
     </context-param>
+    <context-param>
+        <param-name>debug</param-name>
+        <param-value>true</param-value>
+    </context-param>
 </web-app>

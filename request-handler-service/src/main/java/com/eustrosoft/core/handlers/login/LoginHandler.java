@@ -7,6 +7,7 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.tools.WebParams;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 
+import static com.eustrosoft.core.Constants.LOGIN_POOL;
+import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
 import static com.eustrosoft.core.Constants.REQUEST_LOGIN;
 import static com.eustrosoft.core.Constants.REQUEST_LOGOUT;
 
@@ -85,11 +88,11 @@ public final class LoginHandler implements Handler {
         String login = requestBlock.getLogin();
         String password = requestBlock.getPassword();
         QDBPool dbPool = DBPoolContext.getInstance(
-                "DBPool1",
-                "jdbc:postgresql://test:55432/test",
-                "org.postgresql.Driver"
+                LOGIN_POOL,
+                DBPoolContext.getUrl(request),
+                POSTGRES_DRIVER
         );
-        QDBPSession dbps = new QDBPSession("DBPool1", null);
+        QDBPSession dbps = new QDBPSession(LOGIN_POOL, null);
         if (dbps != null) {
             dbps.logout();
         }
@@ -97,10 +100,14 @@ public final class LoginHandler implements Handler {
         if (dbps == null)
             dbps = dbPool.createSession();
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
+        Boolean debug = WebParams.getBoolean(request, WebParams.DEBUG);
+        if (debug == null) {
+            debug = false;
+        }
         qTisCookie.set(
                 dbps.getSessionSecretCookie(),
                 dbps.getSessionCookieMaxAge(),
-                true, false, "/"
+                true, debug, "/"
         );
         dbPool.addSession(dbps);
     }
@@ -109,8 +116,7 @@ public final class LoginHandler implements Handler {
             throws SQLException {
         HttpServletRequest request = requestBlock.getHttpRequest();
         HttpServletResponse response = requestBlock.getHttpResponse();
-        String poolName = "DBPool1";
-        QDBPSession dbps = new QDBPSession(poolName, null);
+        QDBPSession dbps = new QDBPSession(LOGIN_POOL, null);
         dbps.logout();
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
         qTisCookie.deleteCookie();

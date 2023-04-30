@@ -46,6 +46,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eustrosoft.core.Constants.ERR_SERVER;
+import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
+import static com.eustrosoft.core.Constants.LOGIN_POOL;
+import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
 import static com.eustrosoft.core.Constants.REQUEST;
 import static com.eustrosoft.core.Constants.REQUESTS;
 import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
@@ -311,15 +315,13 @@ public class HttpRequestDispatcher extends HttpServlet {
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
         String cookieValue = qTisCookie.getCookieValue();
         QDBPool dbPool = DBPoolContext.getInstance(
-                "DBPool1",
-                "jdbc:postgresql://test:5432/test",
-                "org.postgresql.Driver"
+                LOGIN_POOL,
+                DBPoolContext.getUrl(request),
+                POSTGRES_DRIVER
         );
         QDBPSession session = dbPool.logon(cookieValue);
 
-        if (session != null || isLoginSubsystem(subsystem)) {
-            return;
-        } else {
+        if (session == null || !isLoginSubsystem(subsystem)) {
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
             writer.println(new Gson().toJson(
@@ -353,7 +355,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         object.addProperty("l", en_US);
         JsonObject response = new JsonObject();
         response.addProperty("m", "Unauthorized");
-        response.addProperty("e", 401);
+        response.addProperty("e", ERR_UNAUTHORIZED);
         response.addProperty("s", "login");
         response.addProperty("r", "login");
         object.add("r", response);
@@ -365,7 +367,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         object.addProperty("l", en_US);
         JsonObject response = new JsonObject();
         response.addProperty("m", message);
-        response.addProperty("e", 500);
+        response.addProperty("e", ERR_SERVER);
         response.addProperty("s", subsystem);
         response.addProperty("r", request);
         object.add("r", response);

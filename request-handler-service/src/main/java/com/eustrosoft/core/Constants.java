@@ -35,11 +35,16 @@ public final class Constants {
 
     // ERR codes
     public static final Short ERR_UNAUTHORIZED = 401;
+    public static final Short ERR_SERVER = 500;
     public static final Short ERR_OK = 0;
 
     // Messages
     public static final String MSG_UNAUTHORIZED = "Unauthorized";
     public static final String MSG_OK = "Ok";
+
+    // Database Constants
+    public static final String LOGIN_POOL = "loginPool";
+    public static final String POSTGRES_DRIVER = "org.postgresql.Driver";
 
     private Constants() {
 

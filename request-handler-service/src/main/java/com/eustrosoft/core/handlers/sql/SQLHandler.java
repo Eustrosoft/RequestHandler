@@ -5,6 +5,7 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.tools.WebParams;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
@@ -21,7 +22,7 @@ public final class SQLHandler implements Handler {
         UsersContext usersContext = UsersContext.getInstance();
         User user = usersContext.getSQLUser(request.getSession(false).getId());
 
-        this.dbUrl = request.getServletContext().getInitParameter("dbUrl");
+        this.dbUrl = WebParams.getString(request, WebParams.DB_URL);
         this.dbWrapper = DBWrapper.getInstance(user.getUserName(), user.getPassword(), this.dbUrl);
         SQLRequestBlock sqlRequest = (SQLRequestBlock) requestBlock;
         String query = sqlRequest.getQuery();
