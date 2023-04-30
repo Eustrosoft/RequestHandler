@@ -14,6 +14,7 @@ import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.filedatasource.FileCMSDataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -80,7 +81,9 @@ public final class CMSHandler implements Handler {
                 delete(cmsRequestBlock.getPath());
                 break;
             case REQUEST_TICKET:
-                String session = requestBlock.getHttpRequest().getSession(false).getId();
+                String session =
+                        new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                                .getCookieValue();
                 this.usersContext = UsersContext.getInstance();
                 this.userStorage = UserStorage.getInstanceForUser(usersContext.getSQLUser(session));
                 FileTicket downloadPathDetails = getDownloadPathDetails(

@@ -7,6 +7,7 @@ import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.tools.FileUtils;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -23,7 +24,10 @@ public class ChunkFileHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock)
             throws IOException {
-        User user = UsersContext.getInstance().getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
+        User user = UsersContext.getInstance().getSQLUser(
+                new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                        .getCookieValue()
+        );
         this.storage = UserStorage.getInstanceForUser(user);
         String uploadPath = this.storage.getExistedPathOrCreate();
         String answer = "";

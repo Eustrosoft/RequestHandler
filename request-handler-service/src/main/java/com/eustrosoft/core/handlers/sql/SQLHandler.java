@@ -6,6 +6,7 @@ import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.tools.WebParams;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
@@ -20,7 +21,10 @@ public final class SQLHandler implements Handler {
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         HttpServletRequest request = requestBlock.getHttpRequest();
         UsersContext usersContext = UsersContext.getInstance();
-        User user = usersContext.getSQLUser(request.getSession(false).getId());
+        User user = usersContext.getSQLUser(
+                new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                        .getCookieValue()
+        );
 
         this.dbUrl = WebParams.getString(request, WebParams.DB_URL);
         this.dbWrapper = DBWrapper.getInstance(user.getUserName(), user.getPassword(), this.dbUrl);

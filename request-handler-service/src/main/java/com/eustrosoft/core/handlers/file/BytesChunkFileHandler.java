@@ -7,6 +7,7 @@ import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.datasource.exception.CMSException;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,10 @@ public class BytesChunkFileHandler implements Handler {
         HttpServletRequest request = requestBlock.getHttpRequest();
         BytesChunkFileRequestBlock requestBl = (BytesChunkFileRequestBlock) requestBlock;
         User user = UsersContext.getInstance()
-                .getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
+                .getSQLUser(
+                        new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                                .getCookieValue()
+                );
         this.storage = UserStorage.getInstanceForUser(user);
         String storagePath = this.storage.getStoragePath();
         if (storagePath == null || storagePath.isEmpty()) {

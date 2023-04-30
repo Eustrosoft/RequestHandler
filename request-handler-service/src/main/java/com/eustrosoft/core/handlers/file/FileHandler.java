@@ -6,6 +6,7 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -17,7 +18,10 @@ public class FileHandler implements Handler {
     public ResponseBlock processRequest(RequestBlock requestBlock)
             throws IOException {
         User user = UsersContext.getInstance()
-                .getSQLUser(requestBlock.getHttpRequest().getSession(false).getId());
+                .getSQLUser(
+                        new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                                .getCookieValue()
+                );
         if (user.getSessionPath() == null || user.getSessionPath().isEmpty()) {
             UserStorage storage = UserStorage.getInstanceForUser(user);
             user.setSessionPath(storage.createAndGetNewStoragePath());
