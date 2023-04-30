@@ -5,7 +5,11 @@
          version="4.0">
     <context-param>
         <param-name>dbUrl</param-name>
-        <param-value>fudo.eustrosoft.org:55432/tisexmpldb</param-value>
+        <param-value>-</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbPoolUrl</param-name>
+        <param-value>-</param-value>
     </context-param>
     <context-param>
         <param-name>debug</param-name>

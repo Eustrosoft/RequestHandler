@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public final class WebParams {
     public final static String DB_URL = "dbUrl";
+    public final static String DB_POOL_URL = "dbPoolUrl";
     public final static String DEBUG = "debug";
 
     public static Boolean getBoolean(HttpServletRequest request, String param) {

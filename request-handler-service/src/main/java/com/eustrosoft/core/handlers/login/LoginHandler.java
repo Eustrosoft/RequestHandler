@@ -97,8 +97,9 @@ public final class LoginHandler implements Handler {
             dbps.logout();
         }
         dbps = dbPool.logon(login, password);
-        if (dbps == null)
+        if (dbps == null) {
             dbps = dbPool.createSession();
+        }
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
         Boolean debug = WebParams.getBoolean(request, WebParams.DEBUG);
         if (debug == null) {

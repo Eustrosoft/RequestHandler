@@ -321,7 +321,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         );
         QDBPSession session = dbPool.logon(cookieValue);
 
-        if (session == null || !isLoginSubsystem(subsystem)) {
+        if (session == null && !isLoginSubsystem(subsystem)) {
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
             writer.println(new Gson().toJson(

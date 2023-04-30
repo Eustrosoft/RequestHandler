@@ -29,6 +29,6 @@ public final class DBPoolContext {
     }
 
     public static String getUrl(HttpServletRequest request) {
-        return WebParams.getString(request, WebParams.DB_URL);
+        return WebParams.getString(request, WebParams.DB_POOL_URL);
     }
 }
