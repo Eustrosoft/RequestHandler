@@ -64,11 +64,6 @@ public final class LoginHandler implements Handler {
         }
         HttpSession newSession = request.getSession(true);
         newSession.setMaxInactiveInterval(Constants.SESSION_TIMEOUT);
-        UsersContext usersContext = UsersContext.getInstance();
-        usersContext.setUserDetails(
-                newSession.getId(),
-                new User(login, password, request.getRequestedSessionId())
-        );
     }
 
     public void doLogout(LoginRequestBlock requestBlock) throws ServletException {
@@ -110,7 +105,12 @@ public final class LoginHandler implements Handler {
                 dbps.getSessionCookieMaxAge(),
                 true, debug, "/"
         );
-        dbPool.addSession(dbps);
+        UsersContext usersContext = UsersContext.getInstance();
+        usersContext.setUserDetails(
+                dbps.getSessionSecretCookie(),
+                new User(login, password, request.getRequestedSessionId())
+        );
+        //dbPool.addSession(dbps);
     }
 
     private void logout(LoginRequestBlock requestBlock)
