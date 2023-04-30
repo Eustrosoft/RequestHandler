@@ -37,8 +37,11 @@ public class BytesChunkFileHandler implements Handler {
                 );
         this.storage = UserStorage.getInstanceForUser(user);
         String storagePath = this.storage.getStoragePath();
-        if (storagePath == null || storagePath.isEmpty()) {
+        if (storagePath == null) {
             throw new IOException("Storage path is not defined for this user.");
+        }
+        if (storagePath.isEmpty()) {
+            storagePath = this.storage.createAndGetNewStoragePath();
         }
         String answer = "";
         String uploadPath = requestBl.getPath();
@@ -48,8 +51,8 @@ public class BytesChunkFileHandler implements Handler {
         String fileName = requestBl.getFileName();
         InputStream inputStream = part.getInputStream();
         saveUploadFile(inputStream, new File(
-                        new File(storagePath, uploadPath),
-                        fileName
+                new File(storagePath, uploadPath),
+                fileName
                 )
         );
         answer = String.format(
