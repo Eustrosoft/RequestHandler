@@ -111,10 +111,10 @@ public class FileCMSDataSource implements CMSDataSource {
     private List<CMSObject> fileToCMS(List<File> files) throws IOException {
         List<CMSObject> objects = new ArrayList<>();
         for (File file : files) {
-            CMSObject obj = null;
             if (!file.exists()) {
                 continue;
             }
+            CMSObject obj = null;
             BasicFileAttributes attributes =
                     Files.readAttributes(file.toPath(), BasicFileAttributes.class);
             if (file.isFile()) {

@@ -1,10 +1,8 @@
 package com.eustrosoft.datasource.sources;
 
-import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -17,24 +15,24 @@ import java.util.List;
  */
 public interface CMSDataSource {
 
-    List<CMSObject> getContent(String path) throws CMSException, IOException;
+    List<CMSObject> getContent(String path) throws Exception;
 
-    String createLink(String source, String target);
+    String createLink(String source, String target) throws Exception;
 
-    String createFile(String path, InputStream stream) throws CMSException, IOException;
+    String createFile(String path, InputStream stream) throws Exception;
 
-    String createFile(String path, String name) throws CMSException, IOException;
+    String createFile(String path, String name) throws Exception;
 
-    String createDirectory(String path) throws CMSException;
+    String createDirectory(String path) throws Exception;
 
-    String getFullPath(String source) throws IOException, CMSException;
+    String getFullPath(String source) throws Exception;
 
-    boolean update(String path, CMSObjectUpdateParameters data) throws CMSException;
+    boolean update(String path, CMSObjectUpdateParameters data) throws Exception;
 
-    boolean copy(String source, String direction) throws IOException, CMSException;
+    boolean copy(String source, String direction) throws Exception;
 
-    boolean move(String source, String direction) throws IOException, CMSException;
+    boolean move(String source, String direction) throws Exception;
 
     // TODO: add recursive variant
-    boolean delete(String path) throws IOException, CMSException;
+    boolean delete(String path) throws Exception;
 }
