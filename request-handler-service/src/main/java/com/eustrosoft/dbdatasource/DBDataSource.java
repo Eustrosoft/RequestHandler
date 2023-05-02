@@ -7,9 +7,6 @@ import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.util.List;
 
 public class DBDataSource implements CMSDataSource {
@@ -20,9 +17,6 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public String createLink(String source, String target) {
-        Connection conn = DriverManager.getConnection("", "", "");
-        PreparedStatement statement = conn.prepareStatement("");
-        statement.executeQuery();
         return null;
     }
 
