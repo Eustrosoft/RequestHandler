@@ -12,12 +12,7 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 
@@ -40,8 +35,8 @@ public class BytesChunkFileHandler implements Handler {
         if (storagePath == null) {
             throw new IOException("Storage path is not defined for this user.");
         }
-        if (storagePath.isEmpty()) {
-            storagePath = this.storage.createAndGetNewStoragePath();
+        if (storagePath.isEmpty()) { // TODO
+            storagePath = this.storage.getBaseUploadPath();
         }
         String answer = "";
         String uploadPath = requestBl.getPath();
