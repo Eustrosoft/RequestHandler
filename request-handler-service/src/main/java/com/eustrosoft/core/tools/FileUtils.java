@@ -1,6 +1,7 @@
 package com.eustrosoft.core.tools;
 
 import com.eustrosoft.datasource.exception.CMSException;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +11,9 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 
 public final class FileUtils {
+    public final static char LEFT_BRACKET = '(';
+    public final static char RIGHT_BRACKET = ')';
+
     public static void deleteDir(File file) {
         File[] contents = file.listFiles();
         if (contents != null) {
@@ -47,4 +51,52 @@ public final class FileUtils {
         }
     }
 
+    public static String getNextIterationFilePath(String dirPath, String fileName) {
+        File targetDir = new File(dirPath);
+        File file = new File(targetDir, fileName);
+        if (!file.exists()) {
+            return file.getAbsolutePath();
+        }
+        String name = FilenameUtils.removeExtension(fileName);
+        int left = name.lastIndexOf(LEFT_BRACKET);
+        int right = name.lastIndexOf(RIGHT_BRACKET);
+
+        if (left != -1 && right == (name.length() - 1)) {
+            try {
+                int number = Integer.parseInt(
+                        name.substring(left, right)
+                );
+                String finalName = getNumberFileName(fileName, left, ++number);
+                if (new File(targetDir, fileName).exists()) {
+                    getNextIterationFilePath(dirPath, finalName);
+                }
+                return new File(targetDir, finalName).getAbsolutePath();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return new File(
+                        new File(
+                                targetDir,
+                                fileName
+                        ),
+                        String.valueOf(System.currentTimeMillis())
+                ).getAbsolutePath();
+            }
+        } else {
+            return new File(
+                    targetDir,
+                    getNumberFileName(fileName, left, 1)
+            ).getAbsolutePath();
+        }
+    }
+
+
+    private static String getNumberFileName(String fileName, int leftBound, int number) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(fileName, 0, leftBound);
+        builder.append(number);
+        builder.append(RIGHT_BRACKET);
+        builder.append(".");
+        builder.append(FilenameUtils.getExtension(fileName));
+        return builder.toString();
+    }
 }

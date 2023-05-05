@@ -15,6 +15,7 @@ import javax.servlet.http.Part;
 import java.io.*;
 
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
+import static com.eustrosoft.core.tools.FileUtils.getNextIterationFilePath;
 
 public class BytesChunkFileHandler implements Handler {
     public static final int BUF_SIZE = 2 * 1024;
@@ -45,10 +46,15 @@ public class BytesChunkFileHandler implements Handler {
         Part part = request.getPart("file");
         String fileName = requestBl.getFileName();
         InputStream inputStream = part.getInputStream();
-        saveUploadFile(inputStream, new File(
-                new File(storagePath, uploadPath),
-                fileName
+        File dst = new File(
+                getNextIterationFilePath(
+                        new File(storagePath, uploadPath).getAbsolutePath(),
+                        fileName
                 )
+        );
+        saveUploadFile(
+                inputStream,
+                dst
         );
         answer = String.format(
                 "Part was uploaded in %s path with file name %s.",
