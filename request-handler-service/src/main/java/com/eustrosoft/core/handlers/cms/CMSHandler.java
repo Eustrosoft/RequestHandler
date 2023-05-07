@@ -23,6 +23,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -173,7 +177,7 @@ public final class CMSHandler implements Handler {
         }
     }
 
-    public boolean move(String from, String to)
+    private boolean move(String from, String to)
             throws Exception {
         if (from == null || from.isEmpty() ||
                 to == null || to.isEmpty()) {
@@ -185,7 +189,7 @@ public final class CMSHandler implements Handler {
         );
     }
 
-    public boolean rename(String source, String name) throws Exception {
+    private boolean rename(String source, String name) throws Exception {
         return moveFile(
                 source,
                 new File(getProcessedParentPath(source), name)
