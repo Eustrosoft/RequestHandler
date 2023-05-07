@@ -53,6 +53,24 @@ public final class FileUtils {
         }
     }
 
+    public static String hashCrc32(File file) throws IOException {
+        InputStream stream = new FileInputStream(file);
+        return hashCrc32(stream);
+    }
+
+    public static String hashCrc32(InputStream stream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int readCount = 0;
+        CRC32 crc32 = new CRC32();
+        while ((readCount = stream.read(buffer)) != -1) {
+            crc32.update(buffer, 0, readCount);
+        }
+        if (stream != null) {
+            stream.close();
+        }
+        return String.format("%x", crc32.getValue());
+    }
+
     public static String getNextIterationFilePath(String dirPath, String fileName) {
         File targetDir = new File(dirPath);
         File file = new File(targetDir, fileName);
@@ -99,19 +117,5 @@ public final class FileUtils {
         builder.append(".");
         builder.append(FilenameUtils.getExtension(fileName));
         return builder.toString();
-    }
-
-    public static String hashCrc32(File file) throws IOException {
-        InputStream stream = new FileInputStream(file);
-        byte[] buffer = new byte[1024];
-        int readCount = 0;
-        CRC32 crc32 = new CRC32();
-        while ((readCount = stream.read(buffer)) != -1) {
-            crc32.update(buffer, 0, readCount);
-        }
-        if (stream != null) {
-            stream.close();
-        }
-        return String.format("%x", crc32.getValue());
     }
 }
