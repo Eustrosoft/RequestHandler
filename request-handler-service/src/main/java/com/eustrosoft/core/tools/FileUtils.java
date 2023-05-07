@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
+import java.util.zip.CRC32;
 
 public final class FileUtils {
     public final static char LEFT_BRACKET = '(';
@@ -89,7 +91,6 @@ public final class FileUtils {
         }
     }
 
-
     private static String getNumberFileName(String fileName, int leftBound, int number) {
         StringBuilder builder = new StringBuilder();
         builder.append(fileName, 0, leftBound);
@@ -98,5 +99,19 @@ public final class FileUtils {
         builder.append(".");
         builder.append(FilenameUtils.getExtension(fileName));
         return builder.toString();
+    }
+
+    public static String hashCrc32(File file) throws IOException {
+        InputStream stream = new FileInputStream(file);
+        byte[] buffer = new byte[1024];
+        int readCount = 0;
+        CRC32 crc32 = new CRC32();
+        while ((readCount = stream.read(buffer)) != -1) {
+            crc32.update(buffer, 0, readCount);
+        }
+        if (stream != null) {
+            stream.close();
+        }
+        return String.format("%x", crc32.getValue());
     }
 }
