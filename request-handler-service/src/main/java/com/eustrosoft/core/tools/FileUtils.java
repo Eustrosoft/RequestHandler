@@ -104,14 +104,16 @@ public final class FileUtils {
         } else {
             return new File(
                     targetDir,
-                    getNumberFileName(fileName, left, 1)
+                    getNumberFileName(fileName, fileName.length() + 1, 1)
             ).getAbsolutePath();
         }
     }
 
     private static String getNumberFileName(String fileName, int leftBound, int number) {
         StringBuilder builder = new StringBuilder();
-        builder.append(fileName, 0, leftBound);
+        builder.append(FilenameUtils.removeExtension(fileName));
+        builder.append(" ");
+        builder.append(LEFT_BRACKET);
         builder.append(number);
         builder.append(RIGHT_BRACKET);
         builder.append(".");

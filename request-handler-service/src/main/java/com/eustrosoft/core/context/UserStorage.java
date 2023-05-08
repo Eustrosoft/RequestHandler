@@ -5,19 +5,24 @@ import com.eustrosoft.core.tools.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_UPLOAD_DIRECTORY;
 import static com.eustrosoft.core.tools.PropertiesConstants.SYSTEM_FILE_NAME;
 
 public class UserStorage implements StorageContext {
     private static final Properties systemProperties = new Properties();
+    private static final Map<User, UserStorage> storageMap = new HashMap<>();
     private String baseUploadPath = "";
     private String currentUserStoragePath = "";
 
-    private static final Map<User, UserStorage> storageMap = new HashMap<>();
     private final User user;
     private final List<String> usedPaths = new ArrayList<>();
+    private final Map<String, String> userPaths = new HashMap<>();
 
     private UserStorage(User user) throws IOException {
         this.user = user;
@@ -112,6 +117,10 @@ public class UserStorage implements StorageContext {
 
     private synchronized void setUsedPath(String path) {
         this.usedPaths.add(path);
+    }
+
+    public synchronized Map<String, String> getUserPaths() {
+        return this.userPaths;
     }
 
     private String getUserDirectory() {

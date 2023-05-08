@@ -12,7 +12,13 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static com.eustrosoft.core.tools.FileUtils.getNextIterationFilePath;
@@ -32,12 +38,12 @@ public class BytesChunkFileHandler implements Handler {
                                 .getCookieValue()
                 );
         this.storage = UserStorage.getInstanceForUser(user);
-        String storagePath = this.storage.getStoragePath();
+        String storagePath = this.storage.getBaseUploadPath();
         if (storagePath == null) {
             throw new IOException("Storage path is not defined for this user.");
         }
         if (storagePath.isEmpty()) { // TODO
-            storagePath = this.storage.getBaseUploadPath();
+            storagePath = this.storage.getStoragePath();
         }
         String answer = "";
         String uploadPath = requestBl.getPath();
@@ -46,15 +52,21 @@ public class BytesChunkFileHandler implements Handler {
         Part part = request.getPart("file");
         String fileName = requestBl.getFileName();
         InputStream inputStream = part.getInputStream();
-        File dst = new File(
-                getNextIterationFilePath(
-                        new File(storagePath, uploadPath).getAbsolutePath(),
-                        fileName
-                )
-        );
+        Map<String, String> userPaths = this.storage.getUserPaths();
+        String filePath = userPaths.get(fileName);
+        if (filePath == null || filePath.isEmpty()) {
+            filePath = getNextIterationFilePath(
+                    new File(storagePath, uploadPath).getAbsolutePath(),
+                    fileName
+            );
+            userPaths.put(fileName, filePath);
+        }
+        if (filePath.isEmpty()) {
+            throw new IOException("File path was not specified for this user.");
+        }
         saveUploadFile(
                 inputStream,
-                dst
+                new File(filePath)
         );
         answer = String.format(
                 "Part was uploaded in %s path with file name %s.",
@@ -64,6 +76,7 @@ public class BytesChunkFileHandler implements Handler {
         if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
             this.storage.clearChunksOfCurrentPath();
             this.storage.clearPathOfCurrentStoragePath();
+            userPaths.remove(fileName);
         }
         return new FileResponseBlock(answer);
     }

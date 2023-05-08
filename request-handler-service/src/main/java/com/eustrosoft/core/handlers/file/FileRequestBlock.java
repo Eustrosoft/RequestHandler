@@ -16,6 +16,7 @@ public class FileRequestBlock extends BasicRequest {
     private byte[] fileBytes;
     private String path;
     private String fileName;
+    private String fileHash;
     private String fileString;
     private QJson parameters;
 
@@ -62,6 +63,14 @@ public class FileRequestBlock extends BasicRequest {
         this.fileString = fileString;
     }
 
+    public String getFileHash() {
+        return this.fileHash;
+    }
+
+    public void setFileHash(String fileHash) {
+        this.fileHash = fileHash;
+    }
+
     public String getPath() {
         return this.path;
     }
@@ -96,6 +105,7 @@ public class FileRequestBlock extends BasicRequest {
         setPath(Json.tryGetQJsonParam(fileData, "path"));
         setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
+        setFileHash(fileData.getItemString("hash"));
     }
 
     protected byte[] decodeString(String str) {
