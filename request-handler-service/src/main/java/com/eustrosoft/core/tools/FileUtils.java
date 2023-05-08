@@ -82,30 +82,23 @@ public final class FileUtils {
         int right = name.lastIndexOf(RIGHT_BRACKET);
 
         if (left != -1 && right == (name.length() - 1)) {
-            try {
-                int number = Integer.parseInt(
-                        name.substring(left, right)
-                );
-                String finalName = getNumberFileName(fileName, left, ++number);
-                if (new File(targetDir, fileName).exists()) {
-                    getNextIterationFilePath(dirPath, finalName);
-                }
-                return new File(targetDir, finalName).getAbsolutePath();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return new File(
-                        new File(
-                                targetDir,
-                                fileName
-                        ),
-                        String.valueOf(System.currentTimeMillis())
-                ).getAbsolutePath();
+            int number = Integer.parseInt(
+                    name.substring(left + 1, right)
+            );
+            String finalName = getNumberFileName(fileName.substring(0, left - 1), left, ++number) + FilenameUtils.getExtension(fileName);
+            if (new File(targetDir, finalName).exists()) {
+                return getNextIterationFilePath(dirPath, finalName);
             }
+            return new File(targetDir, finalName).getAbsolutePath();
         } else {
-            return new File(
+            File numFile = new File(
                     targetDir,
                     getNumberFileName(fileName, fileName.length() + 1, 1)
-            ).getAbsolutePath();
+            );
+            if (numFile.exists()) {
+                return getNextIterationFilePath(targetDir.getAbsolutePath(), numFile.getName());
+            }
+            return numFile.getAbsolutePath();
         }
     }
 
