@@ -17,21 +17,11 @@ import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.REQUEST_COPY;
-import static com.eustrosoft.core.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_MOVE;
-import static com.eustrosoft.core.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.Constants.REQUEST_VIEW;
+import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -49,13 +39,13 @@ public final class CMSHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
-        CMSResponseBlock responseBlock = new CMSResponseBlock();
-        responseBlock.setE(0);
-        responseBlock.setErrMsg("Ok.");
+        CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
+        cmsResponseBlock.setE(0);
+        cmsResponseBlock.setErrMsg("Ok.");
         switch (requestType) {
             case REQUEST_VIEW:
                 List<CMSObject> directoryObjects = getDirectoryObjects(cmsRequestBlock.getPath());
-                responseBlock.setContent(directoryObjects);
+                cmsResponseBlock.setContent(directoryObjects);
                 break;
             case REQUEST_CREATE:
                 if (CMSType.FILE.equals(cmsRequestBlock.getType())) {
@@ -90,15 +80,18 @@ public final class CMSHandler implements Handler {
                         ((CMSRequestBlock) requestBlock).getPath(),
                         this.userStorage.getExistedPathOrCreate()
                 );
-                responseBlock.setErrMsg(downloadPathDetails.getTicket());
+                cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
+                break;
+            case REQUEST_RENAME:
+                rename(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
                 break;
             case REQUEST_DOWNLOAD:
                 FileDownloadService fds = FileDownloadService.getInstance();
                 DownloadFileDetails fileInfo
-                        = fds.getFileInfoAndEndConversation(((CMSRequestBlock) requestBlock).getTicket());
+                        = fds.getFileInfoAndEndConversation(cmsRequestBlock.getTicket());
                 HttpServletResponse httpResponse = requestBlock.getHttpResponse();
                 httpResponse.reset();
-                httpResponse.setContentType("application/octet-stream");
+                setContentType(cmsRequestBlock, httpResponse);
                 httpResponse.setHeader(
                         "Content-Disposition",
                         String.format(
@@ -116,19 +109,18 @@ public final class CMSHandler implements Handler {
                     while ((bytesRead = inputStream.read(buf)) != -1) {
                         os.write(buf, 0, bytesRead);
                     }
-                }
-                finally {
+                } finally {
                     os.flush();
                     os.close();
                     // TODO: make delete action
                 }
                 break;
             default:
-                responseBlock.setE(404);
-                responseBlock.setErrMsg("Not yet implemented.");
+                cmsResponseBlock.setE(404);
+                cmsResponseBlock.setErrMsg("Not yet implemented.");
                 break;
         }
-        return responseBlock;
+        return cmsResponseBlock;
     }
 
     @SneakyThrows
@@ -166,7 +158,7 @@ public final class CMSHandler implements Handler {
         );
     }
 
-    public boolean move(String from, String to)
+    private boolean move(String from, String to)
             throws CMSException, IOException {
         if (from == null || from.isEmpty() ||
                 to == null || to.isEmpty()) {
@@ -178,12 +170,12 @@ public final class CMSHandler implements Handler {
         );
     }
 
-    public boolean rename(String source, String name) throws IOException, CMSException {
+    private boolean rename(String source, String name) throws IOException, CMSException {
         return moveFile(
-                        source,
-                        new File(getProcessedParentPath(source), name)
-                                .getPath()
-                );
+                source,
+                new File(getProcessedParentPath(source), name)
+                        .getPath()
+        );
     }
 
     private String getProcessedParentPath(String path) {
@@ -224,5 +216,14 @@ public final class CMSHandler implements Handler {
     private boolean delete(String source)
             throws IOException, CMSException {
         return this.cmsDataSource.delete(source);
+    }
+
+    private void setContentType(CMSRequestBlock cmsRequestBlock, HttpServletResponse httpResponse) {
+        String contentType = cmsRequestBlock.getContentType();
+        if (contentType != null && !contentType.isEmpty()) {
+            httpResponse.setContentType(contentType);
+        } else {
+            httpResponse.setContentType("application/octet-stream");
+        }
     }
 }

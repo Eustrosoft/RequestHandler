@@ -5,12 +5,7 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
-import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
-import com.eustrosoft.core.handlers.file.ChunkFileHandler;
-import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
-import com.eustrosoft.core.handlers.file.FileHandler;
-import com.eustrosoft.core.handlers.file.FileRequestBlock;
+import com.eustrosoft.core.handlers.file.*;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
@@ -38,7 +33,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,25 +40,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.ERR_SERVER;
-import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
-import static com.eustrosoft.core.Constants.LOGIN_POOL;
-import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
-import static com.eustrosoft.core.Constants.REQUEST;
-import static com.eustrosoft.core.Constants.REQUESTS;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_SQL;
-import static com.eustrosoft.core.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.Constants.SUBSYSTEM;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
-import static com.eustrosoft.core.Constants.TIMEOUT;
+import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
 @WebServlet(
@@ -93,24 +69,6 @@ public class HttpRequestDispatcher extends HttpServlet {
         writer.close();
     }
 
-    private void downloadFile(HttpServletRequest req, HttpServletResponse resp, String ticket)
-            throws IOException {
-        Json.JsonBuilder builder = new Json().builder();
-        builder.addKeyValue("s", SUBSYSTEM_CMS);
-        if (ticket != null && !ticket.isEmpty()) {
-            Json json = builder.addKeyValue("ticket", ticket)
-                    .addKeyValue("r", REQUEST_DOWNLOAD)
-                    .build();
-            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
-            try {
-                new CMSHandler(REQUEST_DOWNLOAD)
-                        .processRequest(cmsRequestBlock);
-            } catch (Exception e) {
-                printError(resp, getExceptionResponse("Error while downloading file occurred.", SUBSYSTEM_CMS, REQUEST_DOWNLOAD));
-            }
-        }
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -118,12 +76,14 @@ public class HttpRequestDispatcher extends HttpServlet {
             checkLogin(req, resp, SUBSYSTEM_CMS);
         } catch (Exception ex) {
             System.err.println("Unauthorized access.");
+            printError(resp, getUnauthorizedResponse());
             return;
         }
         String path = req.getParameter("path");
         String ticket = req.getParameter("ticket");
+        String contentType = req.getParameter("contentType");
         if (ticket != null && !ticket.isEmpty()) {
-            downloadFile(req, resp, ticket);
+            downloadFile(req, resp, ticket, contentType);
         }
         if (path != null || !path.isEmpty()) {
             Json json = new Json().builder()
@@ -135,9 +95,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                 ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
                         .processRequest(cmsRequestBlock);
                 String newTicket = responseBlock.getM();
-                downloadFile(req, resp, newTicket);
+                downloadFile(req, resp, newTicket, contentType);
             } catch (Exception e) {
-                printError(resp, getExceptionResponse("File does not exist.", SUBSYSTEM_CMS, REQUEST_TICKET));
+                printError(resp, getExceptionResponse("File does not exist.", SUBSYSTEM_CMS, REQUEST_TICKET, ERR_SERVER));
             }
         }
     }
@@ -329,13 +289,31 @@ public class HttpRequestDispatcher extends HttpServlet {
             ));
             writer.flush();
             writer.close();
-            throw new Exception("Unauthorized");
+            throw new Exception("Unauthorized access");
         }
     }
 
-    private boolean hasSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        return session != null;
+    private void downloadFile(HttpServletRequest req, HttpServletResponse resp, String ticket, String contentType)
+            throws IOException {
+        Json.JsonBuilder builder = new Json().builder();
+        builder.addKeyValue("s", SUBSYSTEM_CMS);
+        if (ticket != null && !ticket.isEmpty()) {
+            Json.JsonBuilder jsonBuilder = builder.addKeyValue("ticket", ticket)
+                    .addKeyValue("r", REQUEST_DOWNLOAD);
+            if (contentType != null && !contentType.isEmpty()) {
+                jsonBuilder.addKeyValue("contentType", contentType);
+            }
+            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(jsonBuilder.build().toString()));
+            try {
+                new CMSHandler(REQUEST_DOWNLOAD)
+                        .processRequest(cmsRequestBlock);
+            } catch (Exception e) {
+                printError(
+                        resp,
+                        getExceptionResponse("Error while downloading file occurred.", SUBSYSTEM_CMS, REQUEST_DOWNLOAD, ERR_SERVER)
+                );
+            }
+        }
     }
 
     private boolean isLoginSubsystem(String subsystem) {
@@ -351,23 +329,15 @@ public class HttpRequestDispatcher extends HttpServlet {
     }
 
     private JsonObject getUnauthorizedResponse() {
-        JsonObject object = new JsonObject();
-        object.addProperty("l", en_US);
-        JsonObject response = new JsonObject();
-        response.addProperty("m", "Unauthorized");
-        response.addProperty("e", ERR_UNAUTHORIZED);
-        response.addProperty("s", "login");
-        response.addProperty("r", "login");
-        object.add("r", response);
-        return object;
+        return getExceptionResponse("Unauthorized", "login", "login", ERR_UNAUTHORIZED);
     }
 
-    private JsonObject getExceptionResponse(String message, String subsystem, String request) {
+    private JsonObject getExceptionResponse(String message, String subsystem, String request, Short errType) {
         JsonObject object = new JsonObject();
         object.addProperty("l", en_US);
         JsonObject response = new JsonObject();
         response.addProperty("m", message);
-        response.addProperty("e", ERR_SERVER);
+        response.addProperty("e", errType);
         response.addProperty("s", subsystem);
         response.addProperty("r", request);
         object.add("r", response);

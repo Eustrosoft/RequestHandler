@@ -7,7 +7,7 @@ import com.eustrosoft.datasource.sources.model.CMSType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
 
 public class CMSRequestBlock extends BasicRequest {
     private CMSType type;
@@ -17,6 +17,7 @@ public class CMSRequestBlock extends BasicRequest {
     private String from;
     private String to;
     private String ticket;
+    private String contentType;
 
     public CMSRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
@@ -73,6 +74,18 @@ public class CMSRequestBlock extends BasicRequest {
         this.to = to;
     }
 
+    public String getRequestType() {
+        return requestType;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
     @Override
     public String getS() {
         return SUBSYSTEM_CMS;
@@ -104,5 +117,6 @@ public class CMSRequestBlock extends BasicRequest {
         setTo(qJson.getItemString("to"));
         setPath(qJson.getItemString("path"));
         setTicket(qJson.getItemString("ticket"));
+        setTicket(qJson.getItemString("contentType"));
     }
 }

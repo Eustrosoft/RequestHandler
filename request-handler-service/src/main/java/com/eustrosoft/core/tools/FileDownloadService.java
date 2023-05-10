@@ -19,32 +19,32 @@ public class FileDownloadService {
     private static final FileDownloadMap PATHS = new FileDownloadMap();
     private static FileDownloadService fds;
 
-    public static FileDownloadService getInstance() {
+    public static synchronized FileDownloadService getInstance() {
         if (fds == null) {
             fds = new FileDownloadService();
         }
         return fds;
     }
 
-    public String getIdAndBeginConversation(DownloadFileDetails downloadFileDetails)
+    public synchronized String getIdAndBeginConversation(DownloadFileDetails downloadFileDetails)
             throws NoSuchAlgorithmException {
         String id = this.generateId();
         PATHS.put(id, downloadFileDetails);
         return id;
     }
 
-    public FileTicket beginConversation(DownloadFileDetails downloadFileDetails)
+    public synchronized FileTicket beginConversation(DownloadFileDetails downloadFileDetails)
             throws NoSuchAlgorithmException, UnsupportedEncodingException {
         return getTicketMap(getIdAndBeginConversation(downloadFileDetails));
     }
 
-    public DownloadFileDetails getFileInfoAndEndConversation(String ticket) throws UnsupportedEncodingException {
+    public synchronized DownloadFileDetails getFileInfoAndEndConversation(String ticket) throws UnsupportedEncodingException {
         DownloadFileDetails fi = PATHS.get(URLDecoder.decode(ticket, StandardCharsets.UTF_8.displayName()));
         PATHS.remove(ticket);
         return fi;
     }
 
-    private String generateId() throws NoSuchAlgorithmException {
+    private synchronized String generateId() throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(GENERATING_ALGORITHM);
         SecureRandom secureRandom = new SecureRandom();
         keyGenerator.init(secureRandom);
@@ -52,7 +52,7 @@ public class FileDownloadService {
         return Base64.getEncoder().encodeToString(key.getEncoded());
     }
 
-    public FileTicket getTicketMap(String id) throws UnsupportedEncodingException {
+    public synchronized FileTicket getTicketMap(String id) throws UnsupportedEncodingException {
         String ticket = URLEncoder.encode(id, StandardCharsets.UTF_8.displayName());
         DownloadFileDetails dfi = PATHS.get(id);
         return new FileTicket(ticket, dfi);
