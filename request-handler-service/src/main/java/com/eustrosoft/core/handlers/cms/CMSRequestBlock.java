@@ -117,6 +117,6 @@ public class CMSRequestBlock extends BasicRequest {
         setTo(qJson.getItemString("to"));
         setPath(qJson.getItemString("path"));
         setTicket(qJson.getItemString("ticket"));
-        setContentType(qJson.getItemString("contentType"));
+        setTicket(qJson.getItemString("contentType"));
     }
 }

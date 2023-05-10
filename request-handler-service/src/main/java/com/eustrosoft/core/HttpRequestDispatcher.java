@@ -27,6 +27,7 @@ import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -56,8 +57,7 @@ public class HttpRequestDispatcher extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        request.setCharacterEncoding("UTF-8");
+            throws IOException, ServletException {
         Response resp = processRequest(request, response);
         response.setContentType("application/json");
         response.setHeader("Cache-Control", "nocache");
@@ -71,8 +71,7 @@ public class HttpRequestDispatcher extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
-        req.setCharacterEncoding("UTF-8");
+            throws ServletException, IOException {
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
         } catch (Exception ex) {
@@ -234,14 +233,10 @@ public class HttpRequestDispatcher extends HttpServlet {
                     if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
                         requestBlock = new BytesChunkFileRequestBlock(request, response, qJson);
                     }
-                    if (requestType.equals(REQUEST_CHUNKS_HEX_FILE_UPLOAD)) {
-                        requestBlock = new HexFileRequestBlock(request, response, qJson);
-                    }
                     break;
                 case SUBSYSTEM_CMS:
                     requestBlock = new CMSRequestBlock(request, response, qJson);
                     ((CMSRequestBlock) requestBlock).setRequestType(requestType);
-                    break;
                 default:
                     break;
             }
@@ -268,8 +263,6 @@ public class HttpRequestDispatcher extends HttpServlet {
                 return new ChunkFileHandler();
             case REQUEST_CHUNKS_BINARY_FILE_UPLOAD:
                 return new BytesChunkFileHandler();
-            case REQUEST_CHUNKS_HEX_FILE_UPLOAD:
-                return new HexFileHandler();
             default:
                 return null;
         }
@@ -310,8 +303,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             if (contentType != null && !contentType.isEmpty()) {
                 jsonBuilder.addKeyValue("contentType", contentType);
             }
-            Json json = jsonBuilder.build();
-            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
+            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(jsonBuilder.build().toString()));
             try {
                 new CMSHandler(REQUEST_DOWNLOAD)
                         .processRequest(cmsRequestBlock);
