@@ -6,30 +6,29 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.datasource.exception.CMSException;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Map;
+import java.util.zip.CRC32;
 
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static com.eustrosoft.core.tools.FileUtils.getNextIterationFilePath;
 
 public class BytesChunkFileHandler implements Handler {
-    public static final int BUF_SIZE = 2 * 1024;
+    public static final int BUF_SIZE = 1 * 1024;
     private UserStorage storage;
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock)
-            throws IOException, ServletException, CMSException {
+            throws Exception {
         HttpServletRequest request = requestBlock.getHttpRequest();
         BytesChunkFileRequestBlock requestBl = (BytesChunkFileRequestBlock) requestBlock;
         User user = UsersContext.getInstance()
@@ -66,7 +65,8 @@ public class BytesChunkFileHandler implements Handler {
         }
         saveUploadFile(
                 inputStream,
-                new File(filePath)
+                new File(filePath),
+                requestBl.getFileHash()
         );
         answer = String.format(
                 "Part was uploaded in %s path with file name %s.",
@@ -81,22 +81,35 @@ public class BytesChunkFileHandler implements Handler {
         return new FileResponseBlock(answer);
     }
 
-    private void saveUploadFile(InputStream input, File dst) {
-        OutputStream out = null;
+    private synchronized void saveUploadFile(InputStream input, File dst, String fileHash) throws Exception {
+        if (fileHash == null || fileHash.isEmpty()) {
+            throw new Exception("Hash code not found in request.");
+        }
+        RandomAccessFile stream = new RandomAccessFile(dst, "rw");
+        FileChannel channel = stream.getChannel();
+        FileLock lock = null;
+        CRC32 crc32 = new CRC32();
+        byte[] buffer = new byte[BUF_SIZE];
+        int len;
         try {
-            if (dst.exists()) {
-                out = new BufferedOutputStream(new FileOutputStream(dst, true), BUF_SIZE);
-            } else {
-                out = new BufferedOutputStream(new FileOutputStream(dst), BUF_SIZE);
-            }
-            byte[] buffer = new byte[BUF_SIZE];
-            int len;
+            lock = channel.tryLock();
             while ((len = input.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
+                crc32.update(buffer, 0, len);
+                stream.write(buffer, 0, len);
+            }
+            String value = String.format("%x", crc32.getValue());
+            if (!fileHash.contains(value) && !value.contains(fileHash)) {
+                dst.delete();
+                throw new Exception("Hash code did not match.");
             }
         } catch (Exception e) {
+            stream.close();
+            channel.close();
             e.printStackTrace();
         } finally {
+            if (null != lock) {
+                lock.release();
+            }
             if (null != input) {
                 try {
                     input.close();
@@ -104,13 +117,8 @@ public class BytesChunkFileHandler implements Handler {
                     e.printStackTrace();
                 }
             }
-            if (null != out) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            stream.close();
+            channel.close();
         }
     }
 }
