@@ -18,6 +18,7 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -92,11 +93,13 @@ public final class CMSHandler implements Handler {
                 HttpServletResponse httpResponse = requestBlock.getHttpResponse();
                 httpResponse.reset();
                 setContentType(cmsRequestBlock, httpResponse);
+                httpResponse.setCharacterEncoding("UTF-8");
                 httpResponse.setHeader(
                         "Content-Disposition",
                         String.format(
-                                "attachment; filename=%s",
-                                fileInfo.getFileName()
+                                "attachment; filename=\"%s;\";filename*=utf-8''%s",
+                                fileInfo.getFileName(),
+                                URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
                         )
                 );
                 httpResponse.setContentLengthLong(fileInfo.getFileLength());
