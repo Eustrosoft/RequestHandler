@@ -58,6 +58,7 @@ public class HttpRequestDispatcher extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        request.setCharacterEncoding("UTF-8");
         Response resp = processRequest(request, response);
         response.setContentType("application/json");
         response.setHeader("Cache-Control", "nocache");
