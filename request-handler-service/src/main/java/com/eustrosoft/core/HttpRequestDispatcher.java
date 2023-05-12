@@ -72,6 +72,7 @@ public class HttpRequestDispatcher extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
         } catch (Exception ex) {
@@ -303,7 +304,8 @@ public class HttpRequestDispatcher extends HttpServlet {
             if (contentType != null && !contentType.isEmpty()) {
                 jsonBuilder.addKeyValue("contentType", contentType);
             }
-            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(jsonBuilder.build().toString()));
+            Json json = jsonBuilder.build();
+            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
             try {
                 new CMSHandler(REQUEST_DOWNLOAD)
                         .processRequest(cmsRequestBlock);

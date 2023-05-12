@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -96,11 +97,13 @@ public final class CMSHandler implements Handler {
                 HttpServletResponse httpResponse = requestBlock.getHttpResponse();
                 httpResponse.reset();
                 setContentType(cmsRequestBlock, httpResponse);
+                httpResponse.setCharacterEncoding("UTF-8");
                 httpResponse.setHeader(
                         "Content-Disposition",
                         String.format(
-                                "attachment; filename=%s",
-                                fileInfo.getFileName()
+                                "attachment; filename=\"%s;\";filename*=utf-8''%s",
+                                fileInfo.getFileName(),
+                                URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
                         )
                 );
                 httpResponse.setContentLengthLong(fileInfo.getFileLength());
