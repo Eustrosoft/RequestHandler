@@ -237,6 +237,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case SUBSYSTEM_CMS:
                     requestBlock = new CMSRequestBlock(request, response, qJson);
                     ((CMSRequestBlock) requestBlock).setRequestType(requestType);
+                    break;
                 default:
                     break;
             }
