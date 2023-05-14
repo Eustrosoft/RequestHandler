@@ -76,51 +76,14 @@ public final class CMSHandler implements Handler {
                 delete(cmsRequestBlock.getPath());
                 break;
             case REQUEST_TICKET:
-                String session =
-                        new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                                .getCookieValue();
-                this.usersContext = UsersContext.getInstance();
-                this.userStorage = UserStorage.getInstanceForUser(usersContext.getSQLUser(session));
-                FileTicket downloadPathDetails = getDownloadPathDetails(
-                        ((CMSRequestBlock) requestBlock).getPath(),
-                        this.userStorage.getExistedPathOrCreate()
-                );
+                FileTicket downloadPathDetails = getFileTicket(requestBlock);
                 cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
                 break;
             case REQUEST_RENAME:
                 rename(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
                 break;
             case REQUEST_DOWNLOAD:
-                FileDownloadService fds = FileDownloadService.getInstance();
-                DownloadFileDetails fileInfo
-                        = fds.getFileInfoAndEndConversation(cmsRequestBlock.getTicket());
-                HttpServletResponse httpResponse = requestBlock.getHttpResponse();
-                httpResponse.reset();
-                setContentType(cmsRequestBlock, httpResponse);
-                httpResponse.setCharacterEncoding("UTF-8");
-                httpResponse.setHeader(
-                        "Content-Disposition",
-                        String.format(
-                                "attachment; filename=\"%s;\";filename*=utf-8''%s",
-                                fileInfo.getFileName(),
-                                URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
-                        )
-                );
-                httpResponse.setContentLengthLong(fileInfo.getFileLength());
-                httpResponse.setBufferSize(DEFAULT_BUFFER_SIZE);
-                httpResponse.setHeader("Accept-Ranges", "bytes");
-                OutputStream os = httpResponse.getOutputStream();
-                try (InputStream inputStream = fileInfo.getInputStream()) {
-                    byte[] buf = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(buf)) != -1) {
-                        os.write(buf, 0, bytesRead);
-                    }
-                } finally {
-                    os.flush();
-                    os.close();
-                    // TODO: make delete action
-                }
+                download(requestBlock, cmsRequestBlock);
                 break;
             default:
                 cmsResponseBlock.setE(404);
@@ -163,6 +126,51 @@ public final class CMSHandler implements Handler {
                         file.length()
                 )
         );
+    }
+
+    private FileTicket getFileTicket(RequestBlock requestBlock) throws IOException {
+        String session =
+                new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                        .getCookieValue();
+        this.usersContext = UsersContext.getInstance();
+        this.userStorage = UserStorage.getInstanceForUser(usersContext.getSQLUser(session));
+        return getDownloadPathDetails(
+                ((CMSRequestBlock) requestBlock).getPath(),
+                this.userStorage.getExistedPathOrCreate()
+        );
+    }
+
+    private void download(RequestBlock requestBlock, CMSRequestBlock cmsRequestBlock) throws IOException {
+        FileDownloadService fds = FileDownloadService.getInstance();
+        DownloadFileDetails fileInfo
+                = fds.getFileInfoAndEndConversation(cmsRequestBlock.getTicket());
+        HttpServletResponse httpResponse = requestBlock.getHttpResponse();
+        httpResponse.reset();
+        setContentType(cmsRequestBlock, httpResponse);
+        httpResponse.setCharacterEncoding("UTF-8");
+        httpResponse.setHeader(
+                "Content-Disposition",
+                String.format(
+                        "attachment; filename=\"%s;\";filename*=utf-8''%s",
+                        fileInfo.getFileName(),
+                        URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
+                )
+        );
+        httpResponse.setContentLengthLong(fileInfo.getFileLength());
+        httpResponse.setBufferSize(DEFAULT_BUFFER_SIZE);
+        httpResponse.setHeader("Accept-Ranges", "bytes");
+        OutputStream os = httpResponse.getOutputStream();
+        try (InputStream inputStream = fileInfo.getInputStream()) {
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buf)) != -1) {
+                os.write(buf, 0, bytesRead);
+            }
+        } finally {
+            os.flush();
+            os.close();
+            // TODO: make delete action
+        }
     }
 
     public boolean move(String from, String to)

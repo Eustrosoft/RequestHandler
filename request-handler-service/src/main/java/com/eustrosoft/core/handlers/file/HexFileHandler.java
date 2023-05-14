@@ -95,14 +95,12 @@ public class HexFileHandler implements Handler {
         FileChannel channel = stream.getChannel();
         FileLock lock = null;
         CRC32 crc32 = new CRC32();
-        byte[] buffer = decodeHexString(hexString);
+        byte[] buffer = hexToBytes(hexString);
         int len = buffer.length;
         try {
             lock = channel.tryLock();
-            byte[] bytes = hexString.getBytes();
-            crc32.update(bytes, 0, bytes.length);
-            stream.seek(dst.length());
-            stream.write(buffer);
+            crc32.update(buffer, 0, len);
+            stream.write(buffer, 0, len);
             String value = String.format("%x", crc32.getValue());
             if (!fileHash.contains(value) && !value.contains(fileHash)) {
                 dst.delete();
@@ -119,33 +117,5 @@ public class HexFileHandler implements Handler {
             stream.close();
             channel.close();
         }
-    }
-
-    public byte[] decodeHexString(String hexString) {
-        if (hexString.length() % 2 == 1) {
-            throw new IllegalArgumentException(
-                    "Invalid hexadecimal String supplied.");
-        }
-
-        byte[] bytes = new byte[hexString.length() / 2];
-        for (int i = 0; i < hexString.length(); i += 2) {
-            bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));
-        }
-        return bytes;
-    }
-
-    public byte hexToByte(String hexString) {
-        int firstDigit = toDigit(hexString.charAt(0));
-        int secondDigit = toDigit(hexString.charAt(1));
-        return (byte) ((firstDigit << 4) + secondDigit);
-    }
-
-    private int toDigit(char hexChar) {
-        int digit = Character.digit(hexChar, 16);
-        if (digit == -1) {
-            throw new IllegalArgumentException(
-                    "Invalid Hexadecimal Character: " + hexChar);
-        }
-        return digit;
     }
 }
