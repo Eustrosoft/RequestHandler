@@ -9,7 +9,6 @@ import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
-import lombok.val;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -20,7 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import static com.eustrosoft.core.tools.PropertiesConstants.*;
+import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
+import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
 import static com.eustrosoft.filedatasource.constants.Messages.*;
 
 public class FileCMSDataSource implements CMSDataSource {
@@ -234,7 +234,7 @@ public class FileCMSDataSource implements CMSDataSource {
     @Override
     public String getFullPath(String source) throws IOException, CMSException {
         checkPathInjection(source);
-        return new File(getRootPath(), source).getAbsolutePath(); // Admin tool
+        return new File(getRootPath(), source).getAbsolutePath();
     }
 
     @Override

@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
 
-public final class ChunkFileRequestBlock extends FileRequestBlock {
+public class ChunkFileRequestBlock extends FileRequestBlock {
     private Long chunkNumber;
     private Long chunksCount;
 

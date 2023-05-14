@@ -27,7 +27,6 @@ import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -57,7 +56,7 @@ public class HttpRequestDispatcher extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws IOException {
         request.setCharacterEncoding("UTF-8");
         Response resp = processRequest(request, response);
         response.setContentType("application/json");
@@ -72,7 +71,7 @@ public class HttpRequestDispatcher extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
         req.setCharacterEncoding("UTF-8");
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
@@ -235,6 +234,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                     if (requestType.equals(REQUEST_CHUNKS_BINARY_FILE_UPLOAD)) {
                         requestBlock = new BytesChunkFileRequestBlock(request, response, qJson);
                     }
+                    if (requestType.equals(REQUEST_CHUNKS_HEX_FILE_UPLOAD)) {
+                        requestBlock = new HexFileRequestBlock(request, response, qJson);
+                    }
                     break;
                 case SUBSYSTEM_CMS:
                     requestBlock = new CMSRequestBlock(request, response, qJson);
@@ -266,6 +268,8 @@ public class HttpRequestDispatcher extends HttpServlet {
                 return new ChunkFileHandler();
             case REQUEST_CHUNKS_BINARY_FILE_UPLOAD:
                 return new BytesChunkFileHandler();
+            case REQUEST_CHUNKS_HEX_FILE_UPLOAD:
+                return new HexFileHandler();
             default:
                 return null;
         }
