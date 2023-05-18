@@ -95,6 +95,7 @@ public class BytesChunkFileHandler implements Handler {
             lock = channel.tryLock();
             while ((len = input.read(buffer)) > 0) {
                 crc32.update(buffer, 0, len);
+                stream.seek(dst.length());
                 stream.write(buffer, 0, len);
             }
             String value = String.format("%x", crc32.getValue());
