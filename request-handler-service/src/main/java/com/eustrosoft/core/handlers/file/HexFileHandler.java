@@ -99,7 +99,8 @@ public class HexFileHandler implements Handler {
         int len = buffer.length;
         try {
             lock = channel.tryLock();
-            crc32.update(buffer, 0, len);
+            byte[] bytes = hexString.getBytes();
+            crc32.update(bytes, 0, bytes.length);
             stream.seek(dst.length());
             stream.write(buffer);
             String value = String.format("%x", crc32.getValue());
