@@ -1,5 +1,6 @@
 package com.eustrosoft.core.handlers.cms;
 
+import com.eustrosoft.core.context.DBPoolContext;
 import com.eustrosoft.core.context.UserStorage;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
@@ -11,9 +12,11 @@ import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
-import com.eustrosoft.filedatasource.FileCMSDataSource;
+import com.eustrosoft.dbdatasource.core.DBDataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +28,23 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.LOGIN_POOL;
+import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
+import static com.eustrosoft.core.Constants.REQUEST_COPY;
+import static com.eustrosoft.core.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_MOVE;
+import static com.eustrosoft.core.Constants.REQUEST_RENAME;
+import static com.eustrosoft.core.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.Constants.REQUEST_VIEW;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -42,11 +56,20 @@ public final class CMSHandler implements Handler {
 
     public CMSHandler(String requestType) throws Exception {
         this.requestType = requestType;
-        this.cmsDataSource = new FileCMSDataSource();
     }
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+        QTISSessionCookie qTisCookie = new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse());
+        String cookieValue = qTisCookie.getCookieValue();
+        QDBPool dbPool = DBPoolContext.getInstance(
+                LOGIN_POOL,
+                DBPoolContext.getUrl(requestBlock.getHttpRequest()),
+                POSTGRES_DRIVER
+        );
+        QDBPSession session = dbPool.logon(cookieValue);
+        this.cmsDataSource = new DBDataSource(session.getConnection());
+
         CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
         CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
         cmsResponseBlock.setE(0);
@@ -155,7 +178,7 @@ public final class CMSHandler implements Handler {
         httpResponse.setHeader(
                 "Content-Disposition",
                 String.format(
-                        "attachment; filename=\"%s;\";filename*=utf-8''%s",
+                        "attachment; filename=\"%s\";;filename*=utf-8''%s",
                         fileInfo.getFileName(),
                         URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
                 )

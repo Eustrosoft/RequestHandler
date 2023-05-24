@@ -1,21 +1,23 @@
 package com.eustrosoft.dbdatasource.constants;
 
 public class DBConstants {
-    public final static String SELECT = "SELECT";
-    public final static String FROM = "FROM";
-    public final static String TABLE = "TABLE";
-    public final static String ALTER = "ALTER";
-    public final static String JOIN = "JOIN";
-    public final static String LEFT_JOIN = "LEFT JOIN";
-    public final static String RIGHT_JOIN = "RIGHT JOIN";
+    public final static int LVL_SCOPE = 0;
+    public final static int LVL_ROOT = 1;
+    public final static int LVL_OTHER = 2;
 
-    public final static String SEMICOLON = ";";
-    public final static String SPACE = " ";
-    public final static String ON = "ON";
-    public final static String IN = "IN";
-    public final static String ALL = "*";
-    public final static String COMMA = ",";
-    public final static String LEFT_BRACKET = "(";
-    public final static String RIGHT_BRACKET = ")";
-    public final static String VARIABLE = "?";
+    public final static String SCOPES = "sam.v_scope";
+    public final static String ROOTS = "FS.V_FFile";
+    public final static String NAME = "name";
+    public final static String F_NAME = "fname";
+    public final static String S_LEVEL_MIN = "slevelmin";
+    public final static String S_LEVEL_MAX = "slevelmax";
+    public final static String DESCRIPTION = "descr";
+    public final static String MIME_TYPE = "mimetype";
+    public final static String TYPE = "type";
+    public final static String FILE_ID = "f_id";
+    public final static String Z_LEVEL = "zlvl";
+    public final static String SID = "sid";
+    public final static String ID = "id";
+    public final static String ZSID = "zsid";
+    public final static String ZOID = "zoid";
 }

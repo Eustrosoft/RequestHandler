@@ -3,10 +3,10 @@ package com.eustrosoft.filedatasource;
 import com.eustrosoft.core.tools.ColorTextUtil;
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
+import com.eustrosoft.datasource.sources.PropsContainer;
 import com.eustrosoft.datasource.sources.model.CMSDirectory;
 import com.eustrosoft.datasource.sources.model.CMSFile;
 import com.eustrosoft.datasource.sources.model.CMSObject;
-import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -17,14 +17,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
-import static com.eustrosoft.filedatasource.constants.Messages.*;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_DIR_EXISTS;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_DIR_NOT_CREATED;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_DIR_NOT_EXIST;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_FILE_EXIST;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_FILE_NOT_CREATED;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_FILE_NOT_EXIST;
+import static com.eustrosoft.filedatasource.constants.Messages.MSG_NULL_PARAMS;
 
-public class FileCMSDataSource implements CMSDataSource {
-    private static final Properties properties = new Properties();
+public class FileCMSDataSource implements CMSDataSource, PropsContainer {
+    private final Properties properties = new Properties();
     private String filePath;
 
     public FileCMSDataSource() throws Exception {
@@ -128,8 +141,7 @@ public class FileCMSDataSource implements CMSDataSource {
                         new Date(attributes.creationTime().toMillis()),
                         new Date(file.lastModified()),
                         file.length(),
-                        String.valueOf(file.hashCode()),
-                        CMSType.FILE.toString()
+                        String.valueOf(file.hashCode())
                 );
             }
             if (file.isDirectory()) {
@@ -141,8 +153,7 @@ public class FileCMSDataSource implements CMSDataSource {
                         new ArrayList<String>(),
                         file.length(),
                         new Date(file.lastModified()),
-                        new Date(attributes.creationTime().toMillis()),
-                        CMSType.DIRECTORY.toString()
+                        new Date(attributes.creationTime().toMillis())
                 );
             }
             if (obj != null) {
@@ -274,7 +285,7 @@ public class FileCMSDataSource implements CMSDataSource {
         return filePath;
     }
 
-    private void loadProps() throws Exception {
+    public void loadProps() throws Exception {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(CMS_FILE_NAME)) {
             if (input == null) {
                 throw new FileNotFoundException(
@@ -294,13 +305,22 @@ public class FileCMSDataSource implements CMSDataSource {
             if (!rootPath.exists()) {
                 throw new FileNotFoundException(
                         "Property was found, but " +
-                        ColorTextUtil.getColoredString("rootPath", ColorTextUtil.Color.GREEN) +
-                        " does not exist."
+                                ColorTextUtil.getColoredString("rootPath", ColorTextUtil.Color.GREEN) +
+                                " does not exist."
                 );
             }
             this.filePath = rootPath.getAbsolutePath();
         } catch (IOException ex) {
             throw new Exception("Error while processing properties.");
         }
+    }
+
+    public Map<String, String> getLoadedProps() {
+        Map<String, String> props = new HashMap<>();
+        Set<Map.Entry<Object, Object>> entries = this.properties.entrySet();
+        for (Map.Entry<Object, Object> entry : entries) {
+            props.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        return props;
     }
 }
