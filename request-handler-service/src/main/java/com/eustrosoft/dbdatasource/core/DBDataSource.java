@@ -57,8 +57,8 @@ public class DBDataSource implements CMSDataSource {
     }
 
     @Override
-    public String createFile(String path, InputStream stream) {
-
+    public String createFile(String path, InputStream stream) throws Exception {
+        return createFile(path, new File(path).getName());
     }
 
     @Override
