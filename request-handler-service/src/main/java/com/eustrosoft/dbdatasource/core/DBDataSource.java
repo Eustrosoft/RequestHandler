@@ -2,8 +2,9 @@ package com.eustrosoft.dbdatasource.core;
 
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
-import com.eustrosoft.datasource.sources.model.CMSDirectory;
+import com.eustrosoft.datasource.sources.model.CMSGeneralObject;
 import com.eustrosoft.datasource.sources.model.CMSObject;
+import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.dbdatasource.ranges.FileType;
 import lombok.SneakyThrows;
@@ -22,6 +23,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
 import static com.eustrosoft.dbdatasource.core.DBStatements.getStatementForPath;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
@@ -172,6 +174,12 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public boolean delete(String path) throws IOException, CMSException {
+        File file = new File(path);
+        String parentPath = file.getParent();
+        String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
+        String scopeZoid = getFirstLevelFromPath(parentPath);
+
+
         return false;
     }
 
@@ -193,12 +201,18 @@ public class DBDataSource implements CMSDataSource {
                 try {
                     String name = getValueOrEmpty(resultSet, NAME);
                     String fname = getValueOrEmpty(resultSet, F_NAME);
+                    CMSType type = getType(resultSet);
                     String sid = getZsid(resultSet);
                     String zoid = getZoid(resultSet);
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
-                    objects.add(new CMSDirectory(
-                                    name, zoid, null, 0L, null, null
-                            )
+                    objects.add(
+                            CMSGeneralObject.builder()
+                                    .id(zoid)
+                                    .description(descr)
+                                    .fullPath(name)
+                                    .fileName(fname)
+                                    .type(type)
+                                    .build()
                     );
                 } catch (Exception ex) {
                     ex.printStackTrace();

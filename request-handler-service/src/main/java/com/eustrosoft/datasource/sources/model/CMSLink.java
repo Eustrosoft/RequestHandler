@@ -4,8 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 public class CMSLink implements CMSObject {
+    public String getId() {
+        return null;
+    }
 
     public String getExtension() {
+        return null;
+    }
+
+    public String getDescription() {
         return null;
     }
 

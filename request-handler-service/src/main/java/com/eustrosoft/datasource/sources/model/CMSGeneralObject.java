@@ -1,6 +1,7 @@
 package com.eustrosoft.datasource.sources.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CMSFile extends CMSGeneralObject {
+@Builder
+public class CMSGeneralObject implements CMSObject {
     private String id;
     private String extension;
     private String fileName;
@@ -22,9 +24,6 @@ public class CMSFile extends CMSGeneralObject {
     private Date modified;
     private long space;
     private String hash;
+    private CMSType type;
     private String description;
-
-    public CMSType getType() {
-        return CMSType.FILE;
-    }
 }

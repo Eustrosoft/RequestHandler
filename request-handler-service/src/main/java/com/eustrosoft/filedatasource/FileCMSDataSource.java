@@ -133,6 +133,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             if (file.isFile()) {
                 obj = new CMSFile(
                         FilenameUtils.getExtension(file.getName()),
+                        FilenameUtils.getExtension(file.getName()),
                         file.getName(),
                         postProcessPath(
                                 file.getAbsolutePath().substring(getRootPath().length())
@@ -141,19 +142,22 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
                         new Date(attributes.creationTime().toMillis()),
                         new Date(file.lastModified()),
                         file.length(),
-                        String.valueOf(file.hashCode())
+                        String.valueOf(file.hashCode()),
+                        ""
                 );
             }
             if (file.isDirectory()) {
                 obj = new CMSDirectory(
                         file.getName(),
+                        file.getName(),
                         postProcessPath(
                                 file.getAbsolutePath().substring(getRootPath().length())
                         ),
                         new ArrayList<String>(),
-                        file.length(),
                         new Date(file.lastModified()),
-                        new Date(attributes.creationTime().toMillis())
+                        new Date(attributes.creationTime().toMillis()),
+                        file.length(),
+                        ""
                 );
             }
             if (obj != null) {

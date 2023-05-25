@@ -158,4 +158,32 @@ public final class DBFunctions {
         }
         return status;
     }
+
+    @SneakyThrows
+    public ExecStatus getFDir(String objectZoid, String objectVer) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("TIS.commit_object")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, %s, %s",
+                                "FS.F",
+                                objectZoid,
+                                objectVer
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
+    }
 }

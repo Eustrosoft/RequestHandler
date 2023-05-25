@@ -1,6 +1,7 @@
 package com.eustrosoft.datasource.sources.model;
 
 public enum CMSType {
+    UNKNOWN("UNKNOWN"),
     DIRECTORY("DIRECTORY"),
     FILE("FILE"),
     LINK("LINK");

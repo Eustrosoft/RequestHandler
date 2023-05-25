@@ -9,6 +9,7 @@ import java.util.List;
  * system objects, like file, directory and other.
  */
 public interface CMSObject {
+    String getId();
 
     String getFileName();
 
@@ -23,4 +24,6 @@ public interface CMSObject {
     CMSType getType();
 
     List<String> getLinks();
+
+    String getDescription();
 }
