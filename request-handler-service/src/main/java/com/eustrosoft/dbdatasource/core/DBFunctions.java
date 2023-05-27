@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+
 public final class DBFunctions {
     private QDBPConnection poolConnection;
 
@@ -22,10 +25,10 @@ public final class DBFunctions {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .add("TIS.create_object")
+                        .add("TIS.open_object")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s",
+                                "'%s', %s, %s",
                                 "FS.F", zoid, "null" // TODO
                         ))
                         .rightBracket()
@@ -48,10 +51,10 @@ public final class DBFunctions {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .add("TIS.open_object")
+                        .add("TIS.create_object")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s",
+                                "'%s', %s, %s",
                                 "FS.F", scopeZoid, "null"
                         ))
                         .rightBracket()
@@ -78,7 +81,7 @@ public final class DBFunctions {
                         .add("FS.create_FFile")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s, %s, '%s', '%s', null, null, null, null, null, null, null, null, null, null",
+                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
                                 objectZoid,
                                 objectVer,
                                 parentVer,
@@ -109,7 +112,7 @@ public final class DBFunctions {
                         .add("TIS.commit_object")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s",
+                                "'%s', %s, %s",
                                 "FS.F",
                                 objectZoid,
                                 objectVer
@@ -168,7 +171,7 @@ public final class DBFunctions {
                         .add("TIS.commit_object")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s",
+                                "'%s', %s, %s",
                                 "FS.F",
                                 objectZoid,
                                 objectVer
@@ -185,5 +188,53 @@ public final class DBFunctions {
             resultSet.close();
         }
         return status;
+    }
+
+    @SneakyThrows
+    public ExecStatus deleteFDir(String zoid, String zrid, String zver) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("FS.delete_FDir")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, %s, %s",
+                                zoid, zver, zrid
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
+    }
+
+    @SneakyThrows
+    public ResultSet getDirectoryByNameAndId(String dirId, String dirName) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("FS.V_FDir")
+                        .where(String.format("%s = %s and %s == '%s'", ZOID, dirId, F_NAME, dirName))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            preparedStatement.close();
+            resultSet.close();
+            return resultSet;
+        }
+        return null; // todo
     }
 }

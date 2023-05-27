@@ -19,14 +19,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 import static com.eustrosoft.dbdatasource.core.DBStatements.getStatementForPath;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -67,7 +62,7 @@ public class DBDataSource implements CMSDataSource {
     public String createFile(String path, String name) throws Exception {
         File file = new File(path);
         String parentPath = file.getParent();
-        String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
+        String parentZoid = parentPath.substring(parentPath.lastIndexOf('\\') + 1);
         String scopeZoid = getFirstLevelFromPath(parentPath);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
         ExecStatus opened = dbFunctions.openObject(parentZoid);
@@ -78,7 +73,7 @@ public class DBDataSource implements CMSDataSource {
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
-        String dirName = path.substring(path.lastIndexOf('/'));
+        String dirName = path.substring(path.lastIndexOf('\\'));
         ExecStatus fFile = dbFunctions.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
@@ -103,7 +98,7 @@ public class DBDataSource implements CMSDataSource {
     public String createDirectory(String path) throws Exception {
         File file = new File(path);
         String parentPath = file.getParent();
-        String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
+        String parentZoid = parentPath.substring(parentPath.lastIndexOf('\\') + 1);
         String scopeZoid = getFirstLevelFromPath(parentPath);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
         ExecStatus opened = dbFunctions.openObject(parentZoid);
@@ -114,7 +109,7 @@ public class DBDataSource implements CMSDataSource {
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
-        String dirName = path.substring(path.lastIndexOf('/'));
+        String dirName = path.substring(path.lastIndexOf('\\') + 1);
         ExecStatus fFile = dbFunctions.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
@@ -126,8 +121,8 @@ public class DBDataSource implements CMSDataSource {
             throw new Exception(fFile.getCaption()); // TODO
         }
         ExecStatus commited = dbFunctions.commitObject(
-                fFile.getZoid().toString(),
-                fFile.getZver().toString()
+                objectInScope.getZoid().toString(),
+                objectInScope.getZver().toString()
         );
         if (!commited.isOk()) {
             throw new Exception(commited.getCaption()); // TODO
@@ -173,19 +168,41 @@ public class DBDataSource implements CMSDataSource {
     }
 
     @Override
-    public boolean delete(String path) throws IOException, CMSException {
+    public boolean delete(String path) throws Exception {
         File file = new File(path);
+        String dirName = file.getName();
         String parentPath = file.getParent();
         String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
-        String scopeZoid = getFirstLevelFromPath(parentPath);
 
-
-        return false;
+        DBFunctions dbFunctions = new DBFunctions(poolConnection);
+        ExecStatus open = dbFunctions.openObject(parentZoid);
+        if (!open.isOk()) {
+            throw new Exception(open.getCaption());
+        }
+        ResultSet directoryByNameAndId = dbFunctions.getDirectoryByNameAndId(parentPath, dirName);
+        if (directoryByNameAndId != null) {
+            long zoid = directoryByNameAndId.getLong(ZOID);
+            long zrid = directoryByNameAndId.getLong(ZRID);
+            long zver = directoryByNameAndId.getLong(ZVER);
+            ExecStatus delete = dbFunctions.deleteFDir(
+                    String.valueOf(zoid),
+                    String.valueOf(zrid),
+                    String.valueOf(zver)
+            );
+            if (!delete.isOk()) {
+                throw new Exception(open.getCaption());
+            }
+        }
+        ExecStatus commit = dbFunctions.commitObject(parentZoid, String.valueOf(open.getZver()));
+        if (!commit.isOk()) {
+            throw new Exception(open.getCaption());
+        }
+        return commit.isOk();
     }
 
     private String getFirstLevelFromPath(String path) {
         String firSlashRem = path.substring(1);
-        int nextSlash = firSlashRem.indexOf('/');
+        int nextSlash = firSlashRem.indexOf('\\');
         if (nextSlash == -1) {
             return firSlashRem;
         } else {

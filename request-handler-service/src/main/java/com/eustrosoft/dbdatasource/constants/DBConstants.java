@@ -20,4 +20,6 @@ public class DBConstants {
     public final static String ID = "id";
     public final static String ZSID = "zsid";
     public final static String ZOID = "zoid";
+    public final static String ZRID = "zrid";
+    public final static String ZVER = "zver";
 }
