@@ -132,8 +132,8 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ExecStatus createFDir(String objectZoid, String objectVer, String parentVer,
-                                 String fileZoid, String name) {
+    public ExecStatus createFDir(String objectZoid, String objectVer, String parentZrid,
+                                 String fileZoid, String name, String description) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -141,12 +141,13 @@ public final class DBFunctions {
                         .add("FS.create_FDir")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s, %s, %s",
+                                "%s, %s, %s, %s, '%s', null, '%s'",
                                 objectZoid,
                                 objectVer,
-                                parentVer,
+                                "1", // TODO
                                 fileZoid,
-                                name
+                                name,
+                                description
                         ))
                         .rightBracket()
                         .buildWithSemicolon()

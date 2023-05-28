@@ -52,9 +52,9 @@ public final class LoginHandler implements Handler {
         return responseBlock;
     }
 
+    @Deprecated
     public void doLogin(LoginRequestBlock requestBlock) throws ServletException {
         HttpServletRequest request = requestBlock.getHttpRequest();
-        HttpServletResponse response = requestBlock.getHttpResponse();
         String login = requestBlock.getLogin();
         String password = requestBlock.getPassword();
         request.login(login, password);
@@ -66,6 +66,7 @@ public final class LoginHandler implements Handler {
         newSession.setMaxInactiveInterval(Constants.SESSION_TIMEOUT);
     }
 
+    @Deprecated
     public void doLogout(LoginRequestBlock requestBlock) throws ServletException {
         HttpServletRequest request = requestBlock.getHttpRequest();
         HttpSession session = request.getSession(false);
@@ -110,7 +111,6 @@ public final class LoginHandler implements Handler {
                 dbps.getSessionSecretCookie(),
                 new User(login, password, request.getRequestedSessionId())
         );
-        //dbPool.addSession(dbps);
     }
 
     private void logout(LoginRequestBlock requestBlock)

@@ -9,22 +9,24 @@ import com.eustrosoft.datasource.sources.model.CMSFile;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
+import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
+import java.util.zip.CRC32;
 
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
@@ -37,6 +39,7 @@ import static com.eustrosoft.filedatasource.constants.Messages.MSG_FILE_NOT_EXIS
 import static com.eustrosoft.filedatasource.constants.Messages.MSG_NULL_PARAMS;
 
 public class FileCMSDataSource implements CMSDataSource, PropsContainer {
+    @Getter
     private final Properties properties = new Properties();
     private String filePath;
 
@@ -95,6 +98,42 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             }
         }
         return MSG_FILE_NOT_CREATED;
+    }
+
+    @Override
+    public String createFileHex(String dist, String id, String hex, String crc32) throws Exception {
+        if (crc32 == null || crc32.isEmpty()) {
+            throw new Exception("Hash code not found in request.");
+        }
+        File distanationFile = new File(dist);
+        RandomAccessFile stream = new RandomAccessFile(distanationFile, "rw");
+        FileChannel channel = stream.getChannel();
+        FileLock lock = null;
+        CRC32 crc = new CRC32();
+        byte[] buffer = decodeHexString(hex);
+        try {
+            lock = channel.tryLock();
+            byte[] bytes = hex.getBytes();
+            crc.update(bytes, 0, bytes.length);
+            stream.seek(distanationFile.length());
+            stream.write(buffer);
+            String value = String.format("%x", crc.getValue());
+            if (!crc32.contains(value) && !value.contains(crc32)) { // TODO
+                distanationFile.delete();
+                throw new Exception("Hash code did not match.");
+            }
+        } catch (Exception e) {
+            stream.close();
+            channel.close();
+            e.printStackTrace();
+        } finally {
+            if (null != lock) {
+                lock.release();
+            }
+            stream.close();
+            channel.close();
+        }
+        return distanationFile.getName();
     }
 
     @Override
@@ -293,7 +332,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(CMS_FILE_NAME)) {
             if (input == null) {
                 throw new FileNotFoundException(
-                        "Unable to find logging.properties.\nFile logging will be unavailable.\n"
+                        "Unable to find cms.properties.\nFile logging will be unavailable.\n"
                 );
             }
             properties.load(input);
@@ -319,12 +358,31 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
         }
     }
 
-    public Map<String, String> getLoadedProps() {
-        Map<String, String> props = new HashMap<>();
-        Set<Map.Entry<Object, Object>> entries = this.properties.entrySet();
-        for (Map.Entry<Object, Object> entry : entries) {
-            props.put((String) entry.getKey(), (String) entry.getValue());
+    public byte[] decodeHexString(String hexString) {
+        if (hexString.length() % 2 == 1) {
+            throw new IllegalArgumentException(
+                    "Invalid hexadecimal String supplied.");
         }
-        return props;
+
+        byte[] bytes = new byte[hexString.length() / 2];
+        for (int i = 0; i < hexString.length(); i += 2) {
+            bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));
+        }
+        return bytes;
+    }
+
+    public byte hexToByte(String hexString) {
+        int firstDigit = toDigit(hexString.charAt(0));
+        int secondDigit = toDigit(hexString.charAt(1));
+        return (byte) ((firstDigit << 4) + secondDigit);
+    }
+
+    private int toDigit(char hexChar) {
+        int digit = Character.digit(hexChar, 16);
+        if (digit == -1) {
+            throw new IllegalArgumentException(
+                    "Invalid Hexadecimal Character: " + hexChar);
+        }
+        return digit;
     }
 }

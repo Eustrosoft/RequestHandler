@@ -6,21 +6,21 @@ import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.providers.DataSourceProvider;
+import com.eustrosoft.core.providers.SessionProvider;
+import com.eustrosoft.datasource.sources.CMSDataSource;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.util.Map;
-import java.util.zip.CRC32;
 
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static com.eustrosoft.core.tools.FileUtils.getNextIterationFilePath;
 
 public class HexFileHandler implements Handler {
+    private CMSDataSource cmsDataSource;
     private UserStorage storage;
 
     @Override
@@ -58,15 +58,23 @@ public class HexFileHandler implements Handler {
         if (filePath.isEmpty()) {
             throw new IOException("File path was not specified for this user.");
         }
-        saveUploadFile(
+        this.cmsDataSource = DataSourceProvider
+                .getInstance(
+                        new SessionProvider(
+                                request,
+                                requestBlock.getHttpResponse()
+                        ).getSession().getConnection()
+                ).getDataSource();
+        String uploadedFile = this.cmsDataSource.createFileHex(
+                filePath,
+                fileName,
                 hexString,
-                new File(filePath),
                 requestBl.getFileHash()
         );
         answer = String.format(
                 "Part was uploaded in %s path with file name %s.",
                 uploadPath,
-                fileName
+                uploadedFile
         );
         if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
             this.storage.clearChunksOfCurrentPath();
@@ -74,48 +82,5 @@ public class HexFileHandler implements Handler {
             userPaths.remove(fileName);
         }
         return new FileResponseBlock(answer);
-    }
-
-    private byte[] hexToBytes(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] =
-                    (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                            + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
-
-    private synchronized void saveUploadFile(String hexString, File dst, String fileHash) throws Exception {
-        if (fileHash == null || fileHash.isEmpty()) {
-            throw new Exception("Hash code not found in request.");
-        }
-        RandomAccessFile stream = new RandomAccessFile(dst, "rw");
-        FileChannel channel = stream.getChannel();
-        FileLock lock = null;
-        CRC32 crc32 = new CRC32();
-        byte[] buffer = hexToBytes(hexString);
-        int len = buffer.length;
-        try {
-            lock = channel.tryLock();
-            crc32.update(buffer, 0, len);
-            stream.write(buffer, 0, len);
-            String value = String.format("%x", crc32.getValue());
-            if (!fileHash.contains(value) && !value.contains(fileHash)) {
-                dst.delete();
-                throw new Exception("Hash code did not match.");
-            }
-        } catch (Exception e) {
-            stream.close();
-            channel.close();
-            e.printStackTrace();
-        } finally {
-            if (null != lock) {
-                lock.release();
-            }
-            stream.close();
-            channel.close();
-        }
     }
 }

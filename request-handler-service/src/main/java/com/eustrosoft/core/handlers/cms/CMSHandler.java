@@ -1,31 +1,24 @@
 package com.eustrosoft.core.handlers.cms;
 
-import com.eustrosoft.core.context.DBPoolContext;
 import com.eustrosoft.core.context.UserStorage;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.providers.DataSourceProvider;
+import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.FileDownloadService;
 import com.eustrosoft.core.tools.ZipService;
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
-import com.eustrosoft.dbdatasource.core.DBDataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;
-import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,8 +28,6 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.LOGIN_POOL;
-import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
 import static com.eustrosoft.core.Constants.REQUEST_COPY;
 import static com.eustrosoft.core.Constants.REQUEST_CREATE;
 import static com.eustrosoft.core.Constants.REQUEST_DELETE;
@@ -60,20 +51,19 @@ public final class CMSHandler implements Handler {
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        QTISSessionCookie qTisCookie = new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse());
-        String cookieValue = qTisCookie.getCookieValue();
-        QDBPool dbPool = DBPoolContext.getInstance(
-                LOGIN_POOL,
-                DBPoolContext.getUrl(requestBlock.getHttpRequest()),
-                POSTGRES_DRIVER
-        );
-        QDBPSession session = dbPool.logon(cookieValue);
-        this.cmsDataSource = new DBDataSource(session.getConnection());
+        QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+                .getSession();
+        this.cmsDataSource = DataSourceProvider.getInstance(session.getConnection())
+                .getDataSource();
 
         CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
         CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
         cmsResponseBlock.setE(0);
         cmsResponseBlock.setErrMsg("Ok.");
+        // TODO
+        postProcessPath(cmsRequestBlock.getPath());
+        postProcessPath(cmsRequestBlock.getFrom());
+        postProcessPath(cmsRequestBlock.getTo());
         switch (requestType) {
             case REQUEST_VIEW:
                 List<CMSObject> directoryObjects = getDirectoryObjects(cmsRequestBlock.getPath());
@@ -153,6 +143,12 @@ public final class CMSHandler implements Handler {
                         file.length()
                 )
         );
+    }
+
+    private void postProcessPath(String path) {
+        if (path != null) {
+            path = path.replaceAll("\\\\", "/");
+        }
     }
 
     private FileTicket getFileTicket(RequestBlock requestBlock) throws IOException {

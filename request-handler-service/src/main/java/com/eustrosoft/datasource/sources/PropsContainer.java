@@ -1,8 +1,13 @@
 package com.eustrosoft.datasource.sources;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public interface PropsContainer {
+    Properties getProperties();
+
     default void reloadProps(boolean force) throws Exception {
         if (getLoadedProps() == null || getLoadedProps().isEmpty()) {
             loadProps();
@@ -16,9 +21,14 @@ public interface PropsContainer {
         }
     }
 
-    ;
-
     void loadProps() throws Exception;
 
-    Map<String, String> getLoadedProps();
+    default Map<String, String> getLoadedProps() {
+        Map<String, String> props = new HashMap<>();
+        Set<Map.Entry<Object, Object>> entries = getProperties().entrySet();
+        for (Map.Entry<Object, Object> entry : entries) {
+            props.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        return props;
+    }
 }
