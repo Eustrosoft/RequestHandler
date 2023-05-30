@@ -22,4 +22,5 @@ public class DBConstants {
     public final static String ZOID = "zoid";
     public final static String ZRID = "zrid";
     public final static String ZVER = "zver";
+    public final static String ZLVL = "zlvl";
 }

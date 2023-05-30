@@ -9,6 +9,10 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.providers.DataSourceProvider;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.datasource.sources.CMSDataSource;
+import com.eustrosoft.datasource.sources.HexFileParams;
+import com.eustrosoft.datasource.sources.HexFileResult;
+import com.eustrosoft.dbdatasource.core.DBDataSource;
+import com.eustrosoft.filedatasource.FileCMSDataSource;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,24 +44,6 @@ public class HexFileHandler implements Handler {
         if (storagePath.isEmpty()) {
             storagePath = this.storage.getStoragePath();
         }
-        String answer = "";
-        String uploadPath = requestBl.getPath();
-        checkPathInjection(uploadPath);
-
-        String fileName = requestBl.getFileName();
-        String hexString = requestBl.getHexString();
-        Map<String, String> userPaths = this.storage.getUserPaths();
-        String filePath = userPaths.get(fileName);
-        if (filePath == null || filePath.isEmpty()) {
-            filePath = getNextIterationFilePath(
-                    new File(storagePath, uploadPath).getAbsolutePath(),
-                    fileName
-            );
-            userPaths.put(fileName, filePath);
-        }
-        if (filePath.isEmpty()) {
-            throw new IOException("File path was not specified for this user.");
-        }
         this.cmsDataSource = DataSourceProvider
                 .getInstance(
                         new SessionProvider(
@@ -65,21 +51,69 @@ public class HexFileHandler implements Handler {
                                 requestBlock.getHttpResponse()
                         ).getSession().getConnection()
                 ).getDataSource();
-        String uploadedFile = this.cmsDataSource.createFileHex(
-                filePath,
-                fileName,
-                hexString,
-                requestBl.getFileHash()
+
+        String answer = "";
+        String uploadPath = requestBl.getPath();
+        checkPathInjection(uploadPath);
+
+        String fileName = requestBl.getFileName();
+        String hexString = requestBl.getHexString();
+        Map<String, HexFileResult> userPaths = this.storage.getUserHexUploads();
+        HexFileResult fileResult = userPaths.get(uploadPath);
+        String recordId = null;
+        String recordVer = null;
+        String filePid = null;
+        String filePath = null;
+        if (fileResult == null || fileResult.isEmpty()) {
+            String path = null;
+            if (cmsDataSource instanceof FileCMSDataSource) {
+                path = getNextIterationFilePath(
+                        new File(storagePath, uploadPath).getAbsolutePath(),
+                        fileName
+                );
+            }
+            if (cmsDataSource instanceof DBDataSource) {
+                path = uploadPath;
+            }
+            if (path == null) {
+                throw new Exception("Path was not found for file.");
+            }
+            fileResult = new HexFileResult("", "", "", path);
+            userPaths.put(uploadPath, fileResult);
+        } else {
+            recordId = fileResult.getRecordId();
+            recordVer = fileResult.getRecordVer();
+            filePid = fileResult.getFilePid();
+            filePath = fileResult.getFilePath();
+        }
+        if (fileResult.isEmpty()) {
+            throw new IOException("File path was not specified for this user.");
+        }
+        HexFileResult result = this.cmsDataSource.createFileHex(
+                new HexFileParams(
+                        filePath,
+                        recordId,
+                        recordVer,
+                        filePid,
+                        hexString,
+                        requestBl.getFileHash(),
+                        requestBl.getChunkNumber(),
+                        requestBl.getChunkCount()
+                )
         );
+        fileResult.setFilePid(result.getFilePid());
+        fileResult.setRecordId(result.getRecordId());
+        fileResult.setRecordVer(result.getRecordVer());
+        fileResult.setFilePath(result.getFilePath());
         answer = String.format(
                 "Part was uploaded in %s path with file name %s.",
                 uploadPath,
-                uploadedFile
+                fileResult.getFilePid()
         );
         if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
             this.storage.clearChunksOfCurrentPath();
             this.storage.clearPathOfCurrentStoragePath();
-            userPaths.remove(fileName);
+            userPaths.remove(uploadPath);
         }
         return new FileResponseBlock(answer);
     }

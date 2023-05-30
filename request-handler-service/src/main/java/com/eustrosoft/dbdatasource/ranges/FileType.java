@@ -3,7 +3,7 @@ package com.eustrosoft.dbdatasource.ranges;
 import lombok.Getter;
 
 public enum FileType {
-    FILE("F"),
+    FILE("B"),
     DIRECTORY("D"),
     ROOT("R");
 

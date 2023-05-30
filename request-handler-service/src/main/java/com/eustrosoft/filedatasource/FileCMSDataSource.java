@@ -3,10 +3,12 @@ package com.eustrosoft.filedatasource;
 import com.eustrosoft.core.tools.ColorTextUtil;
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
+import com.eustrosoft.datasource.sources.HexFileParams;
+import com.eustrosoft.datasource.sources.HexFileResult;
 import com.eustrosoft.datasource.sources.PropsContainer;
-import com.eustrosoft.datasource.sources.model.CMSDirectory;
-import com.eustrosoft.datasource.sources.model.CMSFile;
+import com.eustrosoft.datasource.sources.model.CMSGeneralObject;
 import com.eustrosoft.datasource.sources.model.CMSObject;
+import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.filedatasource.util.FileUtils;
 import lombok.Getter;
@@ -101,7 +103,11 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
     }
 
     @Override
-    public String createFileHex(String dist, String id, String hex, String crc32) throws Exception {
+    public HexFileResult createFileHex(HexFileParams params)
+            throws Exception {
+        String crc32 = params.getCrc32();
+        String hex = params.getHex();
+        String dist = params.getDestination();
         if (crc32 == null || crc32.isEmpty()) {
             throw new Exception("Hash code not found in request.");
         }
@@ -133,7 +139,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             stream.close();
             channel.close();
         }
-        return distanationFile.getName();
+        return new HexFileResult("", "", distanationFile.getName(), params.getDestination());
     }
 
     @Override
@@ -170,8 +176,8 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             BasicFileAttributes attributes =
                     Files.readAttributes(file.toPath(), BasicFileAttributes.class);
             if (file.isFile()) {
-                obj = new CMSFile(
-                        FilenameUtils.getExtension(file.getName()),
+                obj = new CMSGeneralObject(
+                        file.getName(),
                         FilenameUtils.getExtension(file.getName()),
                         file.getName(),
                         postProcessPath(
@@ -182,20 +188,24 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
                         new Date(file.lastModified()),
                         file.length(),
                         String.valueOf(file.hashCode()),
+                        CMSType.FILE,
                         ""
                 );
             }
             if (file.isDirectory()) {
-                obj = new CMSDirectory(
+                obj = new CMSGeneralObject(
                         file.getName(),
+                        FilenameUtils.getExtension(file.getName()),
                         file.getName(),
                         postProcessPath(
                                 file.getAbsolutePath().substring(getRootPath().length())
                         ),
                         new ArrayList<String>(),
-                        new Date(file.lastModified()),
                         new Date(attributes.creationTime().toMillis()),
+                        new Date(file.lastModified()),
                         file.length(),
+                        String.valueOf(file.hashCode()),
+                        CMSType.DIRECTORY,
                         ""
                 );
             }

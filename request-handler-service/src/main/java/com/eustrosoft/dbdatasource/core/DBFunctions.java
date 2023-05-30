@@ -20,6 +20,23 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
+    public ResultSet selectObject(String zoid) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("TIS.V_Object")
+                        .where(String.format("%s = %s", ZOID, zoid))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            return preparedStatement.executeQuery();
+        }
+        return null; // todo
+    }
+
+    @SneakyThrows
     public ExecStatus openObject(String zoid) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
@@ -47,6 +64,11 @@ public final class DBFunctions {
 
     @SneakyThrows
     public ExecStatus createObjectInScope(String scopeZoid) {
+        return createObjectInScope(scopeZoid, "null");
+    }
+
+    @SneakyThrows
+    public ExecStatus createObjectInScope(String scopeZoid, String zlvl) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -55,7 +77,7 @@ public final class DBFunctions {
                         .leftBracket()
                         .add(String.format(
                                 "'%s', %s, %s",
-                                "FS.F", scopeZoid, "null"
+                                "FS.F", scopeZoid, zlvl
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -164,18 +186,24 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ExecStatus getFDir(String objectZoid, String objectVer) {
+    public ExecStatus createFBlob(String zoid, String zver, String zpid,
+                                  String hex, String chunk, String allChunks, String crc32) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .add("TIS.commit_object")
+                        .add("FS.create_FBlob")
                         .leftBracket()
                         .add(String.format(
-                                "'%s', %s, %s",
-                                "FS.F",
-                                objectZoid,
-                                objectVer
+                                "%s, %s, %s, '%s', %s, %s, %s",
+                                zoid,
+                                zver,
+                                zpid,
+                                hex,
+                                chunk,
+                                allChunks,
+                                crc32
+
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -226,15 +254,12 @@ public final class DBFunctions {
                         .all()
                         .from()
                         .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s == '%s'", ZOID, dirId, F_NAME, dirName))
+                        .where(String.format("%s = %s and %s = '%s'", ZOID, dirId, F_NAME, dirName))
                         .buildWithSemicolon()
                         .toString()
         );
         if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
-            resultSet.close();
-            return resultSet;
+            return preparedStatement.executeQuery();
         }
         return null; // todo
     }

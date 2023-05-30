@@ -1,6 +1,7 @@
 package com.eustrosoft.core.context;
 
 import com.eustrosoft.core.tools.FileUtils;
+import com.eustrosoft.datasource.sources.HexFileResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class UserStorage implements StorageContext {
     private final User user;
     private final List<String> usedPaths = new ArrayList<>();
     private final Map<String, String> userPaths = new HashMap<>();
+    private final Map<String, HexFileResult> hexUserUploads = new HashMap<>();
 
     private UserStorage(User user) throws IOException {
         this.user = user;
@@ -121,6 +123,10 @@ public class UserStorage implements StorageContext {
 
     public synchronized Map<String, String> getUserPaths() {
         return this.userPaths;
+    }
+
+    public synchronized Map<String, HexFileResult> getUserHexUploads() {
+        return this.hexUserUploads;
     }
 
     private String getUserDirectory() {

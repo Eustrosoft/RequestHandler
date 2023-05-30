@@ -56,4 +56,8 @@ public final class ResultSetUtils {
         }
         return sid;
     }
+
+    public static String getFid(ResultSet resultSet) {
+        return getValueOrEmpty(resultSet, "f_id");
+    }
 }

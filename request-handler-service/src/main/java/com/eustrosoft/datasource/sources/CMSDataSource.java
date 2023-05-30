@@ -23,7 +23,7 @@ public interface CMSDataSource {
 
     String createFile(String path, String name) throws Exception;
 
-    String createFileHex(String dist, String id, String hex, String crc32) throws Exception;
+    HexFileResult createFileHex(HexFileParams params) throws Exception;
 
     String createDirectory(String path) throws Exception;
 
