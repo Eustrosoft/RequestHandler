@@ -446,16 +446,17 @@ public class DBDataSource implements CMSDataSource {
         FileDetails fileDetails = new FileDetails();
         try {
             ResultSet resultSet = fileDetailsPS.executeQuery();
-            if (resultSet != null) {
-                resultSet.next();
+            int index = 0;
+            while (resultSet.next()) {
+                if (index >= 1) {
+                    throw new Exception("More than 1 file present in this path.\nCall administrator to resolve.");
+                }
+                index++;
                 if (!resultSet.getString("type").equals("B")) {
                     throw new Exception("Type not match."); // todo: create file details for dir
                 }
                 fileDetails.setMimeType(resultSet.getString("mimetype"));
                 fileDetails.setFileName(resultSet.getString("name"));
-                if (resultSet.next()) {
-                    throw new Exception("More than 1 file present in this path.\nCall administrator to resolve.");
-                }
             }
         } finally {
             fileDetailsPS.close();

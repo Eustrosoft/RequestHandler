@@ -39,6 +39,7 @@ public final class DataSourceProvider implements PropsContainer {
         if (dataSourceProvider == null) {
             dataSourceProvider = new DataSourceProvider(connection);
         }
+        dataSourceProvider.updateDBConnection(connection);
         return dataSourceProvider;
     }
 
@@ -72,6 +73,14 @@ public final class DataSourceProvider implements PropsContainer {
             }
         } catch (IOException ex) {
             throw new Exception("Error while processing properties.");
+        }
+    }
+
+    private void updateDBConnection(QDBPConnection connection)
+            throws Exception {
+        CMSDataSource dataSource = this.getDataSource();
+        if (dataSource instanceof DBDataSource) {
+            this.dataSource = new DBDataSource(connection);
         }
     }
 }
