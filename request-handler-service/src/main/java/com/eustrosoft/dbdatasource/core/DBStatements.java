@@ -126,7 +126,7 @@ public final class DBStatements {
     }
 
     @SneakyThrows
-    private static int getPathLvl(String path) {
+    public static int getPathLvl(String path) {
         if (path == null || path.isEmpty() || path.trim().isEmpty()) {
             throw new Exception("Path was null.");
         }

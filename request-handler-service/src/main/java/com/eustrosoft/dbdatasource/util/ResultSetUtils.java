@@ -25,7 +25,7 @@ public final class ResultSetUtils {
         return val;
     }
 
-    public static CMSType getType(ResultSet resultSet) {
+    public static CMSType getType(ResultSet resultSet, CMSType defaultValue) {
         CMSType val = CMSType.UNKNOWN;
         try {
             String typeStr = resultSet.getObject(TYPE).toString();
@@ -39,6 +39,10 @@ public final class ResultSetUtils {
             ex.printStackTrace();
         }
         return val;
+    }
+
+    public static CMSType getType(ResultSet resultSet) {
+        return getType(resultSet, CMSType.UNKNOWN);
     }
 
     public static String getZsid(ResultSet resultSet) {

@@ -33,6 +33,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getPathLvl;
 import static com.eustrosoft.dbdatasource.core.DBStatements.getStatementForPath;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getFid;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
@@ -536,7 +537,7 @@ public class DBDataSource implements CMSDataSource {
                 try {
                     String name = getValueOrEmpty(resultSet, NAME);
                     String fname = getValueOrEmpty(resultSet, F_NAME);
-                    CMSType type = getType(resultSet);
+                    CMSType type = getPathLvl(fullPath) < 2 ? CMSType.DIRECTORY : getType(resultSet);
                     String sid = getZsid(resultSet);
                     String zoid = getZoid(resultSet);
                     String fid = getFid(resultSet);
