@@ -13,19 +13,12 @@ public final class DBPoolContext {
     }
 
     public static QDBPool getInstance(String name, String url, String driver) {
-        if (pool == null) {
-            pool = QDBPool.get(name);
-            if (pool == null) {
-                pool = new QDBPool(name, url, driver);
-            }
-        } else {
-            QDBPool cachedPool = QDBPool.get(name);
-            if (cachedPool == null) {
-                cachedPool = new QDBPool(name, url, driver);
-                pool.add(cachedPool);
-            }
+        QDBPool cachedPool = QDBPool.get(name);
+        if (cachedPool == null) {
+            cachedPool = new QDBPool(name, url, driver);
+            QDBPool.add(cachedPool);
         }
-        return pool;
+        return cachedPool;
     }
 
     public static String getUrl(HttpServletRequest request) {

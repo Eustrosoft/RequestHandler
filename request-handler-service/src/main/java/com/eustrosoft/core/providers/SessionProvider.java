@@ -35,6 +35,10 @@ public final class SessionProvider {
                 POSTGRES_DRIVER
         );
         this.session = dbPool.logon(cookieValue);
-        session.renewLastUsageTS();
+        if (this.session.isSessionRenewReady()) {
+            this.session.renewSession();
+            qTisCookie.set(this.session.getSessionSecretCookie(), this.session.getSessionCookieMaxAge());
+        }
+        //this.session.renewSession();
     }
 }
