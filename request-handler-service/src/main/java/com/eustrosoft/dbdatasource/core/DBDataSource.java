@@ -546,7 +546,7 @@ public class DBDataSource implements CMSDataSource {
                             CMSGeneralObject.builder()
                                     .id(fid.isEmpty() ? zoid : fid)
                                     .description(descr)
-                                    .fullPath(fullPath)
+                                    .fullPath(new File(fullPath, fname.isEmpty() ? name : fname).getPath())
                                     .fileName(fname.isEmpty() ? name : fname)
                                     .type(type)
                                     .build()
