@@ -542,12 +542,13 @@ public class DBDataSource implements CMSDataSource {
                     String zoid = getZoid(resultSet);
                     String fid = getFid(resultSet);
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
+                    String finalName = fname.isEmpty() ? name : fname;
                     objects.add(
                             CMSGeneralObject.builder()
                                     .id(fid.isEmpty() ? zoid : fid)
                                     .description(descr)
-                                    .fullPath(new File(fullPath, fname.isEmpty() ? name : fname).getPath())
-                                    .fileName(fname.isEmpty() ? name : fname)
+                                    .fullPath(new File(fullPath, finalName).getPath())
+                                    .fileName(finalName)
                                     .type(type)
                                     .build()
                     );
