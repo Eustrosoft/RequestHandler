@@ -232,9 +232,9 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public String createDirectory(String path) throws Exception {
-        path = getFullPath(path); // todo
         File file = new File(path);
         String parentPath = file.getParent();
+        parentPath = getFullPath(parentPath);
         String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
         String scopeZoid = getFirstLevelFromPath(parentPath);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
