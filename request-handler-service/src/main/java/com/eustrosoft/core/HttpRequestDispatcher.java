@@ -52,6 +52,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.eustrosoft.core.Constants.ERR_SERVER;
@@ -104,73 +105,12 @@ public class HttpRequestDispatcher extends HttpServlet {
         writer.close();
     }
 
-    // TODO: file download mimetype
-    @Override
-    @SneakyThrows
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        /*
-        To see:
-            1. find file and mimetype - send file
-            2.
-        To download:
-            1. mimetype - binary
-        ID, name, mimetype:
-            1. download by id, name, mimetype
-         */
-        req.setCharacterEncoding("UTF-8");
-        try {
-            checkLogin(req, resp, SUBSYSTEM_CMS);
-        } catch (Exception ex) {
-            System.err.println("Unauthorized access.");
-            printError(resp, getUnauthorizedResponse());
-            return;
-        }
-
-        String path = req.getParameter("path");
-        String ticket = req.getParameter("ticket");
-        String contentType = req.getParameter("contentType");
-        QDBPSession session = new SessionProvider(req, resp).getSession();
-        CMSDataSource dataSource = DataSourceProvider.getInstance(session.getConnection())
-                .getDataSource();
-
-        try {
-            if (dataSource instanceof DBDataSource) {
-                if (path == null || path.isEmpty()) {
-                    throw new Exception("You did not provide path. For database data " +
-                            "source is not possible to get file from other sources.");
-                }
-                InputStream fileStream = dataSource.getFileStream(path);
-                setHeadersForFileDownload(resp, dataSource.getFileDetails(path));
-                dataSource.uploadToStream(fileStream, resp.getOutputStream());
-                return;
-            }
-            if (dataSource instanceof FileCMSDataSource) {
-                if (ticket != null && !ticket.isEmpty()) {
-                    downloadFile(req, resp, ticket, contentType);
-                }
-                if (path != null || !path.isEmpty()) {
-                    Json json = new Json().builder()
-                            .addKeyValue("path", path)
-                            .addKeyValue("r", REQUEST_TICKET)
-                            .build();
-                    CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
-                    ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
-                            .processRequest(cmsRequestBlock);
-                    String newTicket = responseBlock.getM();
-                    downloadFile(req, resp, newTicket, contentType);
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            printError(resp,
-                    getExceptionResponse(
-                            ex.getMessage(),
-                            SUBSYSTEM_CMS,
-                            REQUEST_DOWNLOAD,
-                            ERR_SERVER)
-            );
-        }
-    }
+    private static final String[] AVAILABLE_CONTENT_TYPES = new String[]{
+            "application/octet-stream", "application/json",
+            "application/pdf", "application/xml", "plain/text",
+            "image/gif", "image/jpeg", "image/jpg", "image/png",
+            "image/svg", "video/mp4", "video/mpeg"
+    };
 
     @SneakyThrows
     private Response processRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -421,6 +361,8 @@ public class HttpRequestDispatcher extends HttpServlet {
         return object;
     }
 
+    // FILE DOWNLOAD PART TODO: refactor
+
     @SneakyThrows
     private void setHeadersForFileDownload(HttpServletResponse response, FileDetails fileDetails) {
         response.reset();
@@ -439,11 +381,83 @@ public class HttpRequestDispatcher extends HttpServlet {
         response.setHeader("Accept-Ranges", "bytes");
     }
 
+    @Override
+    @SneakyThrows
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        req.setCharacterEncoding("UTF-8");
+        try {
+            checkLogin(req, resp, SUBSYSTEM_CMS);
+        } catch (Exception ex) {
+            System.err.println("Unauthorized access.");
+            printError(resp, getUnauthorizedResponse());
+            return;
+        }
+
+        String id = req.getParameter("id");
+        String name = req.getParameter("name");
+        String path = req.getParameter("path");
+        String ticket = req.getParameter("ticket");
+        String contentType = req.getParameter("contentType");
+        QDBPSession session = new SessionProvider(req, resp).getSession();
+        CMSDataSource dataSource = DataSourceProvider.getInstance(session.getConnection())
+                .getDataSource();
+
+        try {
+            if (dataSource instanceof DBDataSource) {
+                if ((path == null || path.isEmpty())
+                        && (id == null || id.isEmpty())) {
+                    throw new Exception("You did not provide path. For database data " +
+                            "source is not possible to get file from other sources.");
+                }
+                path = (path == null || path.isEmpty()) ? String.format("/%s", id) : path;
+                InputStream fileStream = dataSource.getFileStream(path);
+                FileDetails fileDetails = dataSource.getFileDetails(path);
+                if (contentType != null && !contentType.isEmpty()) {
+                    fileDetails.setMimeType(contentType);
+                }
+                setHeadersForFileDownload(resp, fileDetails);
+                dataSource.uploadToStream(fileStream, resp.getOutputStream());
+                return;
+            }
+            if (dataSource instanceof FileCMSDataSource) {
+                if (ticket != null && !ticket.isEmpty()) {
+                    downloadFile(req, resp, ticket, contentType);
+                }
+                if (path != null || !path.isEmpty()) {
+                    Json json = new Json().builder()
+                            .addKeyValue("path", path)
+                            .addKeyValue("r", REQUEST_TICKET)
+                            .build();
+                    CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
+                    ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
+                            .processRequest(cmsRequestBlock);
+                    String newTicket = responseBlock.getM();
+                    downloadFile(req, resp, newTicket, contentType);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            printError(resp,
+                    getExceptionResponse(
+                            ex.getMessage(),
+                            SUBSYSTEM_CMS,
+                            REQUEST_DOWNLOAD,
+                            ERR_SERVER)
+            );
+        }
+    }
+
     private void setContentType(HttpServletResponse httpResponse, String mimeType) {
         if (mimeType != null && !mimeType.isEmpty()) {
-            httpResponse.setContentType(mimeType);
-        } else {
-            httpResponse.setContentType("application/octet-stream");
+            if (isAvailableContentType(mimeType)) {
+                httpResponse.setContentType(mimeType);
+                return;
+            }
         }
+        httpResponse.setContentType("application/octet-stream");
+    }
+
+    private boolean isAvailableContentType(String contentType) {
+        return Arrays.asList(AVAILABLE_CONTENT_TYPES).contains(contentType);
     }
 }

@@ -62,36 +62,39 @@ public final class CMSHandler implements Handler {
         cmsResponseBlock.setE(0);
         cmsResponseBlock.setErrMsg("Ok.");
         // TODO
-        postProcessPath(cmsRequestBlock.getPath());
-        postProcessPath(cmsRequestBlock.getFrom());
-        postProcessPath(cmsRequestBlock.getTo());
+        String path = cmsRequestBlock.getPath();
+        String from = cmsRequestBlock.getFrom();
+        String to = cmsRequestBlock.getTo();
+        postProcessPath(path);
+        postProcessPath(from);
+        postProcessPath(to);
         switch (requestType) {
             case REQUEST_VIEW:
-                List<CMSObject> directoryObjects = getDirectoryObjects(cmsRequestBlock.getPath());
+                List<CMSObject> directoryObjects = getDirectoryObjects(path);
                 cmsResponseBlock.setContent(directoryObjects);
                 break;
             case REQUEST_CREATE:
                 if (CMSType.FILE.equals(cmsRequestBlock.getType())) {
                     createFile(
-                            cmsRequestBlock.getPath(),
+                            path,
                             cmsRequestBlock.getFileName()
                     );
                 }
                 if (CMSType.DIRECTORY.equals(cmsRequestBlock.getType())) {
                     createDirectory(
-                            cmsRequestBlock.getPath(),
+                            path,
                             cmsRequestBlock.getFileName()
                     );
                 }
                 break;
             case REQUEST_COPY:
-                copyFile(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
+                copyFile(from, to);
                 break;
             case REQUEST_MOVE:
-                move(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
+                move(from, to);
                 break;
             case REQUEST_DELETE:
-                delete(cmsRequestBlock.getPath());
+                delete(path);
                 break;
             case REQUEST_TICKET:
                 if (cmsDataSource instanceof DBDataSource) {
@@ -101,7 +104,7 @@ public final class CMSHandler implements Handler {
                 cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
                 break;
             case REQUEST_RENAME:
-                rename(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
+                rename(from, to);
                 break;
             case REQUEST_DOWNLOAD:
                 if (cmsDataSource instanceof DBDataSource) {
@@ -255,6 +258,11 @@ public final class CMSHandler implements Handler {
         return this.cmsDataSource.delete(source);
     }
 
+    private String getProcessedIdsPath(String path) throws Exception {
+        return this.cmsDataSource.getFullPath(path);
+    }
+
+    // todo: remove duplicate
     private void setContentType(CMSRequestBlock cmsRequestBlock, HttpServletResponse httpResponse) {
         String contentType = cmsRequestBlock.getContentType();
         if (contentType != null && !contentType.isEmpty()) {

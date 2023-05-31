@@ -12,7 +12,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
 
 public final class ResultSetUtils {
 
-    public ResultSetUtils() {
+    private ResultSetUtils() {
     }
 
     public static String getValueOrEmpty(ResultSet resultSet, String colName) {
