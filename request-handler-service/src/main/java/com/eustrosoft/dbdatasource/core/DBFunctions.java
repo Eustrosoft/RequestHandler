@@ -10,6 +10,7 @@ import java.io.SequenceInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Vector;
 
 import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
@@ -226,30 +227,29 @@ public final class DBFunctions {
     public ExecStatus createFBlob(String zoid, String zver, String zpid,
                                   String hex, String chunk, String allChunks, String crc32) {
         Connection connection = poolConnection.get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("FS.create_FBlob")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s, '\\%s'::bytea, %s, %s, %s",
-                                zoid,
-                                zver,
-                                zpid,
-                                hex,
-                                chunk,
-                                allChunks,
-                                Integer.parseInt(crc32, 16)
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
-        );
+        String query = Query.builder()
+                .select()
+                .add("FS.create_FBlob")
+                .leftBracket()
+                .add(String.format(
+                        "%s, %s, %s, '%s', %s, %s, %s",
+                        zoid,
+                        zver,
+                        zpid,
+                        hex,
+                        chunk,
+                        allChunks,
+                        Integer.parseInt(crc32, 16)
+                ))
+                .rightBracket()
+                .buildWithSemicolon()
+                .toString();
+        Statement statement = connection.createStatement();
         ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery(query);
             status.fillFromResultSet(resultSet);
-            preparedStatement.close();
+            statement.close();
             resultSet.close();
         }
         return status;

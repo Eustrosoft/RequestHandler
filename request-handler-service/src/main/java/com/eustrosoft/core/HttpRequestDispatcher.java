@@ -133,35 +133,42 @@ public class HttpRequestDispatcher extends HttpServlet {
         CMSDataSource dataSource = DataSourceProvider.getInstance(session.getConnection())
                 .getDataSource();
 
-        if (dataSource instanceof DBDataSource) {
-            if (path == null || path.isEmpty()) {
-                throw new Exception("You did not provide path. For database data " +
-                        "source is not possible to get file from other sources.");
+        try {
+            if (dataSource instanceof DBDataSource) {
+                if (path == null || path.isEmpty()) {
+                    throw new Exception("You did not provide path. For database data " +
+                            "source is not possible to get file from other sources.");
+                }
+                InputStream fileStream = dataSource.getFileStream(path);
+                setHeadersForFileDownload(resp, dataSource.getFileDetails(path));
+                dataSource.uploadToStream(fileStream, resp.getOutputStream());
+                return;
             }
-            InputStream fileStream = dataSource.getFileStream(path);
-            setHeadersForFileDownload(resp, dataSource.getFileDetails(path));
-            dataSource.uploadToStream(fileStream, resp.getOutputStream());
-            return;
-        }
-        if (dataSource instanceof FileCMSDataSource) {
-            if (ticket != null && !ticket.isEmpty()) {
-                downloadFile(req, resp, ticket, contentType);
-            }
-            if (path != null || !path.isEmpty()) {
-                Json json = new Json().builder()
-                        .addKeyValue("path", path)
-                        .addKeyValue("r", REQUEST_TICKET)
-                        .build();
-                CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
-                try {
+            if (dataSource instanceof FileCMSDataSource) {
+                if (ticket != null && !ticket.isEmpty()) {
+                    downloadFile(req, resp, ticket, contentType);
+                }
+                if (path != null || !path.isEmpty()) {
+                    Json json = new Json().builder()
+                            .addKeyValue("path", path)
+                            .addKeyValue("r", REQUEST_TICKET)
+                            .build();
+                    CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
                     ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
                             .processRequest(cmsRequestBlock);
                     String newTicket = responseBlock.getM();
                     downloadFile(req, resp, newTicket, contentType);
-                } catch (Exception e) {
-                    printError(resp, getExceptionResponse("File does not exist.", SUBSYSTEM_CMS, REQUEST_TICKET, ERR_SERVER));
                 }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            printError(resp,
+                    getExceptionResponse(
+                            ex.getMessage(),
+                            SUBSYSTEM_CMS,
+                            REQUEST_DOWNLOAD,
+                            ERR_SERVER)
+            );
         }
     }
 
