@@ -126,8 +126,7 @@ public class DBDataSource implements CMSDataSource {
         // create_FBlob (id - object zoid, zver - object version, pid - row id (1-st param), hex, chunk, chunks, size, crc32)
         // create_FBlob (id - object zoid, zver - object version, pid - row id (1-st param), hex, chunk, chunks, size, crc32) - until last chunk
         // commit_object(object)
-        params.setDestination(getFullPath(params.getDestination()));
-        String dest = params.getDestination();
+        String dest = getFullPath(params.getDestination());
         String crc32 = params.getCrc32();
         String recordId = params.getRecordId();
         String recordVer = params.getRecordVer();
@@ -228,7 +227,7 @@ public class DBDataSource implements CMSDataSource {
                 throw new Exception(commited.getCaption()); // TODO
             }
         }
-        return new HexFileResult(recordId, recordVer, filePid, filePath);
+        return new HexFileResult(recordId, recordVer, filePid, params.getDestination());
     }
 
     @Override

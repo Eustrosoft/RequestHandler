@@ -232,14 +232,14 @@ public final class DBFunctions {
                 .add("FS.create_FBlob")
                 .leftBracket()
                 .add(String.format(
-                        "%s, %s, %s, '%s', %s, %s, %s",
+                        "%s, %s, %s, '\\x%s', %s, %s, %s",
                         zoid,
                         zver,
                         zpid,
                         hex,
                         chunk,
                         allChunks,
-                        Integer.parseInt(crc32, 16)
+                        Integer.parseInt(crc32.substring(3), 16)
                 ))
                 .rightBracket()
                 .buildWithSemicolon()
