@@ -5,7 +5,14 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import com.eustrosoft.core.handlers.file.*;
+import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
+import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
+import com.eustrosoft.core.handlers.file.ChunkFileHandler;
+import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
+import com.eustrosoft.core.handlers.file.FileHandler;
+import com.eustrosoft.core.handlers.file.FileRequestBlock;
+import com.eustrosoft.core.handlers.file.HexFileHandler;
+import com.eustrosoft.core.handlers.file.HexFileRequestBlock;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
@@ -18,8 +25,14 @@ import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
+import com.eustrosoft.core.providers.DataSourceProvider;
+import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.Json;
 import com.eustrosoft.core.tools.QJson;
+import com.eustrosoft.datasource.sources.CMSDataSource;
+import com.eustrosoft.datasource.sources.FileDetails;
+import com.eustrosoft.dbdatasource.core.DBDataSource;
+import com.eustrosoft.filedatasource.FileCMSDataSource;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
@@ -34,13 +47,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.ERR_SERVER;
+import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
+import static com.eustrosoft.core.Constants.LOGIN_POOL;
+import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
+import static com.eustrosoft.core.Constants.REQUEST;
+import static com.eustrosoft.core.Constants.REQUESTS;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_SQL;
+import static com.eustrosoft.core.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.Constants.SUBSYSTEM;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
+import static com.eustrosoft.core.Constants.TIMEOUT;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
+import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
 @WebServlet(
         name = "EustrosoftRequestDispatcher",
@@ -69,9 +104,19 @@ public class HttpRequestDispatcher extends HttpServlet {
         writer.close();
     }
 
+    // TODO: file download mimetype
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    @SneakyThrows
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        /*
+        To see:
+            1. find file and mimetype - send file
+            2.
+        To download:
+            1. mimetype - binary
+        ID, name, mimetype:
+            1. download by id, name, mimetype
+         */
         req.setCharacterEncoding("UTF-8");
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
@@ -80,25 +125,42 @@ public class HttpRequestDispatcher extends HttpServlet {
             printError(resp, getUnauthorizedResponse());
             return;
         }
+
         String path = req.getParameter("path");
         String ticket = req.getParameter("ticket");
         String contentType = req.getParameter("contentType");
-        if (ticket != null && !ticket.isEmpty()) {
-            downloadFile(req, resp, ticket, contentType);
+        QDBPSession session = new SessionProvider(req, resp).getSession();
+        CMSDataSource dataSource = DataSourceProvider.getInstance(session.getConnection())
+                .getDataSource();
+
+        if (dataSource instanceof DBDataSource) {
+            if (path == null || path.isEmpty()) {
+                throw new Exception("You did not provide path. For database data " +
+                        "source is not possible to get file from other sources.");
+            }
+            InputStream fileStream = dataSource.getFileStream(path);
+            setHeadersForFileDownload(resp, dataSource.getFileDetails(path));
+            dataSource.uploadToStream(fileStream, resp.getOutputStream());
+            return;
         }
-        if (path != null || !path.isEmpty()) {
-            Json json = new Json().builder()
-                    .addKeyValue("path", path)
-                    .addKeyValue("r", REQUEST_TICKET)
-                    .build();
-            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
-            try {
-                ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
-                        .processRequest(cmsRequestBlock);
-                String newTicket = responseBlock.getM();
-                downloadFile(req, resp, newTicket, contentType);
-            } catch (Exception e) {
-                printError(resp, getExceptionResponse("File does not exist.", SUBSYSTEM_CMS, REQUEST_TICKET, ERR_SERVER));
+        if (dataSource instanceof FileCMSDataSource) {
+            if (ticket != null && !ticket.isEmpty()) {
+                downloadFile(req, resp, ticket, contentType);
+            }
+            if (path != null || !path.isEmpty()) {
+                Json json = new Json().builder()
+                        .addKeyValue("path", path)
+                        .addKeyValue("r", REQUEST_TICKET)
+                        .build();
+                CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
+                try {
+                    ResponseBlock responseBlock = new CMSHandler(REQUEST_TICKET)
+                            .processRequest(cmsRequestBlock);
+                    String newTicket = responseBlock.getM();
+                    downloadFile(req, resp, newTicket, contentType);
+                } catch (Exception e) {
+                    printError(resp, getExceptionResponse("File does not exist.", SUBSYSTEM_CMS, REQUEST_TICKET, ERR_SERVER));
+                }
             }
         }
     }
@@ -350,5 +412,31 @@ public class HttpRequestDispatcher extends HttpServlet {
         response.addProperty("r", request);
         object.add("r", response);
         return object;
+    }
+
+    @SneakyThrows
+    private void setHeadersForFileDownload(HttpServletResponse response, FileDetails fileDetails) {
+        response.reset();
+        setContentType(response, fileDetails.getMimeType());
+        response.setCharacterEncoding(fileDetails.getEncoding());
+        response.setHeader(
+                "Content-Disposition",
+                String.format(
+                        "attachment; filename=\"%s\";;filename*=utf-8''%s",
+                        fileDetails.getFileName(),
+                        URLEncoder.encode(fileDetails.getFileName(), "UTF-8")
+                )
+        );
+        response.setContentLengthLong(fileDetails.getFileLength());
+        response.setBufferSize(DEFAULT_BUFFER_SIZE);
+        response.setHeader("Accept-Ranges", "bytes");
+    }
+
+    private void setContentType(HttpServletResponse httpResponse, String mimeType) {
+        if (mimeType != null && !mimeType.isEmpty()) {
+            httpResponse.setContentType(mimeType);
+        } else {
+            httpResponse.setContentType("application/octet-stream");
+        }
     }
 }

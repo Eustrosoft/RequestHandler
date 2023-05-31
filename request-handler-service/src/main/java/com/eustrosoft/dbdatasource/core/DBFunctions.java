@@ -5,9 +5,12 @@ import com.eustrosoft.dbdatasource.ranges.FileType;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Vector;
 
 import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
@@ -25,7 +28,9 @@ public final class DBFunctions {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .add("TIS.V_Object")
+                        .all()
+                        .from()
+                        .add("TIS.V_ZObject")
                         .where(String.format("%s = %s", ZOID, zoid))
                         .buildWithSemicolon()
                         .toString()
@@ -34,6 +39,38 @@ public final class DBFunctions {
             return preparedStatement.executeQuery();
         }
         return null; // todo
+    }
+
+    @SneakyThrows
+    public Long getFileLength(String zoid) {
+        Connection connection = poolConnection.get();
+        PreparedStatement blobLengthPS = DBStatements.getBlobLength(connection, zoid);
+        try {
+            ResultSet resultSet = blobLengthPS.executeQuery();
+            if (resultSet != null) {
+                resultSet.next();
+                return resultSet.getLong("sum");
+            }
+        } finally {
+            blobLengthPS.close();
+        }
+        return -1L;
+    }
+
+    @SneakyThrows
+    public InputStream getFileInputStream(String zoid) {
+        Connection connection = poolConnection.get();
+        PreparedStatement blobDetailsPS = DBStatements.getBlobDetails(connection, zoid);
+        try {
+            ResultSet resultSet = blobDetailsPS.executeQuery();
+            Vector<InputStream> streams = new Vector<>();
+            while (resultSet.next()) {
+                streams.add(resultSet.getBinaryStream("chunk"));
+            }
+            return new SequenceInputStream(streams.elements());
+        } finally {
+            blobDetailsPS.close();
+        }
     }
 
     @SneakyThrows
@@ -195,15 +232,14 @@ public final class DBFunctions {
                         .add("FS.create_FBlob")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s, '%s', %s, %s, %s",
+                                "%s, %s, %s, '\\%s'::bytea, %s, %s, %s",
                                 zoid,
                                 zver,
                                 zpid,
                                 hex,
                                 chunk,
                                 allChunks,
-                                crc32
-
+                                Integer.parseInt(crc32, 16)
                         ))
                         .rightBracket()
                         .buildWithSemicolon()

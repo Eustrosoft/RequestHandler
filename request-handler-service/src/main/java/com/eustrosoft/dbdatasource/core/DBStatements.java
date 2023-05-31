@@ -11,6 +11,8 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_ROOT;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_SCOPE;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ROOTS;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.SCOPES;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 
 public final class DBStatements {
     @SneakyThrows
@@ -79,6 +81,50 @@ public final class DBStatements {
         throw new Exception("Can not find PreparedStatement for path.");
     }
 
+
+    @SneakyThrows
+    public static PreparedStatement getFileDetails(Connection connection, String zoid) {
+        return connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("name, mimetype, type")
+                        .from()
+                        .add("FS.V_FFile")
+                        .where(String.format("%s = %s", ZOID, zoid))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+    }
+
+    @SneakyThrows
+    public static PreparedStatement getBlobDetails(Connection connection, String zoid) {
+        return connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("FS.V_FBlob")
+                        .where(String.format("%s = %s", ZOID, zoid))
+                        .add(String.format("order by %s %s", ZRID, "ASC"))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+    }
+
+    @SneakyThrows
+    public static PreparedStatement getBlobLength(Connection connection, String zoid) {
+        return connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("sum(length(chunk))")
+                        .from()
+                        .add("FS.V_FBlob")
+                        .where(String.format("%s = %s", ZOID, zoid))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+    }
+
     @SneakyThrows
     private static int getPathLvl(String path) {
         if (path == null || path.isEmpty() || path.trim().isEmpty()) {
@@ -101,4 +147,23 @@ public final class DBStatements {
         }
         return LVL_OTHER;
     }
+
+    private String getNameFromPath(String path, int level) {
+        String firstLevelFromPath = getFirstLevelFromPath(path);
+        if (level == 0) {
+            return firstLevelFromPath;
+        }
+        return getNameFromPath(path.substring(firstLevelFromPath.length()), level - 1);
+    }
+
+    private String getFirstLevelFromPath(String path) {
+        String firSlashRem = path.substring(1);
+        int nextSlash = firSlashRem.indexOf('/');
+        if (nextSlash == -1) {
+            return firSlashRem;
+        } else {
+            return firSlashRem.substring(0, nextSlash);
+        }
+    }
+
 }

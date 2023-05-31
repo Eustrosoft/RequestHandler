@@ -80,6 +80,7 @@ public class HexFileHandler implements Handler {
             }
             fileResult = new HexFileResult("", "", "", path);
             userPaths.put(uploadPath, fileResult);
+            filePath = path;
         } else {
             recordId = fileResult.getRecordId();
             recordVer = fileResult.getRecordVer();
@@ -88,6 +89,9 @@ public class HexFileHandler implements Handler {
         }
         if (fileResult.isEmpty()) {
             throw new IOException("File path was not specified for this user.");
+        }
+        if (requestBl.getChunkNumber() == 0) {
+            recordId = fileName;
         }
         HexFileResult result = this.cmsDataSource.createFileHex(
                 new HexFileParams(
@@ -106,9 +110,10 @@ public class HexFileHandler implements Handler {
         fileResult.setRecordVer(result.getRecordVer());
         fileResult.setFilePath(result.getFilePath());
         answer = String.format(
-                "Part was uploaded in %s path with file name %s.",
+                "Part %d was uploaded in %s path with file name %s.",
+                requestBl.getChunkNumber(),
                 uploadPath,
-                fileResult.getFilePid()
+                fileName
         );
         if (requestBl.getChunkNumber().equals(requestBl.getChunkCount() - 1)) {
             this.storage.clearChunksOfCurrentPath();

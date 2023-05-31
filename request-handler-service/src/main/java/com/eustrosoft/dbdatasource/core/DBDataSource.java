@@ -2,6 +2,7 @@ package com.eustrosoft.dbdatasource.core;
 
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
+import com.eustrosoft.datasource.sources.FileDetails;
 import com.eustrosoft.datasource.sources.HexFileParams;
 import com.eustrosoft.datasource.sources.HexFileResult;
 import com.eustrosoft.datasource.sources.model.CMSGeneralObject;
@@ -27,6 +28,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
 import static com.eustrosoft.dbdatasource.core.DBStatements.getStatementForPath;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getFid;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
@@ -52,7 +54,7 @@ public class DBDataSource implements CMSDataSource {
         List<CMSObject> cmsObjects = new ArrayList<>();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            cmsObjects = processResultSetToCMSObjects(resultSet);
+            cmsObjects = processResultSetToCMSObjects(resultSet, new File(path).getPath());
             preparedStatement.close();
             resultSet.close();
         }
@@ -117,7 +119,7 @@ public class DBDataSource implements CMSDataSource {
         // create_FBlob (id - object zoid, zver - object version, pid - row id (1-st param), hex, chunk, chunks, size, crc32)
         // create_FBlob (id - object zoid, zver - object version, pid - row id (1-st param), hex, chunk, chunks, size, crc32) - until last chunk
         // commit_object(object)
-        String dist = params.getDestination();
+        String dest = params.getDestination();
         String crc32 = params.getCrc32();
         String recordId = params.getRecordId();
         String recordVer = params.getRecordVer();
@@ -126,18 +128,20 @@ public class DBDataSource implements CMSDataSource {
         Long chunk = params.getChunkNumber();
         Long chunkCount = params.getChunkCount();
 
-        File file = new File(dist);
+        File file = new File(dest);
         String filePath = file.getPath();
         String parentZoid = filePath.substring(filePath.lastIndexOf('/') + 1);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
         ResultSet selectObject = dbFunctions.selectObject(parentZoid);
         String zoid = null;
         String zlvl = null;
+        String zsid = null;
         try {
             if (selectObject != null) {
                 selectObject.next();
                 zoid = selectObject.getString(ZOID);
                 zlvl = selectObject.getString(ZLVL);
+                zsid = selectObject.getString(ZSID);
                 if (selectObject.next()) {
                     throw new Exception("Multiple directories was found.");
                 }
@@ -148,50 +152,59 @@ public class DBDataSource implements CMSDataSource {
             selectObject.close();
         }
         if (chunk == 0) {
-            String fileName = filePath.substring(filePath.lastIndexOf('/'));
+            String fileName = params.getRecordId();
             ExecStatus opened = dbFunctions.openObject(zoid);
-            if (!opened.isOk()) {
-                throw new Exception(opened.getCaption());
+            try {
+                if (!opened.isOk()) {
+                    throw new Exception(opened.getCaption());
+                }
+                ExecStatus objectInScope = dbFunctions.createObjectInScope(zsid);
+                if (!objectInScope.isOk()) {
+                    throw new Exception(objectInScope.getCaption());
+                }
+                recordId = objectInScope.getZoid().toString();
+                recordVer = objectInScope.getZver().toString();
+                ExecStatus fDir = dbFunctions.createFDir(
+                        opened.getZoid().toString(),
+                        opened.getZver().toString(),
+                        zoid,
+                        objectInScope.getZoid().toString(),
+                        fileName,
+                        "FDir was created"
+                );
+                if (!fDir.isOk()) {
+                    throw new Exception(fDir.getCaption()); // TODO
+                }
+                ExecStatus commitFDir = dbFunctions.commitObject(
+                        opened.getZoid().toString(),
+                        opened.getZver().toString()
+                );
+                if (!commitFDir.isOk()) {
+                    throw new Exception(commitFDir.getCaption()); // TODO
+                }
+                ExecStatus fFile = dbFunctions.createFFile(
+                        objectInScope.getZoid().toString(),
+                        objectInScope.getZver().toString(),
+                        null,
+                        FileType.FILE,
+                        fileName
+                );
+                if (!fFile.isOk()) {
+                    throw new Exception(fFile.getCaption()); // TODO
+                }
+                filePid = fFile.getZoid().toString();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                try {
+                    dbFunctions.commitObject(opened.getZoid().toString(), opened.getZver().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            ExecStatus objectInScope = dbFunctions.createObjectInScope(zoid, zlvl);
-            if (!objectInScope.isOk()) {
-                throw new Exception(objectInScope.getCaption());
-            }
-            ExecStatus fDir = dbFunctions.createFDir(
-                    objectInScope.getZoid().toString(),
-                    objectInScope.getZver().toString(),
-                    zoid,
-                    null,
-                    fileName,
-                    "FDir was created"
-            );
-            if (!fDir.isOk()) {
-                throw new Exception(fDir.getCaption()); // TODO
-            }
-            recordId = fDir.getZoid().toString();
-            recordVer = fDir.getZver().toString();
-            ExecStatus commitFDir = dbFunctions.commitObject(
-                    opened.getZoid().toString(),
-                    opened.getZver().toString()
-            );
-            if (!commitFDir.isOk()) {
-                throw new Exception(commitFDir.getCaption()); // TODO
-            }
-            ExecStatus fFile = dbFunctions.createFFile(
-                    objectInScope.getZoid().toString(),
-                    objectInScope.getZver().toString(),
-                    null,
-                    FileType.FILE,
-                    fileName
-            );
-            if (!fFile.isOk()) {
-                throw new Exception(fFile.getCaption()); // TODO
-            }
-            filePid = fFile.getZoid().toString();
         }
         ExecStatus fBlob = dbFunctions.createFBlob(
                 recordId,
-                recordId,
+                recordVer,
                 filePid,
                 hex,
                 String.valueOf(chunk),
@@ -200,8 +213,8 @@ public class DBDataSource implements CMSDataSource {
         );
         if (chunk == chunkCount - 1) {
             ExecStatus commited = dbFunctions.commitObject(
-                    fBlob.getZoid().toString(),
-                    fBlob.getZver().toString()
+                    recordId,
+                    recordVer
             );
             if (!commited.isOk()) {
                 throw new Exception(commited.getCaption()); // TODO
@@ -285,6 +298,41 @@ public class DBDataSource implements CMSDataSource {
     }
 
     @Override
+    public InputStream getFileStream(String path) throws Exception {
+        String zoid = getLastLevelFromPath(path);
+        return new DBFunctions(poolConnection)
+                .getFileInputStream(zoid);
+    }
+
+    @Override
+    public FileDetails getFileDetails(String path) throws Exception {
+        Connection connection = poolConnection.get();
+        String zoid = getLastLevelFromPath(path);
+        PreparedStatement fileDetailsPS = DBStatements.getFileDetails(connection, zoid);
+        FileDetails fileDetails = new FileDetails();
+        try {
+            ResultSet resultSet = fileDetailsPS.executeQuery();
+            if (resultSet != null) {
+                resultSet.next();
+                if (!resultSet.getString("type").equals("B")) {
+                    throw new Exception("Type not match."); // todo: create file details for dir
+                }
+                fileDetails.setMimeType(resultSet.getString("mimetype"));
+                fileDetails.setFileName(resultSet.getString("name"));
+                if (resultSet.next()) {
+                    throw new Exception("More than 1 file present in this path.\nCall administrator to resolve.");
+                }
+            }
+        } finally {
+            fileDetailsPS.close();
+        }
+        DBFunctions functions = new DBFunctions(poolConnection);
+        fileDetails.setFileLength(functions.getFileLength(zoid));
+        fileDetails.setEncoding("UTF-8");
+        return fileDetails;
+    }
+
+    @Override
     public boolean delete(String path) throws Exception {
         File file = new File(path);
         String dirName = file.getName();
@@ -336,8 +384,17 @@ public class DBDataSource implements CMSDataSource {
         }
     }
 
+    private String getLastLevelFromPath(String path) throws Exception {
+        int lastSlash = path.lastIndexOf('/');
+        if (lastSlash == -1) {
+            throw new Exception("Illegal path.");
+        } else {
+            return path.substring(lastSlash + 1);
+        }
+    }
+
     @SneakyThrows
-    private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet) {
+    private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) {
         List<CMSObject> objects = new ArrayList<>();
         try {
             while (resultSet.next()) {
@@ -353,7 +410,7 @@ public class DBDataSource implements CMSDataSource {
                             CMSGeneralObject.builder()
                                     .id(fid.isEmpty() ? zoid : fid)
                                     .description(descr)
-                                    .fullPath(name)
+                                    .fullPath(fullPath)
                                     .fileName(fname)
                                     .type(type)
                                     .build()

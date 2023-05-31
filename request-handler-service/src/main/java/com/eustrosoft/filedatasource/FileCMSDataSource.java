@@ -3,6 +3,7 @@ package com.eustrosoft.filedatasource;
 import com.eustrosoft.core.tools.ColorTextUtil;
 import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
+import com.eustrosoft.datasource.sources.FileDetails;
 import com.eustrosoft.datasource.sources.HexFileParams;
 import com.eustrosoft.datasource.sources.HexFileResult;
 import com.eustrosoft.datasource.sources.PropsContainer;
@@ -111,8 +112,8 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
         if (crc32 == null || crc32.isEmpty()) {
             throw new Exception("Hash code not found in request.");
         }
-        File distanationFile = new File(dist);
-        RandomAccessFile stream = new RandomAccessFile(distanationFile, "rw");
+        File destinationFile = new File(dist);
+        RandomAccessFile stream = new RandomAccessFile(destinationFile, "rw");
         FileChannel channel = stream.getChannel();
         FileLock lock = null;
         CRC32 crc = new CRC32();
@@ -121,11 +122,11 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             lock = channel.tryLock();
             byte[] bytes = hex.getBytes();
             crc.update(bytes, 0, bytes.length);
-            stream.seek(distanationFile.length());
+            stream.seek(destinationFile.length());
             stream.write(buffer);
             String value = String.format("%x", crc.getValue());
             if (!crc32.contains(value) && !value.contains(crc32)) { // TODO
-                distanationFile.delete();
+                destinationFile.delete();
                 throw new Exception("Hash code did not match.");
             }
         } catch (Exception e) {
@@ -139,7 +140,17 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             stream.close();
             channel.close();
         }
-        return new HexFileResult("", "", distanationFile.getName(), params.getDestination());
+        return new HexFileResult("", "", destinationFile.getName(), params.getDestination());
+    }
+
+    @Override
+    public InputStream getFileStream(String path) throws Exception {
+        return null; // todo
+    }
+
+    @Override
+    public FileDetails getFileDetails(String path) throws Exception {
+        return null; // todo
     }
 
     @Override

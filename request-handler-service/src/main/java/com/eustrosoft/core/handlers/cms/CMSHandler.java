@@ -13,6 +13,7 @@ import com.eustrosoft.datasource.exception.CMSException;
 import com.eustrosoft.datasource.sources.CMSDataSource;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
+import com.eustrosoft.dbdatasource.core.DBDataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;
@@ -93,6 +94,9 @@ public final class CMSHandler implements Handler {
                 delete(cmsRequestBlock.getPath());
                 break;
             case REQUEST_TICKET:
+                if (cmsDataSource instanceof DBDataSource) {
+                    throw new Exception("This functionality is not implemented for database.");
+                }
                 FileTicket downloadPathDetails = getFileTicket(requestBlock);
                 cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
                 break;
@@ -100,6 +104,9 @@ public final class CMSHandler implements Handler {
                 rename(cmsRequestBlock.getFrom(), cmsRequestBlock.getTo());
                 break;
             case REQUEST_DOWNLOAD:
+                if (cmsDataSource instanceof DBDataSource) {
+                    throw new Exception("This functionality is not implemented for database.");
+                }
                 download(requestBlock, cmsRequestBlock);
                 break;
             default:
@@ -118,7 +125,7 @@ public final class CMSHandler implements Handler {
             throw new CMSException("File is not exist.");
         }
         InputStream inputStream;
-        String fileName;
+        String filePath;
         if (file.isDirectory()) {
             File temporaryFolder = new File(userDir);
             FileUtils.copyDirectory(file, new File(temporaryFolder.getAbsolutePath(), file.getName()));
@@ -128,18 +135,18 @@ public final class CMSHandler implements Handler {
                     temporaryFolder.getAbsolutePath(),
                     temporaryFolder.getAbsolutePath()
             );
-            fileName = zipFileName;
+            filePath = path.toString();
             inputStream = new FileInputStream(path.toFile());
         } else if (file.isFile()) {
             inputStream = new FileInputStream(file);
-            fileName = file.getName();
+            filePath = file.getName();
         } else {
             throw new CMSException("File type is not recognized");
         }
         return FileDownloadService.getInstance().beginConversation(
                 new DownloadFileDetails(
                         inputStream,
-                        fileName,
+                        filePath,
                         file.length()
                 )
         );
@@ -163,7 +170,7 @@ public final class CMSHandler implements Handler {
         );
     }
 
-    private void download(RequestBlock requestBlock, CMSRequestBlock cmsRequestBlock) throws IOException {
+    private void download(RequestBlock requestBlock, CMSRequestBlock cmsRequestBlock) throws Exception {
         FileDownloadService fds = FileDownloadService.getInstance();
         DownloadFileDetails fileInfo
                 = fds.getFileInfoAndEndConversation(cmsRequestBlock.getTicket());
@@ -183,17 +190,9 @@ public final class CMSHandler implements Handler {
         httpResponse.setBufferSize(DEFAULT_BUFFER_SIZE);
         httpResponse.setHeader("Accept-Ranges", "bytes");
         OutputStream os = httpResponse.getOutputStream();
-        try (InputStream inputStream = fileInfo.getInputStream()) {
-            byte[] buf = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buf)) != -1) {
-                os.write(buf, 0, bytesRead);
-            }
-        } finally {
-            os.flush();
-            os.close();
-            // TODO: make delete action
-        }
+        // todo: create getFileStream realization
+        this.cmsDataSource.uploadToStream(fileInfo.getInputStream(), os);
+        // todo: make file deletion
     }
 
     private boolean move(String from, String to)
