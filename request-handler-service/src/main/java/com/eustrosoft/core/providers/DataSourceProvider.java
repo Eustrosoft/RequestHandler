@@ -39,7 +39,8 @@ public final class DataSourceProvider implements PropsContainer {
         if (dataSourceProvider == null) {
             dataSourceProvider = new DataSourceProvider(connection);
         }
-        dataSourceProvider.updateDBConnection(connection);
+        // refresh connection or other info for cms data source based on different instances
+        dataSourceProvider.refresh(connection);
         return dataSourceProvider;
     }
 
@@ -76,7 +77,7 @@ public final class DataSourceProvider implements PropsContainer {
         }
     }
 
-    private void updateDBConnection(QDBPConnection connection)
+    private void refresh(QDBPConnection connection)
             throws Exception {
         CMSDataSource dataSource = this.getDataSource();
         if (dataSource instanceof DBDataSource) {

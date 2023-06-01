@@ -13,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 
 public final class DBFunctions {
@@ -290,7 +290,7 @@ public final class DBFunctions {
                         .all()
                         .from()
                         .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = '%s'", ZOID, dirId, F_NAME, dirName))
+                        .where(String.format("%s = %s and %s = %s", ZOID, dirId, FILE_ID, dirName))
                         .buildWithSemicolon()
                         .toString()
         );

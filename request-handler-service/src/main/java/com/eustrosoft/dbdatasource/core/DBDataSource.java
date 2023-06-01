@@ -219,6 +219,7 @@ public class DBDataSource implements CMSDataSource {
                 crc32
         );
         if (chunk == chunkCount - 1) {
+            // todo: add size
             ExecStatus commited = dbFunctions.commitObject(
                     recordId,
                     recordVer
@@ -471,9 +472,9 @@ public class DBDataSource implements CMSDataSource {
     public boolean delete(String path) throws Exception {
         path = getFullPath(path);
         File file = new File(path);
-        String dirName = file.getName();
+        String dirName = getLastLevelFromPath(path);
         String parentPath = file.getParent();
-        String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
+        String parentZoid = getLastLevelFromPath(parentPath);
 
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
         ExecStatus open = dbFunctions.openObject(parentZoid);
@@ -482,24 +483,23 @@ public class DBDataSource implements CMSDataSource {
         }
         ResultSet directoryByNameAndId = dbFunctions.getDirectoryByNameAndId(parentZoid, dirName);
         ExecStatus commit = null;
-        if (directoryByNameAndId != null) {
-            try {
-                directoryByNameAndId.next();
-                long zrid = directoryByNameAndId.getLong(ZRID);
-                ExecStatus delete = dbFunctions.deleteFDir(
-                        String.valueOf(open.getZoid()),
-                        String.valueOf(zrid),
-                        String.valueOf(open.getZver())
-                );
-                if (!delete.isOk()) {
-                    throw new Exception(delete.getCaption());
-                }
-            } catch (Exception ex) {
-                throw new Exception(ex.getMessage());
-            } finally {
-                commit = dbFunctions.commitObject(parentZoid, String.valueOf(open.getZver()));
-                directoryByNameAndId.close();
+        try {
+            directoryByNameAndId.next();
+            long zrid = directoryByNameAndId.getLong(ZRID);
+            ExecStatus delete = dbFunctions.deleteFDir(
+                    String.valueOf(open.getZoid()),
+                    String.valueOf(zrid),
+                    String.valueOf(open.getZver())
+            );
+            if (!delete.isOk()) {
+                throw new Exception(delete.getCaption());
             }
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        } finally {
+            // todo: rollback
+            commit = dbFunctions.commitObject(parentZoid, String.valueOf(open.getZver()));
+            directoryByNameAndId.close();
         }
         if (commit == null) {
             commit = dbFunctions.commitObject(parentZoid, String.valueOf(open.getZver()));
