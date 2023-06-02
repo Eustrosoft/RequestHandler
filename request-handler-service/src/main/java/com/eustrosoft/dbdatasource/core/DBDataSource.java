@@ -9,7 +9,6 @@ import com.eustrosoft.datasource.sources.model.CMSGeneralObject;
 import com.eustrosoft.datasource.sources.model.CMSObject;
 import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
-import com.eustrosoft.dbdatasource.queries.Query;
 import com.eustrosoft.dbdatasource.ranges.FileType;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
@@ -33,8 +32,12 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getFirstLevelFromPath;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getLastLevelFromPath;
 import static com.eustrosoft.dbdatasource.core.DBStatements.getPathLvl;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getStatementForPath;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getPathParts;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getSelectForPath;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getViewStatementForPath;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getFid;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
 import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
@@ -56,12 +59,12 @@ public class DBDataSource implements CMSDataSource {
     public List<CMSObject> getContent(String path) throws Exception {
         String newPath = getFullPath(path); // todo
         Connection connection = poolConnection.get();
-        PreparedStatement preparedStatement = getStatementForPath(connection, newPath);
+        PreparedStatement preparedStatement = getViewStatementForPath(connection, newPath);
         List<CMSObject> cmsObjects = new ArrayList<>();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            cmsObjects = processResultSetToCMSObjects(resultSet, new File(path).getPath());
             preparedStatement.close();
+            cmsObjects = processResultSetToCMSObjects(resultSet, new File(path).getPath());
             resultSet.close();
         }
         return cmsObjects;
@@ -135,11 +138,9 @@ public class DBDataSource implements CMSDataSource {
         Long chunk = params.getChunkNumber();
         Long chunkCount = params.getChunkCount();
 
-        File file = new File(dest);
-        String filePath = file.getPath();
-        String parentZoid = filePath.substring(filePath.lastIndexOf('/') + 1);
+        String lastLvlPath = getLastLevelFromPath(new File(dest).getPath());
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
-        ResultSet selectObject = dbFunctions.selectObject(parentZoid);
+        ResultSet selectObject = dbFunctions.selectObject(lastLvlPath);
         String zoid = null;
         String zlvl = null;
         String zsid = null;
@@ -236,7 +237,7 @@ public class DBDataSource implements CMSDataSource {
         File file = new File(path);
         String parentPath = file.getParent();
         parentPath = getFullPath(parentPath);
-        String parentZoid = parentPath.substring(parentPath.lastIndexOf('/') + 1);
+        String parentZoid = getLastLevelFromPath(parentPath);
         String scopeZoid = getFirstLevelFromPath(parentPath);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
         ExecStatus opened = dbFunctions.openObject(parentZoid);
@@ -337,75 +338,6 @@ public class DBDataSource implements CMSDataSource {
         }
     }
 
-    private String getSelectForPath(String path) {
-        String[] pathParts = getPathParts(path);
-        int lvl = pathParts.length;
-        Query.Builder builder = Query.builder();
-        builder.select();
-        for (int i = 0; i < lvl; i++) {
-            if (i == 0) {
-                builder.add("XS.id, XS.name");
-            } else if (i == 1) {
-                builder.add("FF.ZOID, FF.name");
-            } else {
-                builder.add(String.format("FD%d.f_id, FD%d.fname", i - 2, i - 2));
-            }
-            if (i != lvl - 1) {
-                builder.comma();
-            }
-        }
-        builder.from();
-        for (int i = 0; i < lvl; i++) {
-            if (i == 0) {
-                builder.add("SAM.V_Scope XS");
-            } else if (i == 1) {
-                builder.add("FS.V_FFile FF");
-            } else {
-                builder.add(String.format("FS.V_FDir FD%d", i - 2));
-            }
-            if (i != lvl - 1) {
-                builder.comma();
-            }
-        }
-        return builder.where(
-                getWhereForLvlAndName(pathParts, lvl)
-        ).buildWithSemicolon().toString();
-    }
-
-    private String getWhereForLvlAndName(String[] partNames, int lvl) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(" ");
-        for (int i = 0; i < lvl; i++) {
-            if (i == 0) {
-                builder.append(String.format("XS.name = '%s'", partNames[i]));
-            } else if (i == 1) {
-                builder.append(String.format("FF.ZSID = XS.id and FF.name = '%s'", partNames[i]));
-            } else if (i == 2) {
-                builder.append(String.format("FD0.ZOID = FF.ZOID and FD0.fname = '%s'", partNames[i]));
-            } else {
-                builder.append(String.format("FD%d.ZOID = FD%d.f_id and FD%d.fname ='%s'", i - 2, i - 3, i - 2, partNames[i]));
-            }
-            if (i != lvl - 1) {
-                builder.append(" and ");
-            }
-        }
-        return builder.toString();
-    }
-
-    @SneakyThrows
-    private String[] getPathParts(String path) {
-        if (path == null || path.isEmpty()) {
-            throw new IllegalArgumentException("Path was null.");
-        }
-        if (path.indexOf("/") == 0) {
-            path = path.substring(1);
-        }
-        if (path.lastIndexOf("/") == path.length() - 1) {
-            path = path.substring(0, path.length() - 1);
-        }
-        return path.trim().split("/");
-    }
-
     @Override
     public boolean update(String path, CMSObjectUpdateParameters data) throws CMSException {
         return false;
@@ -438,7 +370,6 @@ public class DBDataSource implements CMSDataSource {
         try {
             path = getFullPath(path);
         } catch (Exception ex) {
-            // todo
             ex.printStackTrace();
         }
         Connection connection = poolConnection.get();
@@ -510,28 +441,10 @@ public class DBDataSource implements CMSDataSource {
         return commit.isOk();
     }
 
-    private String getFirstLevelFromPath(String path) {
-        String firSlashRem = path.substring(1);
-        int nextSlash = firSlashRem.indexOf('/');
-        if (nextSlash == -1) {
-            return firSlashRem;
-        } else {
-            return firSlashRem.substring(0, nextSlash);
-        }
-    }
-
-    private String getLastLevelFromPath(String path) throws Exception {
-        int lastSlash = path.lastIndexOf('/');
-        if (lastSlash == -1) {
-            throw new Exception("Illegal path.");
-        } else {
-            return path.substring(lastSlash + 1);
-        }
-    }
-
     @SneakyThrows
     private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) {
         List<CMSObject> objects = new ArrayList<>();
+        DBFunctions functions = new DBFunctions(poolConnection);
         try {
             while (resultSet.next()) {
                 try {
@@ -543,9 +456,11 @@ public class DBDataSource implements CMSDataSource {
                     String fid = getFid(resultSet);
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
+                    String id = fid.isEmpty() ? zoid : fid;
                     objects.add(
                             CMSGeneralObject.builder()
-                                    .id(fid.isEmpty() ? zoid : fid)
+                                    .id(id)
+                                    .space(functions.getFileLength(id))
                                     .description(descr)
                                     .fullPath(new File(fullPath, finalName).getPath())
                                     .fileName(finalName)
