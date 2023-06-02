@@ -63,11 +63,22 @@ public class DBDataSource implements CMSDataSource {
         List<CMSObject> cmsObjects = new ArrayList<>();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
             cmsObjects = processResultSetToCMSObjects(resultSet, new File(path).getPath());
+            preparedStatement.close();
             resultSet.close();
+            fillSpaceForFiles(cmsObjects);
         }
         return cmsObjects;
+    }
+
+    private void fillSpaceForFiles(List<CMSObject> objects) {
+        DBFunctions functions = new DBFunctions(poolConnection);
+        for (int i = 0; i < objects.size(); i++) {
+            CMSObject cmsObject = objects.get(0);
+            if (cmsObject instanceof CMSGeneralObject) {
+                ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getId()));
+            }
+        }
     }
 
     @Override
@@ -444,7 +455,6 @@ public class DBDataSource implements CMSDataSource {
     @SneakyThrows
     private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) {
         List<CMSObject> objects = new ArrayList<>();
-        DBFunctions functions = new DBFunctions(poolConnection);
         try {
             while (resultSet.next()) {
                 try {
@@ -460,7 +470,6 @@ public class DBDataSource implements CMSDataSource {
                     objects.add(
                             CMSGeneralObject.builder()
                                     .id(id)
-                                    .space(functions.getFileLength(id))
                                     .description(descr)
                                     .fullPath(new File(fullPath, finalName).getPath())
                                     .fileName(finalName)
