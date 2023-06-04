@@ -12,12 +12,7 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.eustrosoft.core.Constants.ERR_OK;
-import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
-import static com.eustrosoft.core.Constants.LOGIN_POOL;
-import static com.eustrosoft.core.Constants.MSG_OK;
-import static com.eustrosoft.core.Constants.MSG_UNAUTHORIZED;
-import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
+import static com.eustrosoft.core.Constants.*;
 
 public class PingHandler implements Handler {
     @Override
@@ -28,10 +23,11 @@ public class PingHandler implements Handler {
                 requestBlock.getHttpRequest(),
                 requestBlock.getHttpResponse()
         );
+        HttpServletRequest request = requestBlock.getHttpRequest();
         QDBPool dbPool = DBPoolContext.getInstance(
-                LOGIN_POOL,
-                DBPoolContext.getUrl(requestBlock.getHttpRequest()),
-                POSTGRES_DRIVER
+                DBPoolContext.getDbPoolName(request),
+                DBPoolContext.getUrl(request),
+                DBPoolContext.getDriverClass(request)
         );
         QDBPSession dbps = dbPool.logon(qtisSessionCookie.getCookieValue());
         if (dbps.checkSecretCookie(dbps.getSecretCookie())) {

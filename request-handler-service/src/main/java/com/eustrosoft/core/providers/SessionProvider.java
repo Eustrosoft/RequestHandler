@@ -8,9 +8,6 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.LOGIN_POOL;
-import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
-
 public final class SessionProvider {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
@@ -30,9 +27,9 @@ public final class SessionProvider {
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
         String cookieValue = qTisCookie.getCookieValue();
         QDBPool dbPool = DBPoolContext.getInstance(
-                LOGIN_POOL, // TODO
+                DBPoolContext.getDbPoolName(request),
                 DBPoolContext.getUrl(request),
-                POSTGRES_DRIVER
+                DBPoolContext.getDriverClass(request)
         );
         this.session = dbPool.logon(cookieValue);
         if (this.session.isSessionRenewReady()) {

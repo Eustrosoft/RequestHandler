@@ -18,8 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 
-import static com.eustrosoft.core.Constants.LOGIN_POOL;
-import static com.eustrosoft.core.Constants.POSTGRES_DRIVER;
 import static com.eustrosoft.core.Constants.REQUEST_LOGIN;
 import static com.eustrosoft.core.Constants.REQUEST_LOGOUT;
 
@@ -84,11 +82,11 @@ public final class LoginHandler implements Handler {
         String login = requestBlock.getLogin();
         String password = requestBlock.getPassword();
         QDBPool dbPool = DBPoolContext.getInstance(
-                LOGIN_POOL,
+                DBPoolContext.getDbPoolName(request),
                 DBPoolContext.getUrl(request),
-                POSTGRES_DRIVER
+                DBPoolContext.getDriverClass(request)
         );
-        QDBPSession dbps = new QDBPSession(LOGIN_POOL, null);
+        QDBPSession dbps = new QDBPSession(DBPoolContext.getDbPoolName(request), null);
         if (dbps != null) {
             dbps.logout();
         }
@@ -117,7 +115,7 @@ public final class LoginHandler implements Handler {
             throws SQLException {
         HttpServletRequest request = requestBlock.getHttpRequest();
         HttpServletResponse response = requestBlock.getHttpResponse();
-        QDBPSession dbps = new QDBPSession(LOGIN_POOL, null);
+        QDBPSession dbps = new QDBPSession(DBPoolContext.getDbPoolName(request), null);
         dbps.logout();
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
         qTisCookie.deleteCookie();

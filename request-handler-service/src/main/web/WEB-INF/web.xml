@@ -8,8 +8,16 @@
         <param-value>fudo.eustrosoft.org:5432/tisexmpldb</param-value>
     </context-param>
     <context-param>
-        <param-name>dbPoolUrl</param-name>
+        <param-name>QDBPOOL_URL</param-name>
         <param-value>jdbc:postgresql://fudo.eustrosoft.org:5432/conceptisdb</param-value>
+    </context-param>
+    <context-param>
+        <param-name>QDBPOOL_NAME</param-name>
+        <param-value>QTIS</param-value>
+    </context-param>
+    <context-param>
+        <param-name>QDBPOOL_JDBC_CLASS</param-name>
+        <param-value>org.postgresql.Driver</param-value>
     </context-param>
     <context-param>
         <param-name>debug</param-name>

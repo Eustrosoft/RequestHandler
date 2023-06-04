@@ -44,7 +44,9 @@ public final class Constants {
     public static final String MSG_OK = "Ok";
 
     // Database Constants
+    @Deprecated
     public static final String LOGIN_POOL = "loginPool";
+    @Deprecated
     public static final String POSTGRES_DRIVER = "org.postgresql.Driver";
 
     private Constants() {
