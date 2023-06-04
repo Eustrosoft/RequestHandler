@@ -483,16 +483,19 @@ public class DBDataSource implements CMSDataSource {
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
                     String id = fid.isEmpty() ? zoid : fid;
-                    objects.add(
+                    CMSGeneralObject.CMSGeneralObjectBuilder cmsObjectBuilder =
                             CMSGeneralObject.builder()
                                     .id(id)
-                                    .securityLevel(Integer.valueOf(zlvl, 10))
                                     .description(descr)
                                     .fullPath(new File(fullPath, finalName).getPath())
                                     .fileName(finalName)
-                                    .type(type)
-                                    .build()
-                    );
+                                    .type(type);
+                    try {
+                        cmsObjectBuilder.securityLevel(Integer.valueOf(zlvl, 10));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    objects.add(cmsObjectBuilder.build());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
