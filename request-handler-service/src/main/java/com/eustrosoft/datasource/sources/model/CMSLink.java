@@ -32,12 +32,12 @@ public class CMSLink implements CMSObject {
         return null;
     }
 
-    public long getSpace() {
-        return 0;
+    public Long getSpace() {
+        return 0L;
     }
 
-    public long getTotalSpace() {
-        return 0;
+    public Long getTotalSpace() {
+        return 0L;
     }
 
     public CMSType getType() {

@@ -20,7 +20,7 @@ public class CMSFile extends CMSGeneralObject {
     private List<String> links;
     private Date created;
     private Date modified;
-    private long space;
+    private Long space;
     private String hash;
     private String description;
 

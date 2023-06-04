@@ -19,7 +19,7 @@ public interface CMSObject {
 
     Date getModified();
 
-    long getSpace();
+    Long getSpace();
 
     CMSType getType();
 

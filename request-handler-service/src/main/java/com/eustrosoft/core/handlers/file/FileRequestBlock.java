@@ -120,13 +120,18 @@ public class FileRequestBlock extends BasicRequest {
         try {
             setFileBytes(decodeString(fileData.getItemString("file")));
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
         setPath(Json.tryGetQJsonParam(fileData, "path"));
         setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
         setFileHash(fileData.getItemString("hash"));
         setDescription(fileData.getItemString("description"));
-        setSecurityLevel(fileData.getItemInteger("securityLevel"));
+        try {
+            setSecurityLevel(fileData.getItemLong("securityLevel").intValue());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected byte[] decodeString(String str) {

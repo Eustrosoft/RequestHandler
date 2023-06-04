@@ -114,7 +114,7 @@ public final class DBFunctions {
                         .add("TIS.create_object")
                         .leftBracket()
                         .add(String.format(
-                                "'%s', %s, %s",
+                                "'%s', %s, %s::smallint",
                                 "FS.F", scopeZoid, zlvl
                         ))
                         .rightBracket()

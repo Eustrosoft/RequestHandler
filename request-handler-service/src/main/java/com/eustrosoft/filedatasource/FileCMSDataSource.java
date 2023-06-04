@@ -198,6 +198,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
                         new Date(attributes.creationTime().toMillis()),
                         new Date(file.lastModified()),
                         file.length(),
+                        -1,
                         String.valueOf(file.hashCode()),
                         CMSType.FILE,
                         ""
@@ -215,6 +216,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
                         new Date(attributes.creationTime().toMillis()),
                         new Date(file.lastModified()),
                         file.length(),
+                        -1,
                         String.valueOf(file.hashCode()),
                         CMSType.DIRECTORY,
                         ""

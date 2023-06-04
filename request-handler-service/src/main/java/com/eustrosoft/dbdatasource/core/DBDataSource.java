@@ -168,7 +168,9 @@ public class DBDataSource implements CMSDataSource {
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
-            selectObject.close();
+            if (selectObject != null) {
+                selectObject.close();
+            }
         }
         if (chunk == 0) {
             String fileName = params.getRecordId();
@@ -215,8 +217,7 @@ public class DBDataSource implements CMSDataSource {
                     throw new Exception(fFile.getCaption()); // TODO
                 }
                 filePid = fFile.getZoid().toString();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } finally {
                 try {
                     dbFunctions.commitObject(opened.getZoid().toString(), opened.getZver().toString());
                 } catch (Exception e) {
@@ -467,12 +468,14 @@ public class DBDataSource implements CMSDataSource {
                     String sid = getZsid(resultSet);
                     String zoid = getZoid(resultSet);
                     String fid = getFid(resultSet);
+                    String zlvl = getValueOrEmpty(resultSet, ZLVL);
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
                     String id = fid.isEmpty() ? zoid : fid;
                     objects.add(
                             CMSGeneralObject.builder()
                                     .id(id)
+                                    .securityLevel(Integer.valueOf(zlvl, 16))
                                     .description(descr)
                                     .fullPath(new File(fullPath, finalName).getPath())
                                     .fileName(finalName)
