@@ -368,20 +368,15 @@ public class DBDataSource implements CMSDataSource {
     // todo: now works as rename
     @Override
     public boolean move(String source, String direction) throws Exception {
-        try {
-            String fullPath = getFullPath(source);
-            String fileId = getLastLevelFromPath(fullPath);
-            DBFunctions functions = new DBFunctions(poolConnection);
-            functions.renameFile(
-                    fileId,
-                    getLastLevelFromPath(source),
-                    getLastLevelFromPath(direction)
-            );
-            return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return false;
+        String fullPath = getFullPath(source);
+        String fileId = getLastLevelFromPath(fullPath);
+        DBFunctions functions = new DBFunctions(poolConnection);
+        functions.renameFile(
+                fileId,
+                getLastLevelFromPath(source),
+                getLastLevelFromPath(direction)
+        );
+        return true;
     }
 
     @Override

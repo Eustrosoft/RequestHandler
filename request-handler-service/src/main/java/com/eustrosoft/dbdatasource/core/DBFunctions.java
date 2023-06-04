@@ -80,6 +80,11 @@ public final class DBFunctions {
 
     @SneakyThrows
     public ExecStatus openObject(String zoid) {
+        return openObject(zoid, "null");
+    }
+
+    @SneakyThrows
+    public ExecStatus openObject(String zoid, String zver) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -88,7 +93,7 @@ public final class DBFunctions {
                         .leftBracket()
                         .add(String.format(
                                 "'%s', %s, %s",
-                                "FS.F", zoid, "null" // TODO
+                                "FS.F", zoid, zver
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -339,15 +344,16 @@ public final class DBFunctions {
     @SneakyThrows
     public void renameFile(String zoid, String name, String targetName) {
         FDir fDir = getFDir(zoid, name);
+        FFile fFile = getFFile(zoid, name);
         if (fDir == null) {
             throw new Exception("FDir was null while renaming");
         }
         fDir.setFileName(targetName);
-        updateFDir(fDir);
-        FFile fFile = getFFile(zoid, name);
+        updateFDir(fDir, fFile.getZver().toString());
         if (fFile == null) {
             throw new Exception("FFile was null while renaming");
         }
+        fFile = getFFile(zoid, name);
         fFile.setFileName(targetName);
         updateFFile(fFile);
     }
@@ -386,7 +392,7 @@ public final class DBFunctions {
                         .all()
                         .from()
                         .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = '%s'", ZOID, zoid, F_NAME, name))
+                        .where(String.format("%s = %s and %s = '%s'", FILE_ID, zoid, F_NAME, name))
                         .buildWithSemicolon()
                         .toString()
         );
@@ -403,20 +409,18 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public void updateFDir(FDir fDir) {
+    public void updateFDir(FDir fDir, String fileVer) {
         ExecStatus status = null;
         try {
             if (fDir == null) {
                 throw new Exception("FDir is null while updating.");
             }
-            status = openObject(fDir.getZoid().toString());
+            status = openObject(fDir.getFileId().toString(), fileVer);
             if (status.isOk()) {
                 Connection connection = poolConnection.get();
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         Query.builder()
                                 .select()
-                                .all()
-                                .from()
                                 .add("FS.update_FDir")
                                 .leftBracket()
                                 .add(fDir.toUpdate())
@@ -452,8 +456,6 @@ public final class DBFunctions {
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         Query.builder()
                                 .select()
-                                .all()
-                                .from()
                                 .add("FS.update_FFile")
                                 .leftBracket()
                                 .add(fFile.toUpdate())
