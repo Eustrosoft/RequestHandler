@@ -284,6 +284,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             try {
                 checkLogin(request, response, subSystem); // main filter for logging user
             } catch (Exception ex) {
+                printError(response, getUnauthorizedResponse());
                 System.err.println("Unauthorized access.");
                 return null;
             }
@@ -354,21 +355,16 @@ public class HttpRequestDispatcher extends HttpServlet {
     private void checkLogin(HttpServletRequest request,
                             HttpServletResponse response,
                             String subsystem) {
-        try {
-            QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
-            String cookieValue = qTisCookie.getCookieValue();
-            QDBPool dbPool = DBPoolContext.getInstance(
-                    LOGIN_POOL,
-                    DBPoolContext.getUrl(request),
-                    POSTGRES_DRIVER
-            );
-            QDBPSession session = dbPool.logon(cookieValue);
+        QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
+        String cookieValue = qTisCookie.getCookieValue();
+        QDBPool dbPool = DBPoolContext.getInstance(
+                LOGIN_POOL,
+                DBPoolContext.getUrl(request),
+                POSTGRES_DRIVER
+        );
+        QDBPSession session = dbPool.logon(cookieValue);
 
-            if (session == null && !isLoginSubsystem(subsystem)) {
-                printError(response, getUnauthorizedResponse());
-                throw new Exception("Unauthorized access");
-            }
-        } catch (Exception ex) {
+        if (session == null && !isLoginSubsystem(subsystem)) {
             printError(response, getUnauthorizedResponse());
             throw new Exception("Unauthorized access");
         }
