@@ -349,7 +349,7 @@ public final class DBFunctions {
             throw new Exception("FDir was null while renaming");
         }
         fDir.setFileName(targetName);
-        updateFDir(fDir, fFile.getZver().toString());
+        updateFDir(fDir);
         if (fFile == null) {
             throw new Exception("FFile was null while renaming");
         }
@@ -409,14 +409,16 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public void updateFDir(FDir fDir, String fileVer) {
+    public void updateFDir(FDir fDir) {
         ExecStatus status = null;
+        ExecStatus fDirOpen = null;
         try {
             if (fDir == null) {
                 throw new Exception("FDir is null while updating.");
             }
-            status = openObject(fDir.getFileId().toString(), fileVer);
-            if (status.isOk()) {
+            status = openObject(fDir.getFileId().toString());
+            fDirOpen = openObject(fDir.getZoid().toString());
+            if (status.isOk() && fDirOpen.isOk()) {
                 Connection connection = poolConnection.get();
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         Query.builder()
@@ -439,6 +441,9 @@ public final class DBFunctions {
         } finally {
             if (status != null) {
                 commitObject(status.getZoid().toString(), status.getZver().toString());
+            }
+            if (fDirOpen != null) {
+                commitObject(fDirOpen.getZoid().toString(), fDirOpen.getZver().toString());
             }
         }
     }
