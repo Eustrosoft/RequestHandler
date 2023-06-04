@@ -6,13 +6,7 @@ import lombok.SneakyThrows;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_OTHER;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_ROOT;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_SCOPE;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ROOTS;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.SCOPES;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 
 public final class DBStatements {
     @SneakyThrows
@@ -58,7 +52,8 @@ public final class DBStatements {
             return connection.prepareStatement(
                     Query.builder()
                             .select()
-                            .add("FD.*, FF.*")
+                            .add("FD.ZOID, FF.ZSID, FF.ZLVL, FD.f_id, COALESCE(FD.mimetype, FF.mimetype) " +
+                                    "mimetype, COALESCE(FD.descr, FF.descr) descr, FD.fname, FF.name, FF.type")
                             .from()
                             .add("FS.V_FDir AS FD")
                             .add("left outer join")
