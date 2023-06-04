@@ -67,7 +67,7 @@ public class FFile {
 
     public String toUpdate() {
         return String.format(
-                "%s, %s, %s, '%s', '%s','%s', %s, %s, %s, %s, %s, %s, %s, %s, %s",
+                "%s, %s, %s, '%s', '%s','%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
                 zoid,
                 zver,
                 zrid,
@@ -76,6 +76,7 @@ public class FFile {
                 extStore,
                 mimeType,
                 description,
+                "null",
                 chcnt,
                 algorithm,
                 digest,

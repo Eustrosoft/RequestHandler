@@ -418,6 +418,7 @@ public final class DBFunctions {
             }
             status = openObject(fDir.getFileId().toString());
             fDirOpen = openObject(fDir.getZoid().toString());
+            fDir.setZver(fDirOpen.getZver());
             if (status.isOk() && fDirOpen.isOk()) {
                 Connection connection = poolConnection.get();
                 PreparedStatement preparedStatement = connection.prepareStatement(
@@ -456,6 +457,7 @@ public final class DBFunctions {
                 throw new Exception("FFile is null while updating.");
             }
             status = openObject(fFile.getZoid().toString());
+            fFile.setZver(status.getZver());
             if (status.isOk()) {
                 Connection connection = poolConnection.get();
                 PreparedStatement preparedStatement = connection.prepareStatement(
