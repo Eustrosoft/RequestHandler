@@ -13,4 +13,20 @@ public enum FileType {
     FileType(String value) {
         this.value = value;
     }
+
+    public static FileType fromString(String str) {
+        if (str == null || str.isEmpty()) {
+            throw new NullPointerException("String was null.");
+        }
+        switch (str) {
+            case "B":
+                return FileType.FILE;
+            case "D":
+                return FileType.DIRECTORY;
+            case "R":
+                return FileType.ROOT;
+            default:
+                throw new NullPointerException("This value not found.");
+        }
+    }
 }

@@ -49,7 +49,7 @@ public class FFile {
                     resultSet.getLong(ZVER),
                     resultSet.getLong(ZRID),
                     resultSet.getString(NAME),
-                    FileType.valueOf(resultSet.getString("type")),
+                    FileType.fromString(resultSet.getString("type")),
                     resultSet.getString("extstore").charAt(0),
                     resultSet.getString("mimetype"),
                     resultSet.getString(DESCRIPTION),
