@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public final class WebParams {
     public final static String DB_URL = "dbUrl";
-    public final static String DB_POOL_URL = "QDBPOOL_NAME";
-    public final static String DB_POOL_NAME = "QDBDPOOL_NAME";
+    public final static String DB_POOL_URL = "QDBPOOL_URL";
+    public final static String DB_POOL_NAME = "QDBPOOL_NAME";
     public final static String DB_JDBC_CLASS = "QDBPOOL_JDBC_CLASS";
     public final static String DEBUG = "debug";
 
