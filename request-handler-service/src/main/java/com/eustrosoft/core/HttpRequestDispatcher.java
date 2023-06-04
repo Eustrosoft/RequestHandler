@@ -354,16 +354,21 @@ public class HttpRequestDispatcher extends HttpServlet {
     private void checkLogin(HttpServletRequest request,
                             HttpServletResponse response,
                             String subsystem) {
-        QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
-        String cookieValue = qTisCookie.getCookieValue();
-        QDBPool dbPool = DBPoolContext.getInstance(
-                LOGIN_POOL,
-                DBPoolContext.getUrl(request),
-                POSTGRES_DRIVER
-        );
-        QDBPSession session = dbPool.logon(cookieValue);
+        try {
+            QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
+            String cookieValue = qTisCookie.getCookieValue();
+            QDBPool dbPool = DBPoolContext.getInstance(
+                    LOGIN_POOL,
+                    DBPoolContext.getUrl(request),
+                    POSTGRES_DRIVER
+            );
+            QDBPSession session = dbPool.logon(cookieValue);
 
-        if (session == null && !isLoginSubsystem(subsystem)) {
+            if (session == null && !isLoginSubsystem(subsystem)) {
+                printError(response, getUnauthorizedResponse());
+                throw new Exception("Unauthorized access");
+            }
+        } catch (Exception ex) {
             printError(response, getUnauthorizedResponse());
             throw new Exception("Unauthorized access");
         }
