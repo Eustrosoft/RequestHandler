@@ -5,7 +5,14 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import com.eustrosoft.core.handlers.file.*;
+import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
+import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
+import com.eustrosoft.core.handlers.file.ChunkFileHandler;
+import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
+import com.eustrosoft.core.handlers.file.FileHandler;
+import com.eustrosoft.core.handlers.file.FileRequestBlock;
+import com.eustrosoft.core.handlers.file.HexFileHandler;
+import com.eustrosoft.core.handlers.file.HexFileRequestBlock;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
@@ -48,7 +55,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.ERR_SERVER;
+import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
+import static com.eustrosoft.core.Constants.REQUEST;
+import static com.eustrosoft.core.Constants.REQUESTS;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.Constants.REQUEST_SQL;
+import static com.eustrosoft.core.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.Constants.SUBSYSTEM;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
+import static com.eustrosoft.core.Constants.TIMEOUT;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -255,13 +279,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             } catch (Exception ex) {
                 System.err.println("Can not get Request type. " + ex.getMessage());
             }
-            try {
-                checkLogin(request, response, subSystem); // main filter for logging user
-            } catch (Exception ex) {
-                printError(response, getUnauthorizedResponse());
-                System.err.println("Unauthorized access.");
-                return null;
-            }
+            checkLogin(request, response, subSystem); // main filter for logging user
             RequestBlock requestBlock = null;
             switch (subSystem) {
                 case SUBSYSTEM_LOGIN:

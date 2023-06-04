@@ -1,8 +1,6 @@
 package com.eustrosoft.core.handlers.ping;
 
 import com.eustrosoft.core.context.DBPoolContext;
-import com.eustrosoft.core.context.User;
-import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
@@ -12,13 +10,15 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.Constants.ERR_OK;
+import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
+import static com.eustrosoft.core.Constants.MSG_OK;
+import static com.eustrosoft.core.Constants.MSG_UNAUTHORIZED;
 
 public class PingHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         PingResponseBlock pingResponseBlock = new PingResponseBlock();
-        HttpServletRequest httpRequest = requestBlock.getHttpRequest();
         QTISSessionCookie qtisSessionCookie = new QTISSessionCookie(
                 requestBlock.getHttpRequest(),
                 requestBlock.getHttpResponse()
@@ -31,17 +31,13 @@ public class PingHandler implements Handler {
         );
         QDBPSession dbps = dbPool.logon(qtisSessionCookie.getCookieValue());
         if (dbps.checkSecretCookie(dbps.getSecretCookie())) {
-            UsersContext usersContext = UsersContext.getInstance();
-            User user = usersContext.getSQLUser(dbps.getSessionSecretCookie());
             pingResponseBlock.setErrCode(ERR_OK);
             pingResponseBlock.setMessage(MSG_OK);
-            if (httpRequest.getUserPrincipal() != null) {
-                pingResponseBlock.setFullName(httpRequest.getUserPrincipal().getName());
-            } else {
-                pingResponseBlock.setFullName(user.getUserName());
+            if (request.getUserPrincipal() != null) {
+                pingResponseBlock.setFullName(request.getUserPrincipal().getName());
             }
-            pingResponseBlock.setUsername(user.getUserName());
-            pingResponseBlock.setUserId(httpRequest.getRequestedSessionId());
+            pingResponseBlock.setUsername(dbps.getLogin());
+            pingResponseBlock.setFullName(dbps.getLogin());
         } else {
             pingResponseBlock.setErrCode(ERR_UNAUTHORIZED);
             pingResponseBlock.setMessage(MSG_UNAUTHORIZED);
