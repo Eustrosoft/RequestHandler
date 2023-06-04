@@ -470,12 +470,13 @@ public class DBDataSource implements CMSDataSource {
     @SneakyThrows
     private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) {
         List<CMSObject> objects = new ArrayList<>();
+        int pathLvl = getPathLvl(fullPath);
         try {
             while (resultSet.next()) {
                 try {
                     String name = getValueOrEmpty(resultSet, NAME);
                     String fname = getValueOrEmpty(resultSet, F_NAME);
-                    CMSType type = getPathLvl(fullPath) < 2 ? CMSType.DIRECTORY : getType(resultSet);
+                    CMSType type = pathLvl < 2 ? CMSType.DIRECTORY : getType(resultSet);
                     String sid = getZsid(resultSet);
                     String zoid = getZoid(resultSet);
                     String fid = getFid(resultSet);
