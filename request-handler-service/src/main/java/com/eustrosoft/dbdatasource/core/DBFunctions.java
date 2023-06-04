@@ -164,6 +164,38 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
+    public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
+                                  FileType type, String name, String securityLevel, String description) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("FS.create_FFile")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
+                                objectZoid,
+                                objectVer,
+                                parentVer,
+                                name,
+                                type.getValue(),
+                                "N" // TODO
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
+    }
+
+    @SneakyThrows
     public ExecStatus commitObject(String objectZoid, String objectVer) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(

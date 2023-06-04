@@ -353,6 +353,14 @@ public class QJson {
         return ((Long) getItem(index));
     }
 
+    public Integer getItemInteger(String name) {
+        return ((Integer) getItem(name));
+    }
+
+    public Integer getItemInteger(int index) {
+        return ((Integer) getItem(index));
+    }
+
     public QJson getItemQJson(String name) {
         return ((QJson) getItem(name));
     }

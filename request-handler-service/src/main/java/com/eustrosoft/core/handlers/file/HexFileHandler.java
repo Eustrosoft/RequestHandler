@@ -101,6 +101,8 @@ public class HexFileHandler implements Handler {
                         filePid,
                         hexString,
                         requestBl.getFileHash(),
+                        requestBl.getDescription(),
+                        requestBl.getSecurityLevel(),
                         requestBl.getChunkNumber(),
                         requestBl.getChunkCount()
                 )

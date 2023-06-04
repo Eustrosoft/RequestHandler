@@ -71,10 +71,10 @@ public class DBDataSource implements CMSDataSource {
         return cmsObjects;
     }
 
-    private void fillSpaceForFiles(List<CMSObject> objects) {
+    private void fillSpaceForFiles(List<CMSObject> objects) { // todo: make a single query
         DBFunctions functions = new DBFunctions(poolConnection);
         for (int i = 0; i < objects.size(); i++) {
-            CMSObject cmsObject = objects.get(0);
+            CMSObject cmsObject = objects.get(i);
             if (cmsObject instanceof CMSGeneralObject) {
                 ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getId()));
             }
@@ -177,7 +177,10 @@ public class DBDataSource implements CMSDataSource {
                 if (!opened.isOk()) {
                     throw new Exception(opened.getCaption());
                 }
-                ExecStatus objectInScope = dbFunctions.createObjectInScope(zsid);
+                ExecStatus objectInScope = dbFunctions.createObjectInScope(
+                        zsid,
+                        String.valueOf(params.getSecurityLevel())
+                );
                 if (!objectInScope.isOk()) {
                     throw new Exception(objectInScope.getCaption());
                 }
@@ -189,7 +192,7 @@ public class DBDataSource implements CMSDataSource {
                         zoid,
                         objectInScope.getZoid().toString(),
                         fileName,
-                        "FDir was created"
+                        params.getDescription()
                 );
                 if (!fDir.isOk()) {
                     throw new Exception(fDir.getCaption()); // TODO

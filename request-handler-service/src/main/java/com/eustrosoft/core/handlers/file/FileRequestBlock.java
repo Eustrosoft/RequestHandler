@@ -19,6 +19,8 @@ public class FileRequestBlock extends BasicRequest {
     private String fileHash;
     private String fileString;
     private QJson parameters;
+    private String description;
+    private Integer securityLevel;
 
     public FileRequestBlock(HttpServletRequest request,
                             HttpServletResponse response,
@@ -79,6 +81,22 @@ public class FileRequestBlock extends BasicRequest {
         this.path = path;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(Integer securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+
     @Override
     public String getS() {
         return SUBSYSTEM_FILE;
@@ -101,11 +119,14 @@ public class FileRequestBlock extends BasicRequest {
         QJson fileData = getParameters();
         try {
             setFileBytes(decodeString(fileData.getItemString("file")));
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
         setPath(Json.tryGetQJsonParam(fileData, "path"));
         setFileString(fileData.getItemString("file"));
         setFileName(fileData.getItemString("name"));
         setFileHash(fileData.getItemString("hash"));
+        setDescription(fileData.getItemString("description"));
+        setSecurityLevel(fileData.getItemInteger("securityLevel"));
     }
 
     protected byte[] decodeString(String str) {

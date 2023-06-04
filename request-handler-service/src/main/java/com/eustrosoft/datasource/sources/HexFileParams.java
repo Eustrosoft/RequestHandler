@@ -18,6 +18,8 @@ public class HexFileParams {
     private String filePid;
     private String hex;
     private String crc32;
+    private String description;
+    private Integer securityLevel;
     private Long chunkNumber;
     private Long chunkCount;
 }
