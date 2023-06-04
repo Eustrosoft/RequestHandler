@@ -166,7 +166,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             throws IOException {
         request.setCharacterEncoding("UTF-8");
         Response resp = processRequest(request, response);
-        response.setContentType("application/json");
+        response.setContentType("application/json"); // todo think about it
         response.setHeader("Cache-Control", "nocache");
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
