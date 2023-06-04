@@ -1,5 +1,7 @@
 package com.eustrosoft.dbdatasource.core;
 
+import com.eustrosoft.dbdatasource.core.model.FDir;
+import com.eustrosoft.dbdatasource.core.model.FFile;
 import com.eustrosoft.dbdatasource.queries.Query;
 import com.eustrosoft.dbdatasource.ranges.FileType;
 import lombok.SneakyThrows;
@@ -14,6 +16,8 @@ import java.sql.Statement;
 import java.util.Vector;
 
 import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 
 public final class DBFunctions {
@@ -330,5 +334,145 @@ public final class DBFunctions {
             return preparedStatement.executeQuery();
         }
         return null; // todo
+    }
+
+    @SneakyThrows
+    public void renameFile(String zoid, String name, String targetName) {
+        FDir fDir = getFDir(zoid, name);
+        if (fDir == null) {
+            throw new Exception("FDir was null while renaming");
+        }
+        fDir.setFileName(targetName);
+        updateFDir(fDir);
+        FFile fFile = getFFile(zoid, name);
+        if (fFile == null) {
+            throw new Exception("FFile was null while renaming");
+        }
+        fFile.setFileName(targetName);
+        updateFFile(fFile);
+    }
+
+    @SneakyThrows
+    public FFile getFFile(String zoid, String name) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("FS.V_FFile")
+                        .where(String.format("%s = %s and %s = '%s'", ZOID, zoid, NAME, name))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            try {
+                return FFile.fromResultSet(resultSet);
+            } finally {
+                preparedStatement.close();
+                resultSet.close();
+            }
+        }
+        return null;
+    }
+
+    @SneakyThrows
+    public FDir getFDir(String zoid, String name) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("FS.V_FDir")
+                        .where(String.format("%s = %s and %s = '%s'", ZOID, zoid, F_NAME, name))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            try {
+                return FDir.fromResultSet(resultSet);
+            } finally {
+                preparedStatement.close();
+                resultSet.close();
+            }
+        }
+        return null;
+    }
+
+    @SneakyThrows
+    public void updateFDir(FDir fDir) {
+        ExecStatus status = null;
+        try {
+            if (fDir == null) {
+                throw new Exception("FDir is null while updating.");
+            }
+            status = openObject(fDir.getZoid().toString());
+            if (status.isOk()) {
+                Connection connection = poolConnection.get();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        Query.builder()
+                                .select()
+                                .all()
+                                .from()
+                                .add("FS.update_FDir")
+                                .leftBracket()
+                                .add(fDir.toUpdate())
+                                .rightBracket()
+                                .buildWithSemicolon()
+                                .toString()
+                );
+                ExecStatus updatedStatus = new ExecStatus();
+                if (preparedStatement != null) {
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    updatedStatus.fillFromResultSet(resultSet);
+                    preparedStatement.close();
+                    resultSet.close();
+                }
+            }
+        } finally {
+            if (status != null) {
+                commitObject(status.getZoid().toString(), status.getZver().toString());
+            }
+        }
+    }
+
+    @SneakyThrows
+    public void updateFFile(FFile fFile) {
+        ExecStatus status = null;
+        try {
+            if (fFile == null) {
+                throw new Exception("FFile is null while updating.");
+            }
+            status = openObject(fFile.getZoid().toString());
+            if (status.isOk()) {
+                Connection connection = poolConnection.get();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        Query.builder()
+                                .select()
+                                .all()
+                                .from()
+                                .add("FS.update_FFile")
+                                .leftBracket()
+                                .add(fFile.toUpdate())
+                                .rightBracket()
+                                .buildWithSemicolon()
+                                .toString()
+                );
+                ExecStatus updatedStatus = new ExecStatus();
+                if (preparedStatement != null) {
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    updatedStatus.fillFromResultSet(resultSet);
+                    preparedStatement.close();
+                    resultSet.close();
+                }
+            }
+        } finally {
+            if (status != null) {
+                commitObject(status.getZoid().toString(), status.getZver().toString());
+            }
+        }
     }
 }

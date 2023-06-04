@@ -211,7 +211,9 @@ public class DBDataSource implements CMSDataSource {
                         objectInScope.getZver().toString(),
                         null,
                         FileType.FILE,
-                        fileName
+                        fileName,
+                        String.valueOf(params.getSecurityLevel()),
+                        params.getDescription()
                 );
                 if (!fFile.isOk()) {
                     throw new Exception(fFile.getCaption()); // TODO
@@ -363,8 +365,22 @@ public class DBDataSource implements CMSDataSource {
         return false;
     }
 
+    // todo: now works as rename
     @Override
-    public boolean move(String source, String direction) throws IOException, CMSException {
+    public boolean move(String source, String direction) throws Exception {
+        try {
+            String fullPath = getFullPath(source);
+            String fileId = getLastLevelFromPath(fullPath);
+            DBFunctions functions = new DBFunctions(poolConnection);
+            functions.renameFile(
+                    fileId,
+                    getLastLevelFromPath(source),
+                    getLastLevelFromPath(direction)
+            );
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return false;
     }
 
@@ -475,7 +491,7 @@ public class DBDataSource implements CMSDataSource {
                     objects.add(
                             CMSGeneralObject.builder()
                                     .id(id)
-                                    .securityLevel(Integer.valueOf(zlvl, 16))
+                                    .securityLevel(Integer.valueOf(zlvl, 10))
                                     .description(descr)
                                     .fullPath(new File(fullPath, finalName).getPath())
                                     .fileName(finalName)
