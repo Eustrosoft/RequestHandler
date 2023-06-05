@@ -16,33 +16,13 @@ import org.eustrosoft.qdbp.QDBPConnection;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getFirstLevelFromPath;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getLastLevelFromPath;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getPathLvl;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getPathParts;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getSelectForPath;
-import static com.eustrosoft.dbdatasource.core.DBStatements.getViewStatementForPath;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getFid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.core.DBStatements.*;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -251,9 +231,7 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public String createDirectory(String path) throws Exception {
-        File file = new File(path);
-        String parentPath = file.getParent();
-        parentPath = getFullPath(parentPath);
+        String parentPath = getFullPath(new File(path).getParent());
         String parentZoid = getLastLevelFromPath(parentPath);
         String scopeZoid = getFirstLevelFromPath(parentPath);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
