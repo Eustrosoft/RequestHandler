@@ -83,8 +83,8 @@ import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 )
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
-        maxFileSize = 1024 * 1024 * 1024,
-        maxRequestSize = 1024 * 1024 * 1024
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 10
 )
 public class HttpRequestDispatcher extends HttpServlet {
     // todo: move out from here.
