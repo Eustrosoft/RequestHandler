@@ -1,30 +1,18 @@
 package com.eustrosoft.dbdatasource.core.model;
 
 import com.eustrosoft.dbdatasource.ranges.FileType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZVER;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@Builder
-public class FFile {
-    private Long zoid;
-    private Long zver;
-    private Long zrid;
+public class FFile extends DBObject implements Updatable {
     private String fileName;
     private FileType fileType;
     private Character extStore;
@@ -38,39 +26,59 @@ public class FFile {
     private String tAlgorithm;
     private String tDigest;
 
+    public FFile(ResultSet resultSet) throws SQLException {
+        super(resultSet);
+    }
+
+    public FFile(Long zoid, Long zver, Long zrid, String fileName, FileType fileType, Character extStore,
+                 String mimeType, String description, Long chcnt, String algorithm, String digest,
+                 Long bSize, Long tChcnt, String tAlgorithm, String tDigest) {
+        super(zoid, zver, zrid);
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.extStore = extStore;
+        this.mimeType = mimeType;
+        this.description = description;
+        this.chcnt = chcnt;
+        this.algorithm = algorithm;
+        this.digest = digest;
+        this.bSize = bSize;
+        this.tChcnt = tChcnt;
+        this.tAlgorithm = tAlgorithm;
+        this.tDigest = tDigest;
+    }
+
     @SneakyThrows
-    public static FFile fromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) {
         if (resultSet == null) {
             throw new Exception("Result set is null while processing FFile from ResultSet.");
         }
         if (resultSet.next()) {
-            return new FFile(
-                    resultSet.getLong(ZOID),
-                    resultSet.getLong(ZVER),
-                    resultSet.getLong(ZRID),
-                    resultSet.getString(NAME),
-                    FileType.fromString(resultSet.getString("type")),
-                    resultSet.getString("extstore").charAt(0),
-                    resultSet.getString("mimetype"),
-                    resultSet.getString(DESCRIPTION),
-                    resultSet.getLong("b_chcnt"),
-                    resultSet.getString("b_algo"),
-                    resultSet.getString("b_digest"),
-                    resultSet.getLong("b_size"),
-                    resultSet.getLong("t_chcnt"),
-                    resultSet.getString("t_algo"),
-                    resultSet.getString("t_digest")
-            );
+            // TODO: constants
+            setZoid(resultSet.getLong(ZOID));
+            setZver(resultSet.getLong(ZVER));
+            setZrid(resultSet.getLong(ZRID));
+            setFileName(resultSet.getString(NAME));
+            setFileType(FileType.fromString(resultSet.getString("type")));
+            setExtStore(resultSet.getString("extstore").charAt(0));
+            setMimeType(resultSet.getString("mimetype"));
+            setDescription(resultSet.getString(DESCRIPTION));
+            setChcnt(resultSet.getLong("b_chcnt"));
+            setAlgorithm(resultSet.getString("b_algo"));
+            setDigest(resultSet.getString("b_digest"));
+            setBSize(resultSet.getLong("b_size"));
+            setTChcnt(resultSet.getLong("t_chcnt"));
+            setTAlgorithm(resultSet.getString("t_algo"));
+            setTDigest(resultSet.getString("t_digest"));
         }
-        throw new Exception("Exception while processing ResultSet");
     }
 
-    public String toUpdate() {
+    public String toUpdateString() {
         return String.format(
                 "%s, %s, %s, '%s', '%s','%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-                zoid,
-                zver,
-                zrid,
+                getZoid(),
+                getZver(),
+                getZrid(),
                 fileName,
                 fileType.getValue(),
                 extStore,
@@ -87,3 +95,5 @@ public class FFile {
         );
     }
 }
+
+

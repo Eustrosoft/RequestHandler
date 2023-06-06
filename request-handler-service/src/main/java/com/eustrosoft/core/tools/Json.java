@@ -34,6 +34,11 @@ public final class Json {
         return value;
     }
 
+    public static String fromObject(Object object) {
+        Gson gson = new Gson();
+        return gson.toJson(object);
+    }
+
     public String toString() {
         Gson gson = new Gson();
         JsonObject object = new JsonObject();

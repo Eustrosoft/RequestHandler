@@ -21,7 +21,7 @@ public final class DBStatements {
             );
         }
         if (pathLvl == LVL_ROOT) {
-            String rootId = path.replaceAll("/", "");
+            String rootId = path.replaceAll(SEPARATOR, "");
             // select * from FS.V_FFile where ZSID = 1048576 and type = 'R';
             return connection.prepareStatement(
                     Query.builder()
@@ -41,14 +41,14 @@ public final class DBStatements {
                             .getQuery().toString()
             );
         } else if (pathLvl == LVL_OTHER) {
-            if (path.lastIndexOf('/') == path.length() - 1) {
+            if (path.lastIndexOf(SEPARATOR) == path.length() - 1) {
                 path = path.substring(0, path.length() - 1);
             }
             //select FD.*, FF.* from FS.V_FDir AS FD left outer
             // join FS.V_FFile as FF on (FD.f_id = FF.zoid)
             // where fd.zoid = 1441804;
 
-            String lastId = path.substring(path.lastIndexOf('/') + 1);
+            String lastId = path.substring(path.lastIndexOf(SEPARATOR) + 1);
             return connection.prepareStatement(
                     Query.builder()
                             .select()
@@ -116,13 +116,13 @@ public final class DBStatements {
         if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("Path was null.");
         }
-        if (path.indexOf("/") == 0) {
+        if (path.indexOf(SEPARATOR) == 0) {
             path = path.substring(1);
         }
-        if (path.lastIndexOf("/") == path.length() - 1) {
+        if (path.lastIndexOf(SEPARATOR) == path.length() - 1) {
             path = path.substring(0, path.length() - 1);
         }
-        return path.trim().split("/");
+        return path.trim().split(SEPARATOR);
     }
 
     @SneakyThrows
@@ -174,11 +174,11 @@ public final class DBStatements {
             throw new Exception("Path was null.");
         }
         String processedPath = path.trim().replace("..", "");
-        if (processedPath.equals("/")) {
+        if (processedPath.equals(SEPARATOR)) {
             return LVL_SCOPE;
         }
         processedPath = processedPath.substring(1);
-        int nextSlash = processedPath.indexOf('/');
+        int nextSlash = processedPath.indexOf(SEPARATOR);
         if (nextSlash == -1) {
             return LVL_ROOT;
         }
@@ -201,7 +201,7 @@ public final class DBStatements {
 
     public static String getFirstLevelFromPath(String path) {
         String firSlashRem = path.substring(1);
-        int nextSlash = firSlashRem.indexOf('/');
+        int nextSlash = firSlashRem.indexOf(SEPARATOR);
         if (nextSlash == -1) {
             return firSlashRem;
         } else {
@@ -210,7 +210,7 @@ public final class DBStatements {
     }
 
     public static String getLastLevelFromPath(String path) throws Exception {
-        int lastSlash = path.lastIndexOf('/');
+        int lastSlash = path.lastIndexOf(SEPARATOR);
         if (lastSlash == -1) {
             throw new Exception("Illegal path.");
         } else {

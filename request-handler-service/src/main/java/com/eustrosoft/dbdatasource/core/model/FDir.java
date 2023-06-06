@@ -1,61 +1,57 @@
 package com.eustrosoft.dbdatasource.core.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.MIME_TYPE;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZVER;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@Builder
-public class FDir {
-    private Long zoid;
-    private Long zver;
-    private Long zrid;
+public class FDir extends DBObject implements Updatable {
     private Long fileId;
     private String fileName;
     private String mimeType;
     private String description;
 
+    public FDir(ResultSet resultSet) throws SQLException {
+        super(resultSet);
+    }
+
+    public FDir(Long zoid, Long zver, Long zrid, Long fileId,
+                String fileName, String mimeType, String description) {
+        super(zoid, zver, zrid);
+        this.fileId = fileId;
+        this.fileName = fileName;
+        this.mimeType = mimeType;
+        this.description = description;
+    }
+
     @SneakyThrows
-    public static FDir fromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) {
         if (resultSet == null) {
             throw new Exception("Result set is null while processing FDir from ResultSet.");
         }
         if (resultSet.next()) {
-            return new FDir(
-                    resultSet.getLong(ZOID),
-                    resultSet.getLong(ZVER),
-                    resultSet.getLong(ZRID),
-                    resultSet.getLong(FILE_ID),
-                    resultSet.getString(F_NAME),
-                    resultSet.getString(MIME_TYPE),
-                    resultSet.getString(DESCRIPTION)
-            );
+            setZoid(resultSet.getLong(ZOID));
+            setZver(resultSet.getLong(ZVER));
+            setZrid(resultSet.getLong(ZRID));
+            setFileId(resultSet.getLong(FILE_ID));
+            setFileName(resultSet.getString(F_NAME));
+            setMimeType(resultSet.getString(MIME_TYPE));
+            setDescription(resultSet.getString(DESCRIPTION));
         }
-        throw new Exception("Exception while processing ResultSet");
     }
 
-    public String toUpdate() {
+    public String toUpdateString() {
         return String.format(
                 "%s, %s, %s, %s, '%s','%s', '%s'",
-                zoid,
-                zver,
-                zrid,
+                getZoid(),
+                getZver(),
+                getZrid(),
                 fileId,
                 fileName,
                 mimeType,

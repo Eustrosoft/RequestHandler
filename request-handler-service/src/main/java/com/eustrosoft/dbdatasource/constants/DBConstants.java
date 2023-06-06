@@ -5,6 +5,8 @@ public class DBConstants {
     public final static int LVL_ROOT = 1;
     public final static int LVL_OTHER = 2;
 
+    public final static String SEPARATOR = "/";
+
     public final static String SCOPES = "sam.v_scope";
     public final static String ROOTS = "FS.V_FFile";
     public final static String NAME = "name";

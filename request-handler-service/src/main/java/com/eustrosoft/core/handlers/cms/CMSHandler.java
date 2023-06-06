@@ -20,23 +20,12 @@ import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.REQUEST_COPY;
-import static com.eustrosoft.core.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_MOVE;
-import static com.eustrosoft.core.Constants.REQUEST_RENAME;
-import static com.eustrosoft.core.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.Constants.REQUEST_VIEW;
+import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -120,6 +109,7 @@ public final class CMSHandler implements Handler {
         return cmsResponseBlock;
     }
 
+    // TODO: only for file data source
     @SneakyThrows
     public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) {
         checkPathInjection(pathToDownload);
@@ -155,10 +145,11 @@ public final class CMSHandler implements Handler {
         );
     }
 
-    private void postProcessPath(String path) {
+    private String postProcessPath(String path) {
         if (path != null) {
             path = path.replaceAll("\\\\", "/");
         }
+        return path;
     }
 
     private FileTicket getFileTicket(RequestBlock requestBlock) throws IOException {
@@ -205,22 +196,23 @@ public final class CMSHandler implements Handler {
             throw new CMSException("The path or name was null or empty");
         }
         return moveFile(
-                new File(from).getPath(),
-                new File(to).getPath()
+                postProcessPath(new File(from).getPath()),
+                postProcessPath(new File(to).getPath())
         );
     }
 
     private boolean rename(String source, String name) throws Exception {
         return moveFile(
                 source,
-                new File(getProcessedParentPath(source), name)
-                        .getPath()
+                postProcessPath(
+                        new File(getProcessedParentPath(source), name).getPath()
+                )
         );
     }
 
     private String getProcessedParentPath(String path) {
         File parentFile = new File(path).getParentFile();
-        return parentFile.getPath();
+        return postProcessPath(parentFile.getPath());
     }
 
     private boolean moveFile(String from, String to)
@@ -230,7 +222,7 @@ public final class CMSHandler implements Handler {
 
     private String createDirectory(String path, String name)
             throws Exception {
-        return this.cmsDataSource.createDirectory(new File(path, name).getPath());
+        return this.cmsDataSource.createDirectory(postProcessPath(new File(path, name).getPath()));
     }
 
     private String createFile(String path, String name)

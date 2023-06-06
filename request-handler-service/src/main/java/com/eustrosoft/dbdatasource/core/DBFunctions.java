@@ -15,10 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 
 public final class DBFunctions {
     private QDBPConnection poolConnection;
@@ -374,7 +371,7 @@ public final class DBFunctions {
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
-                return FFile.fromResultSet(resultSet);
+                return new FFile(resultSet);
             } finally {
                 preparedStatement.close();
                 resultSet.close();
@@ -399,7 +396,7 @@ public final class DBFunctions {
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
-                return FDir.fromResultSet(resultSet);
+                return new FDir(resultSet);
             } finally {
                 preparedStatement.close();
                 resultSet.close();
@@ -426,7 +423,7 @@ public final class DBFunctions {
                                 .select()
                                 .add("FS.update_FDir")
                                 .leftBracket()
-                                .add(fDir.toUpdate())
+                                .add(fDir.toUpdateString())
                                 .rightBracket()
                                 .buildWithSemicolon()
                                 .toString()
@@ -465,7 +462,7 @@ public final class DBFunctions {
                                 .select()
                                 .add("FS.update_FFile")
                                 .leftBracket()
-                                .add(fFile.toUpdate())
+                                .add(fFile.toUpdateString())
                                 .rightBracket()
                                 .buildWithSemicolon()
                                 .toString()

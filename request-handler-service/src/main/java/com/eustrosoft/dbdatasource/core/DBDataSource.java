@@ -76,7 +76,7 @@ public class DBDataSource implements CMSDataSource {
         path = getFullPath(path); // todo
         File file = new File(path);
         String filePath = file.getPath();
-        String parentZoid = filePath.substring(filePath.lastIndexOf('/') + 1);
+        String parentZoid = filePath.substring(filePath.lastIndexOf(SEPARATOR) + 1);
         String scopeZoid = getFirstLevelFromPath(filePath);
         DBFunctions dbFunctions = new DBFunctions(poolConnection);
         ExecStatus opened = dbFunctions.openObject(parentZoid);
@@ -87,7 +87,7 @@ public class DBDataSource implements CMSDataSource {
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
-        String fileName = filePath.substring(filePath.lastIndexOf('/'));
+        String fileName = filePath.substring(filePath.lastIndexOf(SEPARATOR));
         ExecStatus fFile = dbFunctions.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
@@ -243,7 +243,7 @@ public class DBDataSource implements CMSDataSource {
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
-        String dirName = path.substring(path.lastIndexOf('/') + 1);
+        String dirName = path.substring(path.lastIndexOf(SEPARATOR) + 1);
         ExecStatus fFile = dbFunctions.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
@@ -287,8 +287,8 @@ public class DBDataSource implements CMSDataSource {
         if (source == null || source.isEmpty()) {
             return "";
         }
-        if (source.trim().equalsIgnoreCase("/")) {
-            return "/";
+        if (source.trim().equalsIgnoreCase(SEPARATOR)) {
+            return SEPARATOR;
         }
         String selectForPath = getSelectForPath(source);
         Connection connection = poolConnection.get();
@@ -321,7 +321,7 @@ public class DBDataSource implements CMSDataSource {
                 pathParts.addAll(fIds);
                 StringBuilder pathBuilder = new StringBuilder();
                 for (String pathPart : pathParts) {
-                    pathBuilder.append("/");
+                    pathBuilder.append(SEPARATOR);
                     pathBuilder.append(pathPart);
                 }
                 return pathBuilder.toString();
