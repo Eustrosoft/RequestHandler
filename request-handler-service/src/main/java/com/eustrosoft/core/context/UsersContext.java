@@ -43,15 +43,15 @@ public final class UsersContext {
         connections.put(userDetails, connection);
     }
 
-    public void removeConnection(String userDetails) {
-        Connection connection = connections.get(userDetails);
+    public void removeConnection(String sessionId) {
+        Connection connection = connections.get(sessionId);
         if (connection != null) {
             try {
                 connection.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            connections.remove(userDetails);
+            connections.remove(sessionId);
         }
     }
 

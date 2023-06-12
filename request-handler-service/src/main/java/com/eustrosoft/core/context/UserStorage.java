@@ -6,14 +6,10 @@ import com.eustrosoft.datasource.sources.HexFileResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
+import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_UPLOAD_DIRECTORY;
-import static com.eustrosoft.core.tools.PropertiesConstants.SYSTEM_FILE_NAME;
 
 public class UserStorage implements StorageContext {
     private static final Properties systemProperties = new Properties();
@@ -134,7 +130,7 @@ public class UserStorage implements StorageContext {
     }
 
     private synchronized void setUploadFilePath() throws IOException {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(SYSTEM_FILE_NAME)) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(CMS_FILE_NAME)) {
             systemProperties.load(input);
             this.baseUploadPath = systemProperties.getProperty(PROPERTY_UPLOAD_DIRECTORY);
         }
