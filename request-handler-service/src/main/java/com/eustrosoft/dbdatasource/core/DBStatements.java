@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
+ */
+
 package com.eustrosoft.dbdatasource.core;
 
 import com.eustrosoft.dbdatasource.queries.Query;
@@ -6,7 +12,13 @@ import lombok.SneakyThrows;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_OTHER;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_ROOT;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_SCOPE;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ROOTS;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.SCOPES;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 
 public final class DBStatements {
     @SneakyThrows

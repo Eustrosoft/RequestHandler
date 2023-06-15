@@ -1,14 +1,17 @@
+/**
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
+ */
+
 package com.eustrosoft.core.handlers.login;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
-import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
-import com.eustrosoft.datasource.sources.model.CMSType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
 
 public class LoginRequestBlock extends BasicRequest {

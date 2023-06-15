@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
+ */
+
 package com.eustrosoft.filedatasource;
 
 import com.eustrosoft.core.tools.ColorTextUtil;
@@ -363,8 +369,8 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             if (cmsRootPath == null) {
                 throw new Exception(
                         "Property file was found, but " +
-                        ColorTextUtil.getColoredString("rootPath", ColorTextUtil.Color.GREEN) +
-                        " property wasn't found."
+                                ColorTextUtil.getColoredString("rootPath", ColorTextUtil.Color.GREEN) +
+                                " property wasn't found."
                 );
             }
             File rootPath = new File(cmsRootPath);

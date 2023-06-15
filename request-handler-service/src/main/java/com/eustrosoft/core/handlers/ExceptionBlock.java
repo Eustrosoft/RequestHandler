@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
+ */
+
 package com.eustrosoft.core.handlers;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
@@ -11,7 +17,7 @@ public class ExceptionBlock extends BasicResponse {
     private String response;
 
     public ExceptionBlock(String message, Short errorCode, String lang,
-                            String subsystem, String response) {
+                          String subsystem, String response) {
         this.message = message;
         this.errorCode = errorCode;
         this.lang = lang;

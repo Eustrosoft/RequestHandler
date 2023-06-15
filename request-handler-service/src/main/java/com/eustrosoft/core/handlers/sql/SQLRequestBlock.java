@@ -1,7 +1,12 @@
+/**
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
+ */
+
 package com.eustrosoft.core.handlers.sql;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
-import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
