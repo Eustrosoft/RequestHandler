@@ -1,0 +1,9 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.DRProperty	DP	
+OBJECT	Document	D	
+HEADER	STD_HEADER		
+PARENT	TISC.DRow	DW	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	type	char(4)	NN,DIC	Код свойства	Например NUM, TEXT,MIX
+02	nvalue	numeric	NUL	Числовая часть	
+03	tvalue	varchar(99)	NUL	Текстовая часть

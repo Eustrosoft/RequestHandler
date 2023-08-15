@@ -1,0 +1,4 @@
+# Атрибут	Значение	Значение2/код	
+OBJECT	Area	A	
+SUBSYS	TISC
+RECORD	TISC.AArea	AA	

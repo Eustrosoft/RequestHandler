@@ -1,0 +1,8 @@
+# Атрибут	Значение	Значение2/код	
+NAME	FS.FText	FT	
+OBJECT	File	F	
+HEADER	STD_HEADER		
+PARENT	FS.FFile	FF	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	titlekey	varchar(255)	NUL	Title/Key	Title/Key для идентификации фрагмента (опционально)
+02	chunk	text	NUL	Chunk	Фрагмент файла

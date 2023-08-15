@@ -1,0 +1,12 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.CContainer	CC	
+OBJECT	Container	C	
+HEADER	STD_HEADER		
+CHILD	TISC.CEntry	CE	
+MAXREC	1		
+MINREC	1		
+INDEX	num		
+#	Поле	Тип	Атрибуты	Название	Описание
+01	num	varchar(32)	NN,ZNAME	Название	
+02	type	char(4)	NN,DIC	Тип контейнера	Например по типу хранимого: 'STOR' - только контейнеры, 'FILE' - только документы, 'MIX' - все. Детали этих ограничений реализуются в "ручном" QC.
+03	descr	varchar(99)	NUL	Описание

@@ -1,0 +1,8 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.DRef	DR	
+OBJECT	Document	D	
+HEADER	STD_HEADER		
+PARENT	TISC.DDocument	DD	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	doc_id	bigint	NN,REF=D	Документ	
+02	reltype	char(2)	NN,DIC	Тип отношений	'U' - использует, 'R' - заменяет, 'А' - дополняет, 'I' - включает

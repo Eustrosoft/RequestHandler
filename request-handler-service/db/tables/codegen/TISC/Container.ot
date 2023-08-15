@@ -1,0 +1,5 @@
+# Атрибут	Значение	Значение2/код	
+OBJECT	Container	C	
+SUBSYS	TISC
+RECORD	TISC.CContainer	CC
+RECORD	TISC.CEntry	CE	PARENT=CC
