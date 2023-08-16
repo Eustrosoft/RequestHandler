@@ -1,0 +1,8 @@
+# Атрибут	Значение	Значение2/код	
+NAME	FB.BChat	BC
+OBJECT	Feedback	B
+HEADER	STD_HEADER
+#	Поле	Тип	Атрибуты	Название	Описание
+01	title	varchar(256)	NN	Название Название обращения
+02	creator	bigint	NN  Создатель Создатель обращения
+03	active	char(1) NN,DIC=YESNO    Доступность Является ли чат закрытым
