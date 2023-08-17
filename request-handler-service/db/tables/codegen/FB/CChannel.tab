@@ -8,5 +8,5 @@ CHILD	MSG.CParty	CP
 HEADER	STD_HEADER
 #	Поле	Тип	Атрибуты	Название	Описание
 01	subject varchar(256)    NN  Предмет Предмет обсуждения
-02	status	char(1) NN,DIC=CC02  Состояние Состояние обсуждения
+02	status	char(1) NN,DIC=MSG_CHANNEL_STATUS  Состояние Состояние обсуждения
 03	obj_id	bigint  NUL    Документ Ссылка на объект к которому относится обсуждение

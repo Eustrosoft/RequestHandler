@@ -6,3 +6,4 @@ HEADER	STD_HEADER
 #	Поле	Тип	Атрибуты	Название	Описание
 01	content	varchar(4096)	NUL	Текст Текст сообщения
 02	msg_id	bigint	NUL  Ссылка Ссылка на сообщение в чате
+03  type    varchar(3)  NN,DIC=MSG_MESSAGE_TYPE тип сообщения (M - обычное, L - лайк, P - опрос, A - ответ, ...)
