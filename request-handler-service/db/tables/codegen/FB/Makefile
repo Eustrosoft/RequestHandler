@@ -5,9 +5,10 @@
 # $Id$
 #
 # FS subsystem tab files:
-#  Feedback.ot	- object
-#   BChat.tab	- Chat
-#   FMessage.tab	- Message
+#  Channek.ot			- object
+#   CChannel.tab		- Header
+#   	CMsg.tab		- Message
+#		CParty.tab		- Participant
 
 AWK?=awk
 INSTAB?=NOTHINGTOINSTALL
@@ -16,8 +17,8 @@ INSTCODE?=NOTHINGTOINSTALL
 CODEGENTOOL=${AWK} -F '\t' -f ../tools/codegen.awk
 CODEGENTOOL_OT=${AWK} -F '\t' -f ../tools/codegen_ot.awk
 CODEGENTOOL_SUBSYS=${AWK} -F '\t' -f ../tools/codegen_subsys.awk
-INSTALL_PATH?=../../FB/
-INSTALL_PATH_ZDAO?=../../../../java/zDAO/ru/mave/ConcepTIS/dao/FB/
+INSTALL_PATH?=../../MSG/
+INSTALL_PATH_ZDAO?=../../../../java/zDAO/ru/mave/ConcepTIS/dao/MSG/
 INSTALL=install -m 644
 
 usage:
@@ -39,14 +40,14 @@ all:
 	@mkdir -p work/java/zDAO
 	@mkdir -p work/java/semiproducts
 	@echo "-- all tables"
-	cat BChat.tab | ${CODEGENTOOL}
-	cat BMessage.tab | ${CODEGENTOOL}
+	cat CChannel.tab | ${CODEGENTOOL}
+	cat CMsg.tab | ${CODEGENTOOL}
 	@echo "-- object types"
-	cat Feedback.ot | ${CODEGENTOOL_OT}
+	cat Channek.ot | ${CODEGENTOOL_OT}
 	@echo "-- subsystem functions"
-	cat Feedback.ot | ${CODEGENTOOL_SUBSYS}
+	cat Channek.ot | ${CODEGENTOOL_SUBSYS}
 clean:
-	@echo "-- cleaning all codegen/FB targets"
+	@echo "-- cleaning all codegen/MSG targets"
 	@rm -rf work/tables
 	@rm -rf work/tables.drop
 	@rm -rf work/views
@@ -62,12 +63,13 @@ install:
 	@echo --
 	@echo -- object records
 	@echo --
-	${MAKE} install_tab INSTAB=BMessage INSTCODE=BM
-	${MAKE} install_tab INSTAB=BChat INSTCODE=BC
+	${MAKE} install_tab INSTAB=CChannel INSTCODE=CC
+	${MAKE} install_tab INSTAB=CMsg INSTCODE=CM
+	${MAKE} install_tab INSTAB=CParty INSTCODE=CP
 	@echo --
 	@echo -- object types
 	@echo --
-	${MAKE} install_ot INSTOT=Feedback INSTCODE=B
+	${MAKE} install_ot INSTOT=Channel INSTCODE=C
 	@echo --
 	@echo -- subsystem glue funtions
 	@echo --
@@ -79,12 +81,13 @@ install_zdao:
 	@echo --
 	@echo -- object records
 	@echo --
-	${MAKE} install_zdao_class INSTCLASS=BChat INSTCODE=BC
-	${MAKE} install_zdao_class INSTCLASS=FMessage INSTCODE=BM
+	${MAKE} install_zdao_class INSTCLASS=CChannel INSTCODE=CC
+	${MAKE} install_zdao_class INSTCLASS=CMsg INSTCODE=CM
+	${MAKE} install_zdao_class INSTCLASS=CParty INSTCODE=CP
 	@echo --
 	@echo -- object types
 	@echo --
-	${MAKE} install_zdao_class INSTCLASS=Feedback INSTCODE=B
+	${MAKE} install_zdao_class INSTCLASS=Channel INSTCODE=C
 install_tab:
 	@echo Installing INSTAB=${INSTAB} INSTCODE=${INSTCODE}...
 	test ! ${INSTAB}x = NOTHINGTOINSTALLx
