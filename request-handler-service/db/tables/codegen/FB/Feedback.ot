@@ -1,5 +1,0 @@
-# Атрибут	Значение	Значение2/код	
-OBJECT	Feedback	B
-SUBSYS	FB
-RECORD	FB.BChat	BC
-RECORD	FB.BMessage	BM
