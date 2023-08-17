@@ -16,6 +16,7 @@ public abstract class BasicResponse implements ResponseBlock {
         object.addProperty("e", getE());
         object.addProperty("m", getM());
         object.addProperty("l", getL());
+        object.addProperty("r", getR());
         return object;
     }
 }

@@ -23,6 +23,7 @@ public interface ResponseBlock {
         JsonObject object = new JsonObject();
         object.addProperty("s", getS());
         object.addProperty("e", getE());
+        object.addProperty("r", getR());
         object.addProperty("m", getM());
         object.addProperty("l", getL());
         return object;
