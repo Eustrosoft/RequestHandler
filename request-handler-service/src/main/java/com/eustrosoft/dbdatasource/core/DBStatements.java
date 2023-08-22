@@ -17,6 +17,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_ROOT;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_SCOPE;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ROOTS;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.SCOPES;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.SEPARATOR;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 

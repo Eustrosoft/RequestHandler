@@ -13,8 +13,8 @@ import com.eustrosoft.datasource.sources.HexFileParams;
 import com.eustrosoft.datasource.sources.HexFileResult;
 import com.eustrosoft.datasource.sources.model.CMSGeneralObject;
 import com.eustrosoft.datasource.sources.model.CMSObject;
-import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
+import com.eustrosoft.datasource.sources.ranges.CMSType;
 import com.eustrosoft.dbdatasource.ranges.FileType;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
@@ -22,13 +22,34 @@ import org.eustrosoft.qdbp.QDBPConnection;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
-import static com.eustrosoft.dbdatasource.core.DBStatements.*;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.SEPARATOR;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getFirstLevelFromPath;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getLastLevelFromPath;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getPathLvl;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getPathParts;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getSelectForPath;
+import static com.eustrosoft.dbdatasource.core.DBStatements.getViewStatementForPath;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getFid;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getType;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -468,19 +489,19 @@ public class DBDataSource implements CMSDataSource {
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
                     String id = fid.isEmpty() ? zoid : fid;
-                    CMSGeneralObject.CMSGeneralObjectBuilder cmsObjectBuilder =
-                            CMSGeneralObject.builder()
-                                    .id(id)
-                                    .description(descr)
-                                    .fullPath(new File(fullPath, finalName).getPath())
-                                    .fileName(finalName)
-                                    .type(type);
+                    CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
+                            .description(descr)
+                            .fullPath(new File(fullPath, finalName).getPath())
+                            .fileName(finalName)
+                            .type(type);
                     try {
-                        cmsObjectBuilder.securityLevel(Integer.valueOf(zlvl, 10));
+                        builder.securityLevel(Integer.valueOf(zlvl, 10));
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    objects.add(cmsObjectBuilder.build());
+                    CMSGeneralObject build = builder.build();
+                    build.setId(id);
+                    objects.add(build);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

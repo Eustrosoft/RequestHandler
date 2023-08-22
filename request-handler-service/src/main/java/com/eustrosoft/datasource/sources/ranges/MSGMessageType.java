@@ -1,20 +1,12 @@
-/**
- * Copyright (c) 2023, Yadzuka & EustroSoft.org
- * This file is part of RequestHandler project.
- * See the LICENSE file at the project root for licensing information.
- */
+package com.eustrosoft.datasource.sources.ranges;
 
-package com.eustrosoft.datasource.sources.model;
-
-public enum CMSType {
-    UNKNOWN("UNKNOWN"),
-    DIRECTORY("DIRECTORY"),
-    FILE("FILE"),
-    LINK("LINK");
-
+public enum MSGMessageType {
+    SIMPLE("M"),
+    ANSWER("A"),
+    LIKE("L");
     final String value;
 
-    CMSType(String value) {
+    MSGMessageType(String value) {
         this.value = value;
     }
 
@@ -30,5 +22,4 @@ public enum CMSType {
         }
         return false;
     }
-
 }

@@ -8,7 +8,7 @@ package com.eustrosoft.core.handlers.cms;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
-import com.eustrosoft.datasource.sources.model.CMSType;
+import com.eustrosoft.datasource.sources.ranges.CMSType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

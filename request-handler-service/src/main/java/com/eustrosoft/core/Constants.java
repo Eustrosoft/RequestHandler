@@ -20,13 +20,18 @@ public final class Constants {
     public static final String SUBSYSTEM_PING = "ping";
     public static final String SUBSYSTEM_CMS = "cms";
     public static final String SUBSYSTEM_LOGIN = "login";
+    public static final String SUBSYSTEM_MSG = "msg";
 
     public static final String REQUEST_SQL = "sql";
     public static final String REQUEST_FILE_UPLOAD = "upload";
     public static final String REQUEST_CHUNKS_FILE_UPLOAD = "upload_chunks";
     public static final String REQUEST_CHUNKS_HEX_FILE_UPLOAD = "upload_chunks_hex";
     public static final String REQUEST_CHUNKS_BINARY_FILE_UPLOAD = "upload_chunks_binary";
-
+    public static final String REQUEST_CHATS = "chats";
+    public static final String REQUEST_CHAT = "chat";
+    public static final String REQUEST_SEND = "send";
+    public static final String REQUEST_EDIT = "edit";
+    public static final String REQUEST_CHANGE = "change";
     public static final String REQUEST_VIEW = "view";
     public static final String REQUEST_CREATE = "create";
     public static final String REQUEST_MOVE = "move";

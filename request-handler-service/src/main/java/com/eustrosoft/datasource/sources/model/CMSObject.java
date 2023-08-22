@@ -6,7 +6,8 @@
 
 package com.eustrosoft.datasource.sources.model;
 
-import java.util.Date;
+import com.eustrosoft.datasource.sources.ranges.CMSType;
+
 import java.util.List;
 
 /**
@@ -14,16 +15,10 @@ import java.util.List;
  * methods that need to be implemented by
  * system objects, like file, directory and other.
  */
-public interface CMSObject {
-    String getId();
-
+public interface CMSObject extends IDBObject {
     String getFileName();
 
     String getFullPath();
-
-    Date getCreated();
-
-    Date getModified();
 
     Long getSpace();
 

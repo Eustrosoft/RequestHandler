@@ -15,8 +15,8 @@ import com.eustrosoft.datasource.sources.HexFileResult;
 import com.eustrosoft.datasource.sources.PropsContainer;
 import com.eustrosoft.datasource.sources.model.CMSGeneralObject;
 import com.eustrosoft.datasource.sources.model.CMSObject;
-import com.eustrosoft.datasource.sources.model.CMSType;
 import com.eustrosoft.datasource.sources.parameters.CMSObjectUpdateParameters;
+import com.eustrosoft.datasource.sources.ranges.CMSType;
 import com.eustrosoft.filedatasource.util.FileUtils;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
@@ -66,7 +66,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
         if (!entry.exists()) {
             throw new CMSException(MSG_DIR_NOT_EXIST);
         }
-        File [] filesInside = entry.listFiles();
+        File[] filesInside = entry.listFiles();
         return fileToCMS(filesInside);
     }
 
@@ -189,48 +189,29 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             if (!file.exists()) {
                 continue;
             }
-            CMSObject obj = null;
             BasicFileAttributes attributes =
                     Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            if (file.isFile()) {
-                obj = new CMSGeneralObject(
-                        file.getName(),
-                        FilenameUtils.getExtension(file.getName()),
-                        file.getName(),
-                        postProcessPath(
-                                file.getAbsolutePath().substring(getRootPath().length())
-                        ),
-                        new ArrayList<String>(),
-                        new Date(attributes.creationTime().toMillis()),
-                        new Date(file.lastModified()),
-                        file.length(),
-                        -1,
-                        String.valueOf(file.hashCode()),
-                        CMSType.FILE,
-                        ""
-                );
-            }
+            CMSGeneralObject obj = new CMSGeneralObject(
+                    FilenameUtils.getExtension(file.getName()),
+                    file.getName(),
+                    postProcessPath(
+                            file.getAbsolutePath().substring(getRootPath().length())
+                    ),
+                    new ArrayList<>(),
+                    file.length(),
+                    -1,
+                    String.valueOf(file.hashCode()),
+                    null,
+                    ""
+            );
             if (file.isDirectory()) {
-                obj = new CMSGeneralObject(
-                        file.getName(),
-                        FilenameUtils.getExtension(file.getName()),
-                        file.getName(),
-                        postProcessPath(
-                                file.getAbsolutePath().substring(getRootPath().length())
-                        ),
-                        new ArrayList<String>(),
-                        new Date(attributes.creationTime().toMillis()),
-                        new Date(file.lastModified()),
-                        file.length(),
-                        -1,
-                        String.valueOf(file.hashCode()),
-                        CMSType.DIRECTORY,
-                        ""
-                );
+                obj.setType(CMSType.DIRECTORY);
+            } else {
+                obj.setType(CMSType.FILE);
             }
-            if (obj != null) {
-                objects.add(obj);
-            }
+            obj.setCreated(new Date(attributes.creationTime().toMillis()));
+            obj.setModified(new Date(file.lastModified()));
+            objects.add(obj);
         }
         return objects;
     }

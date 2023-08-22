@@ -6,7 +6,7 @@
 
 package com.eustrosoft.dbdatasource.util;
 
-import com.eustrosoft.datasource.sources.model.CMSType;
+import com.eustrosoft.datasource.sources.ranges.CMSType;
 
 import java.sql.ResultSet;
 

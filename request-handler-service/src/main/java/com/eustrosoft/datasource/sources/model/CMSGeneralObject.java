@@ -6,13 +6,13 @@
 
 package com.eustrosoft.datasource.sources.model;
 
+import com.eustrosoft.datasource.sources.ranges.CMSType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -20,14 +20,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CMSGeneralObject implements CMSObject {
-    private String id;
+public class CMSGeneralObject extends DBObject implements CMSObject {
     private String extension;
     private String fileName;
     private String fullPath;
     private List<String> links;
-    private Date created;
-    private Date modified;
     private Long space;
     private Integer securityLevel;
     private String hash;

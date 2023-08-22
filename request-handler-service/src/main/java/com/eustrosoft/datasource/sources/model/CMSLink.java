@@ -6,14 +6,11 @@
 
 package com.eustrosoft.datasource.sources.model;
 
-import java.util.Date;
+import com.eustrosoft.datasource.sources.ranges.CMSType;
+
 import java.util.List;
 
-public class CMSLink implements CMSObject {
-    public String getId() {
-        return null;
-    }
-
+public class CMSLink extends DBObject implements CMSObject {
     public String getExtension() {
         return null;
     }
@@ -27,14 +24,6 @@ public class CMSLink implements CMSObject {
     }
 
     public String getFullPath() {
-        return null;
-    }
-
-    public Date getCreated() {
-        return null;
-    }
-
-    public Date getModified() {
         return null;
     }
 
