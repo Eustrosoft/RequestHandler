@@ -21,6 +21,8 @@ import com.eustrosoft.core.handlers.file.HexFileHandler;
 import com.eustrosoft.core.handlers.file.HexFileRequestBlock;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
+import com.eustrosoft.core.handlers.msg.MSGHandler;
+import com.eustrosoft.core.handlers.msg.MSGRequestBlock;
 import com.eustrosoft.core.handlers.ping.PingHandler;
 import com.eustrosoft.core.handlers.ping.PingRequestBlock;
 import com.eustrosoft.core.handlers.requests.QTisRequestObject;
@@ -76,6 +78,7 @@ import static com.eustrosoft.core.Constants.SUBSYSTEM;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
 import static com.eustrosoft.core.Constants.TIMEOUT;
@@ -239,6 +242,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case SUBSYSTEM_CMS:
                     handler = new CMSHandler(requestType);
                     break;
+                case SUBSYSTEM_MSG:
+                    handler = new MSGHandler(requestType);
+                    break;
                 default:
                     handler = null;
                     break;
@@ -315,6 +321,10 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case SUBSYSTEM_CMS:
                     requestBlock = new CMSRequestBlock(request, response, qJson);
                     ((CMSRequestBlock) requestBlock).setRequestType(requestType);
+                    break;
+                case SUBSYSTEM_MSG:
+                    requestBlock = new MSGRequestBlock(request, response, qJson);
+                    ((MSGRequestBlock) requestBlock).setRequestType(requestType);
                     break;
                 default:
                     break;

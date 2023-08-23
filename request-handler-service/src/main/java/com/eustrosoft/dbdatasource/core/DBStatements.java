@@ -18,6 +18,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.LVL_SCOPE;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ROOTS;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.SCOPES;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.SEPARATOR;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.UID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 
@@ -251,4 +252,17 @@ public final class DBStatements {
         return builder.toString();
     }
 
+    @SneakyThrows
+    public static PreparedStatement getChats(Connection connection, String uid) {
+        return connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("subject, obj_id, status")
+                        .from()
+                        .add("MSG.V_CChannel")
+                        .where(String.format("%s = %s", UID, uid))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+    }
 }

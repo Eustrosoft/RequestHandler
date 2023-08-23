@@ -26,6 +26,14 @@ public class DBConstants {
     public final static String SCOPES = "sam.v_scope";
     public final static String ROOTS = "FS.V_FFile";
     public final static String NAME = "name";
+    public final static String SUBJECT = "subject";
+    public final static String STATUS = "status";
+    public final static String OBJ_ID = "obj_id";
+    public final static String ROLE = "role";
+    public final static String UID = "uid";
+    public final static String LAST_READ = "last_read";
+    public final static String CONTENT = "content";
+    public final static String MSG_ID = "msg_id";
     public final static String F_NAME = "fname";
     public final static String S_LEVEL_MIN = "slevelmin";
     public final static String S_LEVEL_MAX = "slevelmax";
