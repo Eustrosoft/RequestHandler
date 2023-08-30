@@ -13,7 +13,9 @@ import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.datasource.sources.model.MSGChannel;
+import com.eustrosoft.datasource.sources.model.MSGMessage;
 import com.eustrosoft.datasource.sources.ranges.MSGChannelStatus;
+import com.eustrosoft.datasource.sources.ranges.MSGMessageType;
 import com.eustrosoft.dbdatasource.core.DBFunctions;
 import com.eustrosoft.dbdatasource.core.DBStatements;
 import lombok.SneakyThrows;
@@ -21,8 +23,6 @@ import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,21 +30,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.REQUEST_CHANGE;
-import static com.eustrosoft.core.Constants.REQUEST_CHAT;
-import static com.eustrosoft.core.Constants.REQUEST_CHATS;
-import static com.eustrosoft.core.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.Constants.REQUEST_EDIT;
-import static com.eustrosoft.core.Constants.REQUEST_SEND;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.OBJ_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.STATUS;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.SUBJECT;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
 
 public final class MSGHandler implements Handler {
     private String requestType;
@@ -73,16 +61,22 @@ public final class MSGHandler implements Handler {
                 break;
             // other requests process
             case REQUEST_CHAT:
+                getChatMessages(params.getId());
                 break;
             case REQUEST_CREATE:
+                createChat(msgRequestBlock.getId());
                 break;
             case REQUEST_SEND:
+                createMessage(params);
                 break;
             case REQUEST_EDIT:
+                updateMessage(params);
                 break;
             case REQUEST_DELETE:
+                deleteMessage(msgRequestBlock.getId());
                 break;
             case REQUEST_CHANGE:
+                changeChannelStatus(params);
                 break;
             default:
                 msgResponseBlock.setE(1);
@@ -107,37 +101,80 @@ public final class MSGHandler implements Handler {
         return channels;
     }
 
-    public void getChatMessages(String chatId) {
+    public List<MSGMessage> getChatMessages(String chatId) throws SQLException {
         String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
         String userName = usersContext.getSQLUser(session).getUserName();
         User user = functions.getUserFromDB(userName);
-
-        return;
+        PreparedStatement preparedStatement = DBStatements.getMessages(connection, null);
+        List<MSGMessage> channels = new ArrayList<>();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            channels = processResultSetToMSGMessage(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return channels;
     }
 
-    public void createChat(String objId) {
+    public String createChat(String objId) {
         String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
         String userName = usersContext.getSQLUser(session).getUserName();
         User user = functions.getUserFromDB(userName);
-        return;
+        return "id";
     }
 
-    public void updateMessage(HttpServletRequest req, HttpServletResponse resp) {
+    public String createMessage(MsgParams params) {
         String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
         String userName = usersContext.getSQLUser(session).getUserName();
         User user = functions.getUserFromDB(userName);
-        return;
+        return "id";
     }
 
-    public void deleteMessage(HttpServletRequest req, HttpServletResponse resp) {
+    public void updateMessage(MsgParams params) {
         String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
         String userName = usersContext.getSQLUser(session).getUserName();
         User user = functions.getUserFromDB(userName);
-        return;
+    }
+
+    public void deleteMessage(String messageId) {
+        DBFunctions functions = new DBFunctions(poolConnection);
+        String userName = usersContext.getSQLUser(session).getUserName();
+        User user = functions.getUserFromDB(userName);
+    }
+
+    public void changeChannelStatus(MsgParams params) {
+        String session = new QTISSessionCookie(req, resp).getCookieValue();
+        DBFunctions functions = new DBFunctions(poolConnection);
+        String userName = usersContext.getSQLUser(session).getUserName();
+        User user = functions.getUserFromDB(userName);
+    }
+
+    @SneakyThrows
+    private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
+        List<MSGMessage> objects = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                try {
+                    String content = getValueOrEmpty(resultSet, CONTENT);
+                    String answerId = getValueOrEmpty(resultSet, MSG_ID);
+                    String messageType = getValueOrEmpty(resultSet, TYPE);
+                    String sid = getZsid(resultSet);
+                    String zoid = getZoid(resultSet);
+                    String zlvl = getValueOrEmpty(resultSet, ZLVL);
+                    MSGMessage msgChannel = new MSGMessage(content, answerId, MSGMessageType.valueOf(messageType));
+                    objects.add(msgChannel);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return objects;
     }
 
     @SneakyThrows

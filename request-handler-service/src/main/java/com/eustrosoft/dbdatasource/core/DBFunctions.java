@@ -22,10 +22,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 
 public final class DBFunctions {
     private QDBPConnection poolConnection;
@@ -86,12 +83,12 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ExecStatus openObject(String zoid) {
-        return openObject(zoid, "null");
+    public ExecStatus openObject(String type, String zoid) {
+        return openObject(type, zoid, "null");
     }
 
     @SneakyThrows
-    public ExecStatus openObject(String zoid, String zver) {
+    public ExecStatus openObject(String type, String zoid, String zver) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -100,7 +97,7 @@ public final class DBFunctions {
                         .leftBracket()
                         .add(String.format(
                                 "'%s', %s, %s",
-                                "FS.F", zoid, zver
+                                type, zoid, zver
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -423,8 +420,8 @@ public final class DBFunctions {
             if (fDir == null) {
                 throw new Exception("FDir is null while updating.");
             }
-            status = openObject(fDir.getFileId().toString());
-            fDirOpen = openObject(fDir.getZoid().toString());
+            status = openObject("FS.F", fDir.getFileId().toString());
+            fDirOpen = openObject("FS.F", fDir.getZoid().toString());
             fDir.setZver(fDirOpen.getZver());
             if (status.isOk() && fDirOpen.isOk()) {
                 Connection connection = poolConnection.get();
@@ -463,7 +460,7 @@ public final class DBFunctions {
             if (fFile == null) {
                 throw new Exception("FFile is null while updating.");
             }
-            status = openObject(fFile.getZoid().toString());
+            status = openObject("FS.F", fFile.getZoid().toString());
             fFile.setZver(status.getZver());
             if (status.isOk()) {
                 Connection connection = poolConnection.get();
@@ -513,5 +510,68 @@ public final class DBFunctions {
             resultSet.close();
         }
         return userInfo;
+    }
+
+    @SneakyThrows
+    public ExecStatus createChat(String objectZoid, String description, String parentVer,
+                                 FileType type, String name) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("MSG.create_cchannel")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
+                                objectZoid,
+                                objectVer,
+                                parentVer,
+                                name,
+                                type.getValue(),
+                                "N" // TODO
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
+    }
+
+    @SneakyThrows
+    public ExecStatus createMessage(String objectZoid, String message) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("FS.create_FFile")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
+                                objectZoid,
+                                objectVer,
+                                parentVer,
+                                name,
+                                type.getValue(),
+                                "N" // TODO
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
     }
 }
