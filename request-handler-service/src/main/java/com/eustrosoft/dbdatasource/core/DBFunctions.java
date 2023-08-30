@@ -522,13 +522,39 @@ public final class DBFunctions {
                         .add("MSG.create_cchannel")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
+                                "%s, %s, %s, '%s', '%s', null, null, null, null, null, null, null, null, null, null",
                                 objectZoid,
-                                objectVer,
                                 parentVer,
                                 name,
                                 type.getValue(),
                                 "N" // TODO
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
+    }
+
+    @SneakyThrows
+    public ExecStatus getMessages(String objectZoid, String message) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("MSG.create_message")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, '%s', null, null, null, null, null, null, null, null, null, null",
+                                objectZoid,
+                                "N"
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -555,10 +581,6 @@ public final class DBFunctions {
                         .add(String.format(
                                 "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
                                 objectZoid,
-                                objectVer,
-                                parentVer,
-                                name,
-                                type.getValue(),
                                 "N" // TODO
                         ))
                         .rightBracket()

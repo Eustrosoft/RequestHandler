@@ -21,7 +21,6 @@ import com.eustrosoft.dbdatasource.core.DBStatements;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
-import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -102,55 +101,38 @@ public final class MSGHandler implements Handler {
     }
 
     public List<MSGMessage> getChatMessages(String chatId) throws SQLException {
-        String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
-        String userName = usersContext.getSQLUser(session).getUserName();
-        User user = functions.getUserFromDB(userName);
-        PreparedStatement preparedStatement = DBStatements.getMessages(connection, null);
-        List<MSGMessage> channels = new ArrayList<>();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            channels = processResultSetToMSGMessage(resultSet);
-            preparedStatement.close();
-            resultSet.close();
-        }
-        return channels;
+//        PreparedStatement preparedStatement = functions.getMessages("id", null);
+//        List<MSGMessage> channels = new ArrayList<>();
+//        if (preparedStatement != null) {
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            channels = processResultSetToMSGMessage(resultSet);
+//            preparedStatement.close();
+//            resultSet.close();
+//        }
+        return null;
     }
 
     public String createChat(String objId) {
-        String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
-        String userName = usersContext.getSQLUser(session).getUserName();
-        User user = functions.getUserFromDB(userName);
         return "id";
     }
 
     public String createMessage(MsgParams params) {
-        String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
-        String userName = usersContext.getSQLUser(session).getUserName();
-        User user = functions.getUserFromDB(userName);
         return "id";
     }
 
     public void updateMessage(MsgParams params) {
-        String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
-        String userName = usersContext.getSQLUser(session).getUserName();
-        User user = functions.getUserFromDB(userName);
     }
 
     public void deleteMessage(String messageId) {
         DBFunctions functions = new DBFunctions(poolConnection);
-        String userName = usersContext.getSQLUser(session).getUserName();
-        User user = functions.getUserFromDB(userName);
     }
 
     public void changeChannelStatus(MsgParams params) {
-        String session = new QTISSessionCookie(req, resp).getCookieValue();
         DBFunctions functions = new DBFunctions(poolConnection);
-        String userName = usersContext.getSQLUser(session).getUserName();
-        User user = functions.getUserFromDB(userName);
     }
 
     @SneakyThrows
