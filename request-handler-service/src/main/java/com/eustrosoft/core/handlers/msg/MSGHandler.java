@@ -14,11 +14,15 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.datasource.sources.model.MSGChannel;
 import com.eustrosoft.datasource.sources.ranges.MSGChannelStatus;
+import com.eustrosoft.dbdatasource.core.DBFunctions;
 import com.eustrosoft.dbdatasource.core.DBStatements;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,6 +53,7 @@ public final class MSGHandler implements Handler {
 
     public MSGHandler(String requestType) {
         this.requestType = requestType;
+        this.usersContext = UsersContext.getInstance();
     }
 
     @Override
@@ -100,6 +105,39 @@ public final class MSGHandler implements Handler {
             resultSet.close();
         }
         return channels;
+    }
+
+    public void getChatMessages(String chatId) {
+        String session = new QTISSessionCookie(req, resp).getCookieValue();
+        DBFunctions functions = new DBFunctions(poolConnection);
+        String userName = usersContext.getSQLUser(session).getUserName();
+        User user = functions.getUserFromDB(userName);
+
+        return;
+    }
+
+    public void createChat(String objId) {
+        String session = new QTISSessionCookie(req, resp).getCookieValue();
+        DBFunctions functions = new DBFunctions(poolConnection);
+        String userName = usersContext.getSQLUser(session).getUserName();
+        User user = functions.getUserFromDB(userName);
+        return;
+    }
+
+    public void updateMessage(HttpServletRequest req, HttpServletResponse resp) {
+        String session = new QTISSessionCookie(req, resp).getCookieValue();
+        DBFunctions functions = new DBFunctions(poolConnection);
+        String userName = usersContext.getSQLUser(session).getUserName();
+        User user = functions.getUserFromDB(userName);
+        return;
+    }
+
+    public void deleteMessage(HttpServletRequest req, HttpServletResponse resp) {
+        String session = new QTISSessionCookie(req, resp).getCookieValue();
+        DBFunctions functions = new DBFunctions(poolConnection);
+        String userName = usersContext.getSQLUser(session).getUserName();
+        User user = functions.getUserFromDB(userName);
+        return;
     }
 
     @SneakyThrows

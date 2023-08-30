@@ -6,7 +6,11 @@
 
 package com.eustrosoft.core.context;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class User implements EustrosoftUser {
+    private Long id;
     private String username;
     private String password;
     private String ip;
@@ -20,6 +24,14 @@ public class User implements EustrosoftUser {
 
     public User() {
 
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getPassword() {
@@ -42,5 +54,13 @@ public class User implements EustrosoftUser {
 
     public void setSessionPath(String sessionPath) {
         this.sessionPath = sessionPath;
+    }
+
+    public User fromResultSet(ResultSet resultSet) throws SQLException {
+        User user = new User(
+                resultSet.getString("login"), "", ""
+        );
+        user.setId(resultSet.getLong("id"));
+        return user;
     }
 }

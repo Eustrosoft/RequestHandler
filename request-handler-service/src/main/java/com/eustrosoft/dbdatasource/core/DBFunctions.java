@@ -6,6 +6,7 @@
 
 package com.eustrosoft.dbdatasource.core;
 
+import com.eustrosoft.core.context.User;
 import com.eustrosoft.dbdatasource.core.model.FDir;
 import com.eustrosoft.dbdatasource.core.model.FFile;
 import com.eustrosoft.dbdatasource.queries.Query;
@@ -21,7 +22,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 
 public final class DBFunctions {
     private QDBPConnection poolConnection;
@@ -113,12 +117,12 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ExecStatus createObjectInScope(String scopeZoid) {
-        return createObjectInScope(scopeZoid, "null");
+    public ExecStatus createObjectInScope(String type, String scopeZoid) {
+        return createObjectInScope(type, scopeZoid, "null");
     }
 
     @SneakyThrows
-    public ExecStatus createObjectInScope(String scopeZoid, String zlvl) {
+    public ExecStatus createObjectInScope(String type, String scopeZoid, String zlvl) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -127,7 +131,7 @@ public final class DBFunctions {
                         .leftBracket()
                         .add(String.format(
                                 "'%s', %s, %s::smallint",
-                                "FS.F", scopeZoid, zlvl
+                                type, scopeZoid, zlvl
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -486,5 +490,28 @@ public final class DBFunctions {
                 commitObject(status.getZoid().toString(), status.getZver().toString());
             }
         }
+    }
+
+    @SneakyThrows
+    public User getUserFromDB(String username) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("SAM.\"user\"")
+                        .where("login = " + username)
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        User userInfo = new User();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            userInfo.fromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return userInfo;
     }
 }

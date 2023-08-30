@@ -110,7 +110,7 @@ public class DBDataSource implements CMSDataSource {
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
-        ExecStatus objectInScope = dbFunctions.createObjectInScope(scopeZoid);
+        ExecStatus objectInScope = dbFunctions.createObjectInScope("FS.F", scopeZoid);
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
@@ -266,7 +266,7 @@ public class DBDataSource implements CMSDataSource {
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
-        ExecStatus objectInScope = dbFunctions.createObjectInScope(scopeZoid);
+        ExecStatus objectInScope = dbFunctions.createObjectInScope("FS.F", scopeZoid);
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
