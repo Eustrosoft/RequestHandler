@@ -14,6 +14,7 @@ import static com.eustrosoft.dbdatasource.constants.DBConstants.ID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.SID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.TYPE;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZRID;
 import static com.eustrosoft.dbdatasource.constants.DBConstants.ZSID;
 
 public final class ResultSetUtils {
@@ -52,19 +53,27 @@ public final class ResultSetUtils {
     }
 
     public static String getZsid(ResultSet resultSet) {
-        String sid = getValueOrEmpty(resultSet, SID);
-        if (sid == null || sid.isEmpty()) {
-            sid = getValueOrEmpty(resultSet, ZSID);
+        String zsid = getValueOrEmpty(resultSet, SID);
+        if (zsid == null || zsid.isEmpty()) {
+            zsid = getValueOrEmpty(resultSet, ZSID);
         }
-        return sid;
+        return zsid;
     }
 
     public static String getZoid(ResultSet resultSet) {
-        String sid = getValueOrEmpty(resultSet, ZOID);
-        if (sid == null || sid.isEmpty()) {
-            sid = getValueOrEmpty(resultSet, ID);
+        String zoid = getValueOrEmpty(resultSet, ZOID);
+        if (zoid == null || zoid.isEmpty()) {
+            zoid = getValueOrEmpty(resultSet, ID);
         }
-        return sid;
+        return zoid;
+    }
+
+    public static String getZrid(ResultSet resultSet) {
+        String zrid = getValueOrEmpty(resultSet, ZRID);
+        if (zrid == null || zrid.isEmpty()) {
+            zrid = getValueOrEmpty(resultSet, ID);
+        }
+        return zrid;
     }
 
     public static String getFid(ResultSet resultSet) {

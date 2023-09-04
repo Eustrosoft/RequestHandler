@@ -33,6 +33,8 @@ import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
+import com.eustrosoft.core.handlers.tis.TISHandler;
+import com.eustrosoft.core.handlers.tis.TISRequestBlock;
 import com.eustrosoft.core.providers.DataSourceProvider;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.Json;
@@ -81,6 +83,7 @@ import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
 import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_TIS;
 import static com.eustrosoft.core.Constants.TIMEOUT;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
@@ -245,6 +248,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case SUBSYSTEM_MSG:
                     handler = new MSGHandler(requestType);
                     break;
+                case SUBSYSTEM_TIS:
+                    handler = new TISHandler();
+                    break;
                 default:
                     handler = null;
                     break;
@@ -325,6 +331,10 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case SUBSYSTEM_MSG:
                     requestBlock = new MSGRequestBlock(request, response, qJson);
                     ((MSGRequestBlock) requestBlock).setRequestType(requestType);
+                    break;
+                case SUBSYSTEM_TIS:
+                    requestBlock = new TISRequestBlock(request, response, qJson);
+                    ((TISRequestBlock) requestBlock).setRequestType(requestType);
                     break;
                 default:
                     break;

@@ -4,37 +4,31 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.handlers.msg;
+package com.eustrosoft.core.handlers.tis;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.eustrosoft.datasource.sources.model.MSGChannel;
-import com.eustrosoft.datasource.sources.model.MSGMessage;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_TIS;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public final class MSGResponseBlock extends BasicResponse {
+public final class TISResponseBlock extends BasicResponse {
     private String errMsg = "";
     private Short errCode = 0;
     private String responseType;
-    private List<MSGChannel> chats;
-    private List<MSGMessage> messages;
+    private String data;
 
     @Override
     public String getS() {
-        return SUBSYSTEM_MSG;
+        return SUBSYSTEM_TIS;
     }
 
     @Override
@@ -68,8 +62,7 @@ public final class MSGResponseBlock extends BasicResponse {
     @Override
     public JsonObject toJsonObject() throws Exception {
         JsonObject object = super.toJsonObject();
-        object.add("chats", new Gson().toJsonTree(chats));
-        object.add("messages", new Gson().toJsonTree(messages));
+        object.addProperty("data", getData());
         return object;
     }
 }

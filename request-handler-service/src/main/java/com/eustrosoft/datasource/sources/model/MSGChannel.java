@@ -14,4 +14,14 @@ public class MSGChannel extends DBObject {
     private String subject;
     private String documentId;
     private MSGChannelStatus status;
+
+    public MSGChannel(String id, String subject, String docId, String msgStatus) {
+        setId(id);
+        this.subject = subject;
+        this.documentId = docId;
+        try {
+            this.status = MSGChannelStatus.of(msgStatus);
+        } catch (Exception ex) {
+        }
+    }
 }

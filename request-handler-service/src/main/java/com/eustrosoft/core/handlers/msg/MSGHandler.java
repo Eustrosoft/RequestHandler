@@ -6,7 +6,6 @@
 
 package com.eustrosoft.core.handlers.msg;
 
-import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
@@ -14,24 +13,40 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.datasource.sources.model.MSGChannel;
 import com.eustrosoft.datasource.sources.model.MSGMessage;
-import com.eustrosoft.datasource.sources.ranges.MSGChannelStatus;
 import com.eustrosoft.datasource.sources.ranges.MSGMessageType;
 import com.eustrosoft.dbdatasource.core.DBFunctions;
-import com.eustrosoft.dbdatasource.core.DBStatements;
+import com.eustrosoft.dbdatasource.core.ExecStatus;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
+import static com.eustrosoft.core.Constants.ERR_OK;
+import static com.eustrosoft.core.Constants.MSG_OK;
+import static com.eustrosoft.core.Constants.REQUEST_CHANGE;
+import static com.eustrosoft.core.Constants.REQUEST_CHAT;
+import static com.eustrosoft.core.Constants.REQUEST_CHATS;
+import static com.eustrosoft.core.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.Constants.REQUEST_EDIT;
+import static com.eustrosoft.core.Constants.REQUEST_SEND;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.CONTENT;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.MSG_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.OBJ_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.STATUS;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.SUBJECT;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.TYPE;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZrid;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
 
 public final class MSGHandler implements Handler {
     private String requestType;
@@ -51,22 +66,28 @@ public final class MSGHandler implements Handler {
         MSGRequestBlock msgRequestBlock = (MSGRequestBlock) requestBlock;
         MsgParams params = msgRequestBlock.getParams();
         MSGResponseBlock msgResponseBlock = new MSGResponseBlock();
-        msgResponseBlock.setE(0);
-        msgResponseBlock.setErrMsg("Ok.");
+        msgResponseBlock.setE(ERR_OK);
+        msgResponseBlock.setErrMsg(MSG_OK);
+        msgResponseBlock.setResponseType(requestType);
         // TODO
         switch (requestType) {
             case REQUEST_CHATS:
                 List<MSGChannel> chats = getChats();
+                msgResponseBlock.setChats(chats);
                 break;
-            // other requests process
             case REQUEST_CHAT:
-                getChatMessages(params.getId());
+                List<MSGMessage> chatMessages = getChatMessages(params.getId());
+                msgResponseBlock.setMessages(chatMessages);
                 break;
             case REQUEST_CREATE:
-                createChat(msgRequestBlock.getId());
+                createChat(params.getId(), params.getContent());
                 break;
             case REQUEST_SEND:
-                createMessage(params);
+                String message = createMessage(params);
+                if (message == null) {
+                    msgResponseBlock.setErrCode((short) 1);
+                    msgResponseBlock.setErrMsg("Error while creating message");
+                }
                 break;
             case REQUEST_EDIT:
                 updateMessage(params);
@@ -86,45 +107,49 @@ public final class MSGHandler implements Handler {
     }
 
     public List<MSGChannel> getChats() throws SQLException {
-        Connection connection = poolConnection.get();
-        // get user id
-        User sqlUser = UsersContext.getInstance().getSQLUser(poolConnection.getSessionID().toString());
-        PreparedStatement preparedStatement = DBStatements.getChats(connection, null);
+        DBFunctions functions = new DBFunctions(poolConnection);
         List<MSGChannel> channels = new ArrayList<>();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            channels = processResultSetToMSGChannels(resultSet);
-            preparedStatement.close();
-            resultSet.close();
+        ResultSet chatsResultSet = functions.getChats();
+        if (chatsResultSet != null) {
+            channels = processResultSetToMSGChannels(chatsResultSet);
+            chatsResultSet.close();
         }
         return channels;
     }
 
     public List<MSGMessage> getChatMessages(String chatId) throws SQLException {
         DBFunctions functions = new DBFunctions(poolConnection);
-//        PreparedStatement preparedStatement = functions.getMessages("id", null);
-//        List<MSGMessage> channels = new ArrayList<>();
-//        if (preparedStatement != null) {
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//            channels = processResultSetToMSGMessage(resultSet);
-//            preparedStatement.close();
-//            resultSet.close();
-//        }
-        return null;
+        List<MSGMessage> messages = new ArrayList<>();
+        ResultSet chatsResultSet = functions.getMessages(chatId);
+        if (chatsResultSet != null) {
+            messages = processResultSetToMSGMessage(chatsResultSet);
+            chatsResultSet.close();
+        }
+        Collections.reverse(messages);
+        return messages;
     }
 
-    public String createChat(String objId) {
+    public String createChat(String objId, String subject) {
         DBFunctions functions = new DBFunctions(poolConnection);
-        return "id";
+        ExecStatus chat = functions.createChat(subject, objId);
+        return chat.getZoid().toString();
     }
 
     public String createMessage(MsgParams params) {
         DBFunctions functions = new DBFunctions(poolConnection);
-        return "id";
+        ExecStatus message = functions.createMessage(
+                params.getId(), params.getContent(),
+                MSGMessageType.of(params.getType()), params.getReference()
+        );
+        if (message.isOk()) {
+            return message.getZoid().toString();
+        }
+        return null;
     }
 
     public void updateMessage(MsgParams params) {
         DBFunctions functions = new DBFunctions(poolConnection);
+
     }
 
     public void deleteMessage(String messageId) {
@@ -144,10 +169,8 @@ public final class MSGHandler implements Handler {
                     String content = getValueOrEmpty(resultSet, CONTENT);
                     String answerId = getValueOrEmpty(resultSet, MSG_ID);
                     String messageType = getValueOrEmpty(resultSet, TYPE);
-                    String sid = getZsid(resultSet);
-                    String zoid = getZoid(resultSet);
-                    String zlvl = getValueOrEmpty(resultSet, ZLVL);
-                    MSGMessage msgChannel = new MSGMessage(content, answerId, MSGMessageType.valueOf(messageType));
+                    String zrid = getZrid(resultSet);
+                    MSGMessage msgChannel = new MSGMessage(zrid, content, answerId, MSGMessageType.of(messageType));
                     objects.add(msgChannel);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -166,13 +189,13 @@ public final class MSGHandler implements Handler {
             while (resultSet.next()) {
                 try {
                     String subject = getValueOrEmpty(resultSet, SUBJECT);
-                    MSGChannelStatus status = MSGChannelStatus.valueOf(getValueOrEmpty(resultSet, STATUS));
+                    String chStatus = getValueOrEmpty(resultSet, STATUS);
                     String objId = getValueOrEmpty(resultSet, OBJ_ID);
                     String descr = getValueOrEmpty(resultSet, DESCRIPTION);
                     String sid = getZsid(resultSet);
                     String zoid = getZoid(resultSet);
                     String zlvl = getValueOrEmpty(resultSet, ZLVL);
-                    MSGChannel msgChannel = new MSGChannel(subject, objId, status);
+                    MSGChannel msgChannel = new MSGChannel(zoid, subject, objId, chStatus);
                     objects.add(msgChannel);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -181,6 +204,8 @@ public final class MSGHandler implements Handler {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        resultSet.close();
+        Collections.reverse(objects);
         return objects;
     }
 }

@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.handlers.msg;
+package com.eustrosoft.core.handlers.tis;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
@@ -14,16 +14,15 @@ import lombok.Setter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_TIS;
 
 @Getter
 @Setter
-public class MSGRequestBlock extends BasicRequest {
+public class TISRequestBlock extends BasicRequest {
     private String id;
     private String requestType;
-    private MsgParams params;
 
-    public MSGRequestBlock(HttpServletRequest request,
+    public TISRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
         super(request, response);
@@ -32,7 +31,7 @@ public class MSGRequestBlock extends BasicRequest {
 
     @Override
     public String getS() {
-        return SUBSYSTEM_MSG;
+        return SUBSYSTEM_TIS;
     }
 
     @Override
@@ -45,17 +44,13 @@ public class MSGRequestBlock extends BasicRequest {
         return this.request;
     }
 
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
+    }
+
     private void parseQJson(QJson qJson) {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
-        }
-        try {
-            setId(qJson.getItemString("id"));
-        } catch (Exception ex) {
-        }
-        try {
-            setParams(MsgParams.fromJson(qJson.getItemQJson("params")));
-        } catch (Exception ex) {
         }
     }
 }

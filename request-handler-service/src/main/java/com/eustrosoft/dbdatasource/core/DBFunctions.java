@@ -6,7 +6,8 @@
 
 package com.eustrosoft.dbdatasource.core;
 
-import com.eustrosoft.core.context.User;
+import com.eustrosoft.datasource.sources.ranges.MSGChannelStatus;
+import com.eustrosoft.datasource.sources.ranges.MSGMessageType;
 import com.eustrosoft.dbdatasource.core.model.FDir;
 import com.eustrosoft.dbdatasource.core.model.FFile;
 import com.eustrosoft.dbdatasource.queries.Query;
@@ -22,7 +23,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 
 public final class DBFunctions {
     private QDBPConnection poolConnection;
@@ -209,7 +213,7 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ExecStatus commitObject(String objectZoid, String objectVer) {
+    public ExecStatus commitObject(String type, String objectZoid, String objectVer) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -218,7 +222,7 @@ public final class DBFunctions {
                         .leftBracket()
                         .add(String.format(
                                 "'%s', %s, %s",
-                                "FS.F",
+                                type,
                                 objectZoid,
                                 objectVer
                         ))
@@ -234,6 +238,11 @@ public final class DBFunctions {
             resultSet.close();
         }
         return status;
+    }
+
+    @SneakyThrows
+    public ExecStatus commitObject(String type, Long objectZoid, Long objectVer) {
+        return commitObject(type, objectZoid.toString(), objectVer.toString());
     }
 
     @SneakyThrows
@@ -445,10 +454,10 @@ public final class DBFunctions {
             }
         } finally {
             if (status != null) {
-                commitObject(status.getZoid().toString(), status.getZver().toString());
+                commitObject("FS.F", status.getZoid().toString(), status.getZver().toString());
             }
             if (fDirOpen != null) {
-                commitObject(fDirOpen.getZoid().toString(), fDirOpen.getZver().toString());
+                commitObject("FS.F", fDirOpen.getZoid().toString(), fDirOpen.getZver().toString());
             }
         }
     }
@@ -484,37 +493,33 @@ public final class DBFunctions {
             }
         } finally {
             if (status != null) {
-                commitObject(status.getZoid().toString(), status.getZver().toString());
+                commitObject("FS.F", status.getZoid().toString(), status.getZver().toString());
             }
         }
     }
 
     @SneakyThrows
-    public User getUserFromDB(String username) {
+    public ResultSet getChats() {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
                         .all()
                         .from()
-                        .add("SAM.\"user\"")
-                        .where("login = " + username)
+                        .add("MSG.V_CChannel")
                         .buildWithSemicolon()
                         .toString()
         );
-        User userInfo = new User();
         if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            userInfo.fromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
+            return preparedStatement.executeQuery();
         }
-        return userInfo;
+        return null;
     }
 
     @SneakyThrows
-    public ExecStatus createChat(String objectZoid, String description, String parentVer,
-                                 FileType type, String name) {
+    public ExecStatus createChat(String subject, String objectId) {
+        // ??? todo zsid
+        ExecStatus objectInScope = createObjectInScope("MSG.C", "1048576");
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -522,12 +527,14 @@ public final class DBFunctions {
                         .add("MSG.create_cchannel")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s, '%s', '%s', null, null, null, null, null, null, null, null, null, null",
-                                objectZoid,
-                                parentVer,
-                                name,
-                                type.getValue(),
-                                "N" // TODO
+                                //v_zoid bigint, v_zver bigint, v_zpid bigint, v_subject character varying, v_status character, v_obj_id bigint
+                                "%s, %s, %s, '%s', '%s', %s",
+                                objectInScope.getZoid(),
+                                objectInScope.getZver(),
+                                null,
+                                subject,
+                                MSGChannelStatus.NEW.getValue(),
+                                objectId
                         ))
                         .rightBracket()
                         .buildWithSemicolon()
@@ -540,60 +547,154 @@ public final class DBFunctions {
             preparedStatement.close();
             resultSet.close();
         }
+        commitObject(
+                "MSG.C",
+                objectInScope.getZoid().toString(),
+                status.getZver().toString()
+        );
         return status;
     }
 
     @SneakyThrows
-    public ExecStatus getMessages(String objectZoid, String message) {
+    public ResultSet getMessages(String channelId) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .add("MSG.create_message")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, '%s', null, null, null, null, null, null, null, null, null, null",
-                                objectZoid,
-                                "N"
-                        ))
-                        .rightBracket()
+                        .all()
+                        .from()
+                        .add("MSG.V_CMsg")
+                        .where(String.format("%s = %s", ZOID, channelId))
                         .buildWithSemicolon()
                         .toString()
         );
-        ExecStatus status = new ExecStatus();
         if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
+            return preparedStatement.executeQuery();
         }
-        return status;
+        return null;
     }
 
     @SneakyThrows
-    public ExecStatus createMessage(String objectZoid, String message) {
+    public ExecStatus createMessage(String chatId, String message,
+                                    MSGMessageType msgType, String answerMsgId) {
+        ExecStatus openedChat = openObject("MSG.C", chatId);
+        try {
+            if (openedChat.isOk()) {
+                Connection connection = poolConnection.get();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        Query.builder()
+                                .select()
+                                .add("MSG.Create_cmsg")
+                                .leftBracket()
+                                .add(String.format(
+                                        //v_zoid bigint, v_zver bigint, v_zpid bigint, v_content character varying, v_msg_id bigint, v_type character varying
+                                        "%s, %s, %s, '%s', %s, '%s'",
+                                        openedChat.getZoid(),
+                                        openedChat.getZver(),
+                                        1,
+                                        message,
+                                        answerMsgId,
+                                        msgType.getValue()
+                                ))
+                                .rightBracket()
+                                .buildWithSemicolon()
+                                .toString()
+                );
+                ExecStatus status = new ExecStatus();
+                if (preparedStatement != null) {
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    status.fillFromResultSet(resultSet);
+                    preparedStatement.close();
+                    resultSet.close();
+                }
+                return status;
+            }
+            return new ExecStatus();
+        } finally {
+            commitObject("MSG.C", openedChat.getZoid(), openedChat.getZver());
+        }
+    }
+
+    @SneakyThrows
+    public String getUserId() {
         Connection connection = poolConnection.get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("FS.create_FFile")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
-                                objectZoid,
-                                "N" // TODO
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
-        );
-        ExecStatus status = new ExecStatus();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user");
+        String userId = null;
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
+            resultSet.next();
+            userId = resultSet.getString("get_user");
             preparedStatement.close();
             resultSet.close();
         }
-        return status;
+        return userId;
+    }
+
+    @SneakyThrows
+    public String getUserLogin() {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_login");
+        String userLogin = null;
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            userLogin = resultSet.getString("get_user_login");
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return userLogin;
+    }
+
+    @SneakyThrows
+    public String getUserLang() {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_lang");
+        String userLang = null;
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            userLang = resultSet.getString("get_user_lang");
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return userLang;
+    }
+
+    @SneakyThrows
+    public Integer getUserSLvl() {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_slevel");
+        Integer userSlvl = null;
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            userSlvl = resultSet.getInt("get_user_slevel");
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return userSlvl;
+    }
+
+    @SneakyThrows
+    public int[] getUserAvailableSlvl() {
+        Connection connection = poolConnection.get();
+        int[] slvls = new int[2];
+        PreparedStatement minPrep = DBStatements.getFunctionStatement(connection, "SAM.get_user_slevel_min");
+        if (minPrep != null) {
+            ResultSet resultSet = minPrep.executeQuery();
+            resultSet.next();
+            slvls[0] = resultSet.getInt("get_user_slevel_min");
+            minPrep.close();
+            resultSet.close();
+        }
+        PreparedStatement maxPrep = DBStatements.getFunctionStatement(connection, "SAM.get_user_slevel_max");
+        if (maxPrep != null) {
+            ResultSet resultSet = maxPrep.executeQuery();
+            resultSet.next();
+            slvls[1] = resultSet.getInt("get_user_slevel_max");
+            maxPrep.close();
+            resultSet.close();
+        }
+        return slvls;
     }
 }

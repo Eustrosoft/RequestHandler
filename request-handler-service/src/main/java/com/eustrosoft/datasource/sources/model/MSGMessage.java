@@ -14,4 +14,11 @@ public class MSGMessage extends DBObject {
     private String content;
     private String answerId;
     private MSGMessageType type;
+
+    public MSGMessage(String id, String content, String answerId, MSGMessageType type) {
+        setId(id);
+        this.content = content;
+        this.answerId = answerId;
+        this.type = type;
+    }
 }
