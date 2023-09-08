@@ -21,7 +21,7 @@ public final class Constants {
     public static final String SUBSYSTEM_CMS = "cms";
     public static final String SUBSYSTEM_LOGIN = "login";
     public static final String SUBSYSTEM_MSG = "msg";
-    public static final String SUBSYSTEM_TIS = "tis";
+    public static final String SUBSYSTEM_SAM = "sam";
 
     // Sql subsystem
     public static final String REQUEST_SQL = "sql";

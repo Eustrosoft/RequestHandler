@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.handlers.tis;
+package com.eustrosoft.core.handlers.sam;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
@@ -14,13 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_TIS;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SAM;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public final class TISResponseBlock extends BasicResponse {
+public final class SAMResponseBlock extends BasicResponse {
     private String errMsg = "";
     private Short errCode = 0;
     private String responseType;
@@ -28,7 +28,7 @@ public final class TISResponseBlock extends BasicResponse {
 
     @Override
     public String getS() {
-        return SUBSYSTEM_TIS;
+        return SUBSYSTEM_SAM;
     }
 
     @Override

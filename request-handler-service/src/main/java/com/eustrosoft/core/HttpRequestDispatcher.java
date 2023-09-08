@@ -11,14 +11,7 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
-import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
-import com.eustrosoft.core.handlers.file.ChunkFileHandler;
-import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
-import com.eustrosoft.core.handlers.file.FileHandler;
-import com.eustrosoft.core.handlers.file.FileRequestBlock;
-import com.eustrosoft.core.handlers.file.HexFileHandler;
-import com.eustrosoft.core.handlers.file.HexFileRequestBlock;
+import com.eustrosoft.core.handlers.file.*;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.msg.MSGHandler;
@@ -31,10 +24,10 @@ import com.eustrosoft.core.handlers.requests.RequestObject;
 import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.handlers.sam.SAMHandler;
+import com.eustrosoft.core.handlers.sam.SAMRequestBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
-import com.eustrosoft.core.handlers.tis.TISHandler;
-import com.eustrosoft.core.handlers.tis.TISRequestBlock;
 import com.eustrosoft.core.providers.DataSourceProvider;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.Json;
@@ -65,26 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.ERR_SERVER;
-import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
-import static com.eustrosoft.core.Constants.REQUEST;
-import static com.eustrosoft.core.Constants.REQUESTS;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_SQL;
-import static com.eustrosoft.core.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.Constants.SUBSYSTEM;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_SQL;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_TIS;
-import static com.eustrosoft.core.Constants.TIMEOUT;
+import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -248,8 +222,8 @@ public class HttpRequestDispatcher extends HttpServlet {
                 case SUBSYSTEM_MSG:
                     handler = new MSGHandler(requestType);
                     break;
-                case SUBSYSTEM_TIS:
-                    handler = new TISHandler();
+                case SUBSYSTEM_SAM:
+                    handler = new SAMHandler();
                     break;
                 default:
                     handler = null;
@@ -332,9 +306,9 @@ public class HttpRequestDispatcher extends HttpServlet {
                     requestBlock = new MSGRequestBlock(request, response, qJson);
                     ((MSGRequestBlock) requestBlock).setRequestType(requestType);
                     break;
-                case SUBSYSTEM_TIS:
-                    requestBlock = new TISRequestBlock(request, response, qJson);
-                    ((TISRequestBlock) requestBlock).setRequestType(requestType);
+                case SUBSYSTEM_SAM:
+                    requestBlock = new SAMRequestBlock(request, response, qJson);
+                    ((SAMRequestBlock) requestBlock).setRequestType(requestType);
                     break;
                 default:
                     break;

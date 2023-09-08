@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.handlers.tis;
+package com.eustrosoft.core.handlers.sam;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
@@ -14,15 +14,15 @@ import lombok.Setter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_TIS;
+import static com.eustrosoft.core.Constants.SUBSYSTEM_SAM;
 
 @Getter
 @Setter
-public class TISRequestBlock extends BasicRequest {
+public class SAMRequestBlock extends BasicRequest {
     private String id;
     private String requestType;
 
-    public TISRequestBlock(HttpServletRequest request,
+    public SAMRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
         super(request, response);
@@ -31,7 +31,7 @@ public class TISRequestBlock extends BasicRequest {
 
     @Override
     public String getS() {
-        return SUBSYSTEM_TIS;
+        return SUBSYSTEM_SAM;
     }
 
     @Override
