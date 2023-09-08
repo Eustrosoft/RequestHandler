@@ -6,6 +6,8 @@
 
 package com.eustrosoft.core.handlers.msg;
 
+import com.eustrosoft.core.context.User;
+import com.eustrosoft.core.context.UserDTO;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
@@ -24,11 +26,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import static com.eustrosoft.core.Constants.*;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
+import static com.eustrosoft.core.Constants.ERR_OK;
+import static com.eustrosoft.core.Constants.MSG_OK;
+import static com.eustrosoft.core.Constants.REQUEST_CHANGE;
+import static com.eustrosoft.core.Constants.REQUEST_CHAT;
+import static com.eustrosoft.core.Constants.REQUEST_CHATS;
+import static com.eustrosoft.core.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.Constants.REQUEST_EDIT;
+import static com.eustrosoft.core.Constants.REQUEST_SEND;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.OBJ_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.STATUS;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.SUBJECT;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
 
 public final class MSGHandler implements Handler {
     private String requestType;
@@ -145,14 +164,26 @@ public final class MSGHandler implements Handler {
     @SneakyThrows
     private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
         List<MSGMessage> objects = new ArrayList<>();
+        Map<String, User> userMapping = new HashMap<>();
+        DBFunctions functions = new DBFunctions(poolConnection);
         try {
             while (resultSet.next()) {
                 try {
-                    String content = getValueOrEmpty(resultSet, CONTENT);
-                    String answerId = getValueOrEmpty(resultSet, MSG_ID);
-                    String messageType = getValueOrEmpty(resultSet, TYPE);
-                    String zrid = getZrid(resultSet);
+                    String str = resultSet.getString(1);
+                    String[] splitted = str.substring(1, str.length() - 1).split(",");
+                    String content = splitted[3];
+                    String answerId = splitted[4];
+                    String messageType = splitted[5];
+                    String zrid = splitted[1];
+                    String userId = splitted[6];
+                    User user = null;
+                    if (!userMapping.containsKey(userId)) {
+                        user = User.fromResultSet(Objects.requireNonNull(functions.getUserResultSetById(userId)));
+                    } else {
+                        user = userMapping.get(userId);
+                    }
                     MSGMessage msgChannel = new MSGMessage(zrid, content, answerId, MSGMessageType.of(messageType));
+                    msgChannel.setUser(UserDTO.fromUser(user));
                     objects.add(msgChannel);
                 } catch (Exception ex) {
                     ex.printStackTrace();

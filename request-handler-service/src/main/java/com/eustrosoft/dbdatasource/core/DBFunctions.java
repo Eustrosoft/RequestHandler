@@ -24,7 +24,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
 
 public final class DBFunctions {
     private final QDBPConnection poolConnection;
@@ -517,7 +520,7 @@ public final class DBFunctions {
     @SneakyThrows
     public ExecStatus createChat(String subject, Integer slvl, String objectId) {
         // ??? todo zsid
-        ExecStatus objectInScope = createObjectInScope("MSG.C", getUserSid(), slvl.toString());
+        ExecStatus objectInScope = createObjectInScope("MSG.C", getUserSid(), slvl == null ? "null" : slvl.toString());
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -546,11 +549,11 @@ public final class DBFunctions {
             resultSet.close();
         }
         if (status.isOk()) {
-            createCParty(
-                    status.getZoid().toString(),
+            ExecStatus partyCreationStatus = createCParty(
+                    objectInScope.getZoid().toString(),
                     status.getZver().toString(),
                     MSGPartyRole.CREATOR
-            );
+            ); // todo: maybe create a message for creator
         }
         commitObject(
                 "MSG.C",
@@ -566,12 +569,31 @@ public final class DBFunctions {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .all()
+                        .leftBracket()
+                        .add("cm.zoid, cm.zver, cm.zlvl, cm.content, cm.msg_id, cm.type, tz.zuid")
+                        .rightBracket()
                         .from()
-                        .add("MSG.V_CMsg")
-                        .where(String.format("%s = %s", ZOID, channelId))
+                        .add("MSG.v_cchannel as cc")
+                        .add("right outer join")
+                        .add("MSG.v_cmsg as cm")
+                        .on()
+                        .leftBracket()
+                        .add("cc.zoid = cm.zoid")
+                        .rightBracket()
+                        .add("left outer join tis.vh_zobject as tz")
+                        .on()
+                        .leftBracket()
+                        .add("cm.zver = tz.zver")
+                        .rightBracket()
+                        .where(
+                                Query.builder()
+                                        .add(channelId)
+                                        .eq()
+                                        .add("tz.zoid")
+                                        .build()
+                        )
                         .buildWithSemicolon()
-                        .toString()
+                        .getQuery().toString()
         );
         if (preparedStatement != null) {
             return preparedStatement.executeQuery();
@@ -629,7 +651,7 @@ public final class DBFunctions {
                         .add("MSG.create_cparty")
                         .leftBracket()
                         .add(String.format(
-                                "%s, %s, %s, '%s', %s, '%s'",
+                                "%s, %s, %s, %s, '%s', %s",
                                 chatId,
                                 chatVer,
                                 1, // todo
@@ -679,6 +701,25 @@ public final class DBFunctions {
             resultSet.close();
         }
         return userId;
+    }
+
+    @SneakyThrows
+    public ResultSet getUserResultSetById(String id) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("SAM.V_User")
+                        .where(String.format("id = %s", id))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            return preparedStatement.executeQuery();
+        }
+        return null;
     }
 
     @SneakyThrows

@@ -56,11 +56,13 @@ public class User implements EustrosoftUser {
         this.sessionPath = sessionPath;
     }
 
-    public User fromResultSet(ResultSet resultSet) throws SQLException {
+    public static User fromResultSet(ResultSet resultSet) throws SQLException {
+        resultSet.next();
         User user = new User(
                 resultSet.getString("login"), "", ""
         );
         user.setId(resultSet.getLong("id"));
+        resultSet.close();
         return user;
     }
 }

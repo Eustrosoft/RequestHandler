@@ -1,5 +1,6 @@
 package com.eustrosoft.datasource.sources.model;
 
+import com.eustrosoft.core.context.UserDTO;
 import com.eustrosoft.datasource.sources.ranges.MSGMessageType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ public class MSGMessage extends DBObject {
     private String content;
     private String answerId;
     private MSGMessageType type;
+    private UserDTO user;
 
     public MSGMessage(String id, String content, String answerId, MSGMessageType type) {
         setId(id);

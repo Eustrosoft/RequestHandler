@@ -25,7 +25,11 @@ public class MsgParams {
         params.setContent(qJson.getItemString("content"));
         params.setReference(qJson.getItemString("reference"));
         params.setType(qJson.getItemString("type"));
-        params.setSlvl(qJson.getItemInteger("slvl"));
+        try {
+            params.setSlvl(qJson.getItemLong("slvl").intValue());
+        } catch (Exception ex) {
+
+        }
         return params;
     }
 }
