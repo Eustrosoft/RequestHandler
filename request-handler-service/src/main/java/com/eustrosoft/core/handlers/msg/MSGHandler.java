@@ -26,27 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.ERR_OK;
-import static com.eustrosoft.core.Constants.MSG_OK;
-import static com.eustrosoft.core.Constants.REQUEST_CHANGE;
-import static com.eustrosoft.core.Constants.REQUEST_CHAT;
-import static com.eustrosoft.core.Constants.REQUEST_CHATS;
-import static com.eustrosoft.core.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.Constants.REQUEST_EDIT;
-import static com.eustrosoft.core.Constants.REQUEST_SEND;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.CONTENT;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.MSG_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.OBJ_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.STATUS;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.SUBJECT;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.TYPE;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZrid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.dbdatasource.util.ResultSetUtils.*;
 
 public final class MSGHandler implements Handler {
     private String requestType;
@@ -80,7 +62,7 @@ public final class MSGHandler implements Handler {
                 msgResponseBlock.setMessages(chatMessages);
                 break;
             case REQUEST_CREATE:
-                createChat(params.getId(), params.getContent());
+                createChat(params.getId(), params.getSlvl(), params.getContent());
                 break;
             case REQUEST_SEND:
                 String message = createMessage(params);
@@ -129,9 +111,9 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(String objId, String subject) {
+    public String createChat(String objId, Integer slvl, String subject) {
         DBFunctions functions = new DBFunctions(poolConnection);
-        ExecStatus chat = functions.createChat(subject, objId);
+        ExecStatus chat = functions.createChat(subject, slvl, objId);
         return chat.getZoid().toString();
     }
 

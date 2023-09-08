@@ -8,6 +8,7 @@ package com.eustrosoft.dbdatasource.core;
 
 import com.eustrosoft.datasource.sources.ranges.MSGChannelStatus;
 import com.eustrosoft.datasource.sources.ranges.MSGMessageType;
+import com.eustrosoft.datasource.sources.ranges.MSGPartyRole;
 import com.eustrosoft.dbdatasource.core.model.FDir;
 import com.eustrosoft.dbdatasource.core.model.FFile;
 import com.eustrosoft.dbdatasource.queries.Query;
@@ -23,13 +24,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.dbdatasource.constants.DBConstants.FILE_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.F_NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.NAME;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZOID;
+import static com.eustrosoft.dbdatasource.constants.DBConstants.*;
 
 public final class DBFunctions {
-    private QDBPConnection poolConnection;
+    private final QDBPConnection poolConnection;
 
     public DBFunctions(QDBPConnection poolConnection) {
         this.poolConnection = poolConnection;
@@ -517,9 +515,9 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ExecStatus createChat(String subject, String objectId) {
+    public ExecStatus createChat(String subject, Integer slvl, String objectId) {
         // ??? todo zsid
-        ExecStatus objectInScope = createObjectInScope("MSG.C", "1048576");
+        ExecStatus objectInScope = createObjectInScope("MSG.C", getUserSid(), slvl.toString());
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -546,6 +544,13 @@ public final class DBFunctions {
             status.fillFromResultSet(resultSet);
             preparedStatement.close();
             resultSet.close();
+        }
+        if (status.isOk()) {
+            createCParty(
+                    status.getZoid().toString(),
+                    status.getZver().toString(),
+                    MSGPartyRole.CREATOR
+            );
         }
         commitObject(
                 "MSG.C",
@@ -591,7 +596,7 @@ public final class DBFunctions {
                                         "%s, %s, %s, '%s', %s, '%s'",
                                         openedChat.getZoid(),
                                         openedChat.getZver(),
-                                        1,
+                                        1, // todo
                                         message,
                                         answerMsgId,
                                         msgType.getValue()
@@ -613,6 +618,52 @@ public final class DBFunctions {
         } finally {
             commitObject("MSG.C", openedChat.getZoid(), openedChat.getZver());
         }
+    }
+
+    @SneakyThrows
+    private ExecStatus createCParty(String chatId, String chatVer, MSGPartyRole role) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("MSG.create_cparty")
+                        .leftBracket()
+                        .add(String.format(
+                                "%s, %s, %s, '%s', %s, '%s'",
+                                chatId,
+                                chatVer,
+                                1, // todo
+                                getUserId(),
+                                role.getValue(),
+                                null
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        ExecStatus status = new ExecStatus();
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status.fillFromResultSet(resultSet);
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return status;
+    }
+
+    @SneakyThrows
+    public String getUserSid() {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_sid");
+        String userLogin = null;
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            userLogin = resultSet.getString("get_user_sid");
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return userLogin;
     }
 
     @SneakyThrows

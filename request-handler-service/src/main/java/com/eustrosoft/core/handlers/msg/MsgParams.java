@@ -16,6 +16,7 @@ public class MsgParams {
     private String content;
     private String reference;
     private String type;
+    private Integer slvl;
 
     public static MsgParams fromJson(QJson qJson) {
         MsgParams params = new MsgParams();
@@ -24,6 +25,7 @@ public class MsgParams {
         params.setContent(qJson.getItemString("content"));
         params.setReference(qJson.getItemString("reference"));
         params.setType(qJson.getItemString("type"));
+        params.setSlvl(qJson.getItemInteger("slvl"));
         return params;
     }
 }
