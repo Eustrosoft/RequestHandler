@@ -14,7 +14,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.cms.dbdatasource.constants;
+package com.eustrosoft.core.constants;
 
 public class DBConstants {
     public final static int LVL_SCOPE = 0;

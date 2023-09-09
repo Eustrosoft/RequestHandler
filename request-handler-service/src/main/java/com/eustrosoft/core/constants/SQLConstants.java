@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.cms.dbdatasource.constants;
+package com.eustrosoft.core.constants;
 
 public class SQLConstants {
     public final static String SELECT = "SELECT";

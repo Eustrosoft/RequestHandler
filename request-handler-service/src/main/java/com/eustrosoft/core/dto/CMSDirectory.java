@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.model;
+package com.eustrosoft.core.dto;
 
 import com.eustrosoft.core.model.ranges.CMSType;
 import lombok.AllArgsConstructor;

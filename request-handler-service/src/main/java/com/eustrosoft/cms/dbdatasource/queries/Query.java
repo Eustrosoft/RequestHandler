@@ -6,7 +6,7 @@
 
 package com.eustrosoft.cms.dbdatasource.queries;
 
-import static com.eustrosoft.cms.dbdatasource.constants.SQLConstants.*;
+import static com.eustrosoft.core.constants.SQLConstants.*;
 
 public class Query {
     private StringBuilder query;

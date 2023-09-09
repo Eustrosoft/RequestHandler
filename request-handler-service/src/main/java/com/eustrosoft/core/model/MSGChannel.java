@@ -1,10 +1,11 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.model.ranges.MSGChannelStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.sql.ResultSet;
+
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 @Getter
 @Setter
@@ -23,5 +24,14 @@ public class MSGChannel extends DBObject {
             this.status = MSGChannelStatus.of(msgStatus);
         } catch (Exception ex) {
         }
+    }
+
+    @Override
+    @SneakyThrows
+    public void fillFromResultSet(ResultSet resultSet) {
+        super.fillFromResultSet(resultSet);
+        setSubject(resultSet.getString(SUBJECT));
+        setDocumentId(resultSet.getLong(OBJ_ID));
+        setStatus(MSGChannelStatus.of(resultSet.getString(STATUS)));
     }
 }

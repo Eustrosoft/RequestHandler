@@ -12,7 +12,7 @@ import lombok.SneakyThrows;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public final class DBStatements {
     @SneakyThrows

@@ -1,4 +1,6 @@
-package com.eustrosoft.core.model;
+package com.eustrosoft.core.model.interfaces;
+
+import com.eustrosoft.core.model.DBObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

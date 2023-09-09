@@ -6,6 +6,7 @@
 
 package com.eustrosoft.core.model;
 
+import com.eustrosoft.core.model.interfaces.Updatable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -13,7 +14,7 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 @Getter
 @Setter
@@ -36,20 +37,14 @@ public class FDir extends DBObject implements Updatable {
         this.description = description;
     }
 
+    @Override
     @SneakyThrows
     public void fillFromResultSet(ResultSet resultSet) {
-        if (resultSet == null) {
-            throw new Exception("Result set is null while processing FDir from ResultSet.");
-        }
-        if (resultSet.next()) {
-            setZoid(resultSet.getLong(ZOID));
-            setZver(resultSet.getLong(ZVER));
-            setZrid(resultSet.getLong(ZRID));
-            setFileId(resultSet.getLong(FILE_ID));
-            setFileName(resultSet.getString(F_NAME));
-            setMimeType(resultSet.getString(MIME_TYPE));
-            setDescription(resultSet.getString(DESCRIPTION));
-        }
+        super.fillFromResultSet(resultSet);
+        setFileId(resultSet.getLong(FILE_ID));
+        setFileName(resultSet.getString(F_NAME));
+        setMimeType(resultSet.getString(MIME_TYPE));
+        setDescription(resultSet.getString(DESCRIPTION));
     }
 
     public String toUpdateString() {

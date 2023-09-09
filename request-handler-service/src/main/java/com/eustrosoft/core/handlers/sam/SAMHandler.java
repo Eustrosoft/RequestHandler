@@ -37,7 +37,7 @@ public final class SAMHandler implements Handler {
         DBFunctions functions = new DBFunctions(poolConnection);
         switch (requestType) {
             case REQUEST_USER_ID:
-                SAMResponseBLock.setData(functions.getUserId());
+                SAMResponseBLock.setData(functions.getUserId().toString());
                 break;
             case REQUEST_USER_LOGIN:
                 SAMResponseBLock.setData(functions.getUserLogin());

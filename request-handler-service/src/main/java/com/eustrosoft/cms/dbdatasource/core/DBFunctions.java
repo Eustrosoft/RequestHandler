@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Vector;
 
-import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public final class DBFunctions {
     private final QDBPConnection poolConnection;
@@ -677,14 +677,14 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public String getUserId() {
+    public Long getUserId() {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user");
-        String userId = null;
+        Long userId = null;
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            userId = resultSet.getString("get_user");
+            userId = resultSet.getLong("get_user");
             preparedStatement.close();
             resultSet.close();
         }
@@ -692,7 +692,7 @@ public final class DBFunctions {
     }
 
     @SneakyThrows
-    public ResultSet getUserResultSetById(String id) {
+    public ResultSet getUserResultSetById(Long id) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()

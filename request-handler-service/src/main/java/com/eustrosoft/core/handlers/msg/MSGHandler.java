@@ -27,9 +27,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
 import static com.eustrosoft.cms.dbdatasource.util.ResultSetUtils.*;
 import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public final class MSGHandler implements Handler {
     private String requestType;
@@ -151,18 +151,18 @@ public final class MSGHandler implements Handler {
     @SneakyThrows
     private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
         List<MSGMessage> objects = new ArrayList<>();
-        Map<String, User> userMapping = new HashMap<>();
+        Map<Long, User> userMapping = new HashMap<>();
         DBFunctions functions = new DBFunctions(poolConnection);
         try {
             while (resultSet.next()) {
                 try {
                     String str = resultSet.getString(1);
                     String[] splitted = str.substring(1, str.length() - 1).split(",");
-                    String content = splitted[3];
-                    String answerId = splitted[4];
-                    String messageType = splitted[5];
-                    Long zrid = Long.parseLong(splitted[1]);
-                    String userId = splitted[6];
+                    String content = getStrValueOrEmpty(resultSet, splitted[3]);
+                    Long answerId = getLongValueOrEmpty(resultSet, splitted[4]);
+                    String messageType = getStrValueOrEmpty(resultSet, splitted[5]);
+                    Long zrid = getLongValueOrEmpty(resultSet, splitted[1]);
+                    Long userId = getLongValueOrEmpty(resultSet, splitted[6]);
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
                         user = User.fromResultSet(Objects.requireNonNull(functions.getUserResultSetById(userId)));

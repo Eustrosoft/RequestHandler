@@ -14,7 +14,7 @@ public class MsgParams {
     private Long id;
     private String status;
     private String content;
-    private String reference;
+    private Long reference;
     private String type;
     private Integer slvl;
 
@@ -23,7 +23,7 @@ public class MsgParams {
         params.setId(qJson.getItemLong("id"));
         params.setStatus(qJson.getItemString("status"));
         params.setContent(qJson.getItemString("content"));
-        params.setReference(qJson.getItemString("reference"));
+        params.setReference(qJson.getItemLong("reference"));
         params.setType(qJson.getItemString("type"));
         try {
             params.setSlvl(qJson.getItemLong("slvl").intValue());

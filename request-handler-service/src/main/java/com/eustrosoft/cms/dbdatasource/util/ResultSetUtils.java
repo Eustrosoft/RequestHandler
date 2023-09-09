@@ -10,7 +10,7 @@ import com.eustrosoft.core.model.ranges.CMSType;
 
 import java.sql.ResultSet;
 
-import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public final class ResultSetUtils {
 

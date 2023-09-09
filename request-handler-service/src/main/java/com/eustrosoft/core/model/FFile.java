@@ -6,6 +6,14 @@
  * Copyright (c) 2023, Yadzuka & EustroSoft.org
  * This file is part of RequestHandler project.
  * See the LICENSE file at the project root for licensing information.
+ * <p>
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
+ * <p>
+ * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * This file is part of RequestHandler project.
+ * See the LICENSE file at the project root for licensing information.
  */
 
 /**
@@ -17,6 +25,7 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.cms.dbdatasource.ranges.FileType;
+import com.eustrosoft.core.model.interfaces.Updatable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -24,7 +33,8 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.core.constants.DBConstants.NAME;
 
 @Getter
 @Setter
@@ -64,29 +74,23 @@ public class FFile extends DBObject implements Updatable {
         this.tDigest = tDigest;
     }
 
+    @Override
     @SneakyThrows
     public void fillFromResultSet(ResultSet resultSet) {
-        if (resultSet == null) {
-            throw new Exception("Result set is null while processing FFile from ResultSet.");
-        }
-        if (resultSet.next()) {
-            // TODO: constants
-            setZoid(resultSet.getLong(ZOID));
-            setZver(resultSet.getLong(ZVER));
-            setZrid(resultSet.getLong(ZRID));
-            setFileName(resultSet.getString(NAME));
-            setFileType(FileType.fromString(resultSet.getString("type")));
-            setExtStore(resultSet.getString("extstore").charAt(0));
-            setMimeType(resultSet.getString("mimetype"));
-            setDescription(resultSet.getString(DESCRIPTION));
-            setChcnt(resultSet.getLong("b_chcnt"));
-            setAlgorithm(resultSet.getString("b_algo"));
-            setDigest(resultSet.getString("b_digest"));
-            setBSize(resultSet.getLong("b_size"));
-            setTChcnt(resultSet.getLong("t_chcnt"));
-            setTAlgorithm(resultSet.getString("t_algo"));
-            setTDigest(resultSet.getString("t_digest"));
-        }
+        super.fillFromResultSet(resultSet);
+        // TODO: constants
+        setFileName(resultSet.getString(NAME));
+        setFileType(FileType.fromString(resultSet.getString("type")));
+        setExtStore(resultSet.getString("extstore").charAt(0));
+        setMimeType(resultSet.getString("mimetype"));
+        setDescription(resultSet.getString(DESCRIPTION));
+        setChcnt(resultSet.getLong("b_chcnt"));
+        setAlgorithm(resultSet.getString("b_algo"));
+        setDigest(resultSet.getString("b_digest"));
+        setBSize(resultSet.getLong("b_size"));
+        setTChcnt(resultSet.getLong("t_chcnt"));
+        setTAlgorithm(resultSet.getString("t_algo"));
+        setTDigest(resultSet.getString("t_digest"));
     }
 
     public String toUpdateString() {
