@@ -16,9 +16,9 @@ import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.cms.parameters.HexFileParams;
 import com.eustrosoft.cms.parameters.HexFileResult;
-import com.eustrosoft.core.db.core.DBFunctions;
-import com.eustrosoft.core.db.core.DBStatements;
-import com.eustrosoft.core.db.core.ExecStatus;
+import com.eustrosoft.cms.util.DBStatements;
+import com.eustrosoft.cms.util.FSDao;
+import com.eustrosoft.core.db.ExecStatus;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
@@ -29,8 +29,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eustrosoft.cms.util.DBStatements.getSelectForPath;
+import static com.eustrosoft.cms.util.DBStatements.getViewStatementForPath;
+import static com.eustrosoft.cms.util.FileUtils.*;
 import static com.eustrosoft.core.constants.DBConstants.*;
-import static com.eustrosoft.core.db.core.DBStatements.*;
 import static com.eustrosoft.core.db.util.ResultSetUtils.*;
 
 public class DBDataSource implements CMSDataSource {
@@ -61,7 +63,7 @@ public class DBDataSource implements CMSDataSource {
     }
 
     private void fillSpaceForFiles(List<CMSObject> objects) { // todo: make a single query
-        DBFunctions functions = new DBFunctions(poolConnection);
+        FSDao functions = new FSDao(poolConnection);
         for (int i = 0; i < objects.size(); i++) {
             CMSObject cmsObject = objects.get(i);
             if (cmsObject instanceof CMSGeneralObject) {
@@ -87,17 +89,17 @@ public class DBDataSource implements CMSDataSource {
         String filePath = file.getPath();
         Long parentZoid = Long.parseLong(filePath.substring(filePath.lastIndexOf(SEPARATOR) + 1));
         String scopeZoid = getFirstLevelFromPath(filePath);
-        DBFunctions dbFunctions = new DBFunctions(poolConnection);
-        ExecStatus opened = dbFunctions.openObject("FS.F", parentZoid);
+        FSDao FSDao = new FSDao(poolConnection);
+        ExecStatus opened = FSDao.openObject("FS.F", parentZoid);
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
-        ExecStatus objectInScope = dbFunctions.createObjectInScope("FS.F", scopeZoid);
+        ExecStatus objectInScope = FSDao.createObjectInScope("FS.F", scopeZoid);
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
         String fileName = filePath.substring(filePath.lastIndexOf(SEPARATOR));
-        ExecStatus fFile = dbFunctions.createFFile(
+        ExecStatus fFile = FSDao.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
                 null,
@@ -107,7 +109,7 @@ public class DBDataSource implements CMSDataSource {
         if (!fFile.isOk()) {
             throw new Exception(fFile.getCaption()); // TODO
         }
-        ExecStatus commited = dbFunctions.commitObject(
+        ExecStatus commited = FSDao.commitObject(
                 "FS.F",
                 opened.getZoid(),
                 opened.getZver()
@@ -140,8 +142,8 @@ public class DBDataSource implements CMSDataSource {
         Long chunkCount = params.getChunkCount();
 
         Long lastLvlPath = Long.parseLong(getLastLevelFromPath(new File(dest).getPath()));
-        DBFunctions dbFunctions = new DBFunctions(poolConnection);
-        ResultSet selectObject = dbFunctions.selectObject(lastLvlPath);
+        FSDao FSDao = new FSDao(poolConnection);
+        ResultSet selectObject = FSDao.selectObject(lastLvlPath);
         Long zoid = null;
         String zlvl = null;
         String zsid = null;
@@ -164,12 +166,12 @@ public class DBDataSource implements CMSDataSource {
         }
         if (chunk == 0) {
             String fileName = params.getRecordId();
-            ExecStatus opened = dbFunctions.openObject("FS.F", zoid);
+            ExecStatus opened = FSDao.openObject("FS.F", zoid);
             try {
                 if (!opened.isOk()) {
                     throw new Exception(opened.getCaption());
                 }
-                ExecStatus objectInScope = dbFunctions.createObjectInScope(
+                ExecStatus objectInScope = FSDao.createObjectInScope(
                         zsid,
                         String.valueOf(params.getSecurityLevel())
                 );
@@ -178,7 +180,7 @@ public class DBDataSource implements CMSDataSource {
                 }
                 recordId = objectInScope.getZoid().toString();
                 recordVer = objectInScope.getZver().toString();
-                ExecStatus fDir = dbFunctions.createFDir(
+                ExecStatus fDir = FSDao.createFDir(
                         opened.getZoid(),
                         opened.getZver(),
                         zoid,
@@ -189,7 +191,7 @@ public class DBDataSource implements CMSDataSource {
                 if (!fDir.isOk()) {
                     throw new Exception(fDir.getCaption()); // TODO
                 }
-                ExecStatus commitFDir = dbFunctions.commitObject(
+                ExecStatus commitFDir = FSDao.commitObject(
                         "FS.F",
                         opened.getZoid(),
                         opened.getZver()
@@ -197,7 +199,7 @@ public class DBDataSource implements CMSDataSource {
                 if (!commitFDir.isOk()) {
                     throw new Exception(commitFDir.getCaption()); // TODO
                 }
-                ExecStatus fFile = dbFunctions.createFFile(
+                ExecStatus fFile = FSDao.createFFile(
                         objectInScope.getZoid().toString(),
                         objectInScope.getZver().toString(),
                         null,
@@ -212,13 +214,13 @@ public class DBDataSource implements CMSDataSource {
                 filePid = fFile.getZoid().toString();
             } finally {
                 try {
-                    dbFunctions.commitObject("FS.F", opened.getZoid(), opened.getZver());
+                    FSDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        ExecStatus fBlob = dbFunctions.createFBlob(
+        ExecStatus fBlob = FSDao.createFBlob(
                 recordId,
                 recordVer,
                 filePid,
@@ -229,7 +231,7 @@ public class DBDataSource implements CMSDataSource {
         );
         if (chunk == chunkCount - 1) {
             // todo: add size
-            ExecStatus commited = dbFunctions.commitObject(
+            ExecStatus commited = FSDao.commitObject(
                     "FS.F",
                     Long.parseLong(recordId),
                     Long.parseLong(recordVer)
@@ -246,17 +248,17 @@ public class DBDataSource implements CMSDataSource {
         String parentPath = getFullPath(new File(path).getParent());
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
         String scopeZoid = getFirstLevelFromPath(parentPath);
-        DBFunctions dbFunctions = new DBFunctions(poolConnection);
-        ExecStatus opened = dbFunctions.openObject("FS.F", parentZoid);
+        FSDao FSDao = new FSDao(poolConnection);
+        ExecStatus opened = FSDao.openObject("FS.F", parentZoid);
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
-        ExecStatus objectInScope = dbFunctions.createObjectInScope("FS.F", scopeZoid);
+        ExecStatus objectInScope = FSDao.createObjectInScope("FS.F", scopeZoid);
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
         String dirName = path.substring(path.lastIndexOf(SEPARATOR) + 1);
-        ExecStatus fFile = dbFunctions.createFFile(
+        ExecStatus fFile = FSDao.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
                 null,
@@ -266,7 +268,7 @@ public class DBDataSource implements CMSDataSource {
         if (!fFile.isOk()) {
             throw new Exception(fFile.getCaption()); // TODO
         }
-        ExecStatus commited = dbFunctions.commitObject(
+        ExecStatus commited = FSDao.commitObject(
                 "FS.F",
                 objectInScope.getZoid(),
                 objectInScope.getZver()
@@ -274,7 +276,7 @@ public class DBDataSource implements CMSDataSource {
         if (!commited.isOk()) {
             throw new Exception(commited.getCaption()); // TODO
         }
-        ExecStatus fDir = dbFunctions.createFDir(
+        ExecStatus fDir = FSDao.createFDir(
                 opened.getZoid(),
                 opened.getZver(),
                 fFile.getZver(),
@@ -285,7 +287,7 @@ public class DBDataSource implements CMSDataSource {
         if (!fDir.isOk()) {
             throw new Exception(fDir.getCaption()); // TODO
         }
-        ExecStatus objectCommited = dbFunctions.commitObject(
+        ExecStatus objectCommited = FSDao.commitObject(
                 "FS.F",
                 opened.getZoid(),
                 opened.getZver()
@@ -362,7 +364,7 @@ public class DBDataSource implements CMSDataSource {
     public boolean move(String source, String direction) throws Exception {
         String fullPath = getFullPath(source);
         Long fileId = Long.parseLong(getLastLevelFromPath(fullPath));
-        DBFunctions functions = new DBFunctions(poolConnection);
+        FSDao functions = new FSDao(poolConnection);
         functions.renameFile(
                 fileId,
                 getLastLevelFromPath(source),
@@ -380,7 +382,7 @@ public class DBDataSource implements CMSDataSource {
             ex.printStackTrace();
         }
         String zoid = getLastLevelFromPath(path);
-        return new DBFunctions(poolConnection).getFileInputStream(zoid);
+        return new FSDao(poolConnection).getFileInputStream(zoid);
     }
 
     @Override
@@ -411,7 +413,7 @@ public class DBDataSource implements CMSDataSource {
         } finally {
             fileDetailsPS.close();
         }
-        DBFunctions functions = new DBFunctions(poolConnection);
+        FSDao functions = new FSDao(poolConnection);
         fileDetails.setFileLength(functions.getFileLength(zoid));
         fileDetails.setEncoding("UTF-8");
         return fileDetails;
@@ -425,17 +427,17 @@ public class DBDataSource implements CMSDataSource {
         String parentPath = file.getParent();
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
 
-        DBFunctions dbFunctions = new DBFunctions(poolConnection);
-        ExecStatus open = dbFunctions.openObject("FS.F", parentZoid);
+        FSDao FSDao = new FSDao(poolConnection);
+        ExecStatus open = FSDao.openObject("FS.F", parentZoid);
         if (!open.isOk()) {
             throw new Exception(open.getCaption());
         }
-        ResultSet directoryByNameAndId = dbFunctions.getDirectoryByNameAndId(parentZoid, dirName);
+        ResultSet directoryByNameAndId = FSDao.getDirectoryByNameAndId(parentZoid, dirName);
         ExecStatus commit = null;
         try {
             directoryByNameAndId.next();
             long zrid = directoryByNameAndId.getLong(ZRID);
-            ExecStatus delete = dbFunctions.deleteFDir(
+            ExecStatus delete = FSDao.deleteFDir(
                     String.valueOf(open.getZoid()),
                     String.valueOf(zrid),
                     String.valueOf(open.getZver())
@@ -447,11 +449,11 @@ public class DBDataSource implements CMSDataSource {
             throw new Exception(ex.getMessage());
         } finally {
             // todo: rollback
-            commit = dbFunctions.commitObject("FS.F", parentZoid, open.getZver());
+            commit = FSDao.commitObject("FS.F", parentZoid, open.getZver());
             directoryByNameAndId.close();
         }
         if (commit == null) {
-            commit = dbFunctions.commitObject("FS.F", parentZoid, open.getZver());
+            commit = FSDao.commitObject("FS.F", parentZoid, open.getZver());
         }
         if (!commit.isOk()) {
             throw new Exception(open.getCaption());

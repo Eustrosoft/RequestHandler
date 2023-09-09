@@ -6,8 +6,9 @@
 
 package com.eustrosoft.core.handlers.msg;
 
-import com.eustrosoft.core.db.core.DBFunctions;
-import com.eustrosoft.core.db.core.ExecStatus;
+import com.eustrosoft.core.db.ExecStatus;
+import com.eustrosoft.core.db.dao.MSGDao;
+import com.eustrosoft.core.db.dao.SamDAO;
 import com.eustrosoft.core.dto.UserDTO;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
@@ -90,7 +91,7 @@ public final class MSGHandler implements Handler {
     }
 
     public List<MSGChannel> getChats() throws SQLException {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
         List<MSGChannel> channels = new ArrayList<>();
         ResultSet chatsResultSet = functions.getChats();
         if (chatsResultSet != null) {
@@ -101,7 +102,7 @@ public final class MSGHandler implements Handler {
     }
 
     public List<MSGMessage> getChatMessages(Long chatId) throws SQLException {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
         List<MSGMessage> messages = new ArrayList<>();
         ResultSet chatsResultSet = functions.getMessages(chatId);
         if (chatsResultSet != null) {
@@ -113,13 +114,13 @@ public final class MSGHandler implements Handler {
     }
 
     public String createChat(Long objId, Integer slvl, String subject) {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
         ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.NEW), slvl);
         return chat.getZoid().toString();
     }
 
     public String createMessage(MsgParams params) {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
         ExecStatus message = functions.createMessage(
                 params.getId(),
                 new MSGMessage(
@@ -135,24 +136,24 @@ public final class MSGHandler implements Handler {
     }
 
     public void updateMessage(MsgParams params) {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
 
     }
 
     public void deleteMessage(String messageId) {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
 
     }
 
     public void changeChannelStatus(MsgParams params) {
-        DBFunctions functions = new DBFunctions(poolConnection);
+        MSGDao functions = new MSGDao(poolConnection);
     }
 
     @SneakyThrows
     private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
         List<MSGMessage> objects = new ArrayList<>();
         Map<Long, User> userMapping = new HashMap<>();
-        DBFunctions functions = new DBFunctions(poolConnection);
+        SamDAO samDAO = new SamDAO(poolConnection);
         try {
             while (resultSet.next()) {
                 try {
@@ -165,7 +166,7 @@ public final class MSGHandler implements Handler {
                     Long userId = getLongValueOrEmpty(resultSet, splitted[6]);
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
-                        user = User.fromResultSet(Objects.requireNonNull(functions.getUserResultSetById(userId)));
+                        user = User.fromResultSet(Objects.requireNonNull(samDAO.getUserResultSetById(userId)));
                     } else {
                         user = userMapping.get(userId);
                     }

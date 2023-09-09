@@ -6,7 +6,7 @@
 
 package com.eustrosoft.core.handlers.sam;
 
-import com.eustrosoft.core.db.core.DBFunctions;
+import com.eustrosoft.core.db.dao.SamDAO;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
@@ -34,22 +34,22 @@ public final class SAMHandler implements Handler {
         SAMResponseBLock.setErrMsg(MSG_OK);
         SAMResponseBLock.setResponseType(requestType);
 
-        DBFunctions functions = new DBFunctions(poolConnection);
+        SamDAO dao = new SamDAO(poolConnection);
         switch (requestType) {
             case REQUEST_USER_ID:
-                SAMResponseBLock.setData(functions.getUserId().toString());
+                SAMResponseBLock.setData(dao.getUserId().toString());
                 break;
             case REQUEST_USER_LOGIN:
-                SAMResponseBLock.setData(functions.getUserLogin());
+                SAMResponseBLock.setData(dao.getUserLogin());
                 break;
             case REQUEST_USER_SLVL:
-                SAMResponseBLock.setData(functions.getUserSLvl().toString());
+                SAMResponseBLock.setData(dao.getUserSLvl().toString());
                 break;
             case REQUEST_USER_AVAILABLE_SLVL:
-                SAMResponseBLock.setData(Arrays.toString(functions.getUserAvailableSlvl()));
+                SAMResponseBLock.setData(Arrays.toString(dao.getUserAvailableSlvl()));
                 break;
             case REQUEST_USER_LANG:
-                SAMResponseBLock.setData(functions.getUserLang());
+                SAMResponseBLock.setData(dao.getUserLang());
                 break;
             default:
                 SAMResponseBLock.setE(ERR_OK);

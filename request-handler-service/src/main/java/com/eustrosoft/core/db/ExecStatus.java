@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.db.core;
+package com.eustrosoft.core.db;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

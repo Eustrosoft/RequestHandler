@@ -1,10 +1,4 @@
-/**
- * Copyright (c) 2023, Yadzuka & EustroSoft.org
- * This file is part of RequestHandler project.
- * See the LICENSE file at the project root for licensing information.
- */
-
-package com.eustrosoft.core.db.core;
+package com.eustrosoft.cms.util;
 
 import com.eustrosoft.core.db.Query;
 import lombok.SneakyThrows;
@@ -12,9 +6,10 @@ import lombok.SneakyThrows;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import static com.eustrosoft.cms.util.FileUtils.*;
 import static com.eustrosoft.core.constants.DBConstants.*;
 
-public final class DBStatements {
+public class DBStatements {
     @SneakyThrows
     public static PreparedStatement getViewStatementForPath(Connection connection, String path) {
         int pathLvl = getPathLvl(path);
@@ -118,20 +113,6 @@ public final class DBStatements {
     }
 
     @SneakyThrows
-    public static String[] getPathParts(String path) {
-        if (path == null || path.isEmpty()) {
-            throw new IllegalArgumentException("Path was null.");
-        }
-        if (path.indexOf(SEPARATOR) == 0) {
-            path = path.substring(1);
-        }
-        if (path.lastIndexOf(SEPARATOR) == path.length() - 1) {
-            path = path.substring(0, path.length() - 1);
-        }
-        return path.trim().split(SEPARATOR);
-    }
-
-    @SneakyThrows
     public static PreparedStatement getFileDetails(Connection connection, Long zoid) {
         return connection.prepareStatement(
                 Query.builder()
@@ -172,89 +153,5 @@ public final class DBStatements {
                         .buildWithSemicolon()
                         .toString()
         );
-    }
-
-    @SneakyThrows
-    public static int getPathLvl(String path) {
-        if (path == null || path.isEmpty() || path.trim().isEmpty()) {
-            throw new Exception("Path was null.");
-        }
-        String processedPath = path.trim().replace("..", "");
-        if (processedPath.equals(SEPARATOR)) {
-            return LVL_SCOPE;
-        }
-        processedPath = processedPath.substring(1);
-        int nextSlash = processedPath.indexOf(SEPARATOR);
-        if (nextSlash == -1) {
-            return LVL_ROOT;
-        }
-        if (nextSlash > 0) {
-            String afterSlash = processedPath.substring(nextSlash + 1);
-            if (afterSlash == null || afterSlash.isEmpty()) {
-                return LVL_ROOT;
-            }
-        }
-        return LVL_OTHER;
-    }
-
-    @SneakyThrows
-    public static PreparedStatement getFunctionStatement(Connection connection, String function, String... params) {
-        return connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add(function)
-                        .add(String.format("(%s)", String.join(",", params)))
-                        .buildWithSemicolon()
-                        .toString()
-        );
-    }
-
-    private String getNameFromPath(String path, int level) {
-        String firstLevelFromPath = getFirstLevelFromPath(path);
-        if (level == 0) {
-            return firstLevelFromPath;
-        }
-        return getNameFromPath(path.substring(firstLevelFromPath.length()), level - 1);
-    }
-
-    public static String getFirstLevelFromPath(String path) {
-        String firSlashRem = path.substring(1);
-        int nextSlash = firSlashRem.indexOf(SEPARATOR);
-        if (nextSlash == -1) {
-            return firSlashRem;
-        } else {
-            return firSlashRem.substring(0, nextSlash);
-        }
-    }
-
-    public static String getLastLevelFromPath(String path) throws Exception {
-        int lastSlash = path.lastIndexOf(SEPARATOR);
-        if (lastSlash == -1) {
-            throw new Exception("Illegal path.");
-        } else {
-            return path.substring(lastSlash + 1);
-        }
-    }
-
-    private static String getWhereForLvlAndName(String[] partNames, int lvl) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(" ");
-        for (int i = 0; i < lvl; i++) {
-            if (i == 0) {
-                builder.append(String.format("XS.name = '%s'", partNames[i]));
-            } else if (i == 1) {
-                builder.append(String.format("FF.ZSID = XS.id and FF.name = '%s'", partNames[i]));
-            } else if (i == 2) {
-                builder.append(String.format("FD0.ZOID = FF.ZOID and FD0.fname = '%s'", partNames[i]));
-            } else {
-                builder.append(String.format("FD%d.ZOID = FD%d.f_id and FD%d.fname ='%s'", i - 2, i - 3, i - 2, partNames[i]));
-            }
-            if (i != lvl - 1) {
-                builder.append(" and ");
-            }
-        }
-        return builder.toString();
     }
 }
