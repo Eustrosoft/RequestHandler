@@ -7,18 +7,18 @@
 package com.eustrosoft.cms.dbdatasource;
 
 import com.eustrosoft.cms.CMSDataSource;
-import com.eustrosoft.cms.dbdatasource.core.DBFunctions;
-import com.eustrosoft.cms.dbdatasource.core.DBStatements;
-import com.eustrosoft.cms.dbdatasource.core.ExecStatus;
+import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.cms.dbdatasource.ranges.FileType;
+import com.eustrosoft.cms.dto.CMSGeneralObject;
+import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.cms.exception.CMSException;
 import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.cms.parameters.HexFileParams;
 import com.eustrosoft.cms.parameters.HexFileResult;
-import com.eustrosoft.core.dto.CMSGeneralObject;
-import com.eustrosoft.core.dto.CMSObject;
-import com.eustrosoft.core.model.ranges.CMSType;
+import com.eustrosoft.core.db.core.DBFunctions;
+import com.eustrosoft.core.db.core.DBStatements;
+import com.eustrosoft.core.db.core.ExecStatus;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
@@ -29,9 +29,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.cms.dbdatasource.core.DBStatements.*;
-import static com.eustrosoft.cms.dbdatasource.util.ResultSetUtils.*;
 import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.db.core.DBStatements.*;
+import static com.eustrosoft.core.db.util.ResultSetUtils.*;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;

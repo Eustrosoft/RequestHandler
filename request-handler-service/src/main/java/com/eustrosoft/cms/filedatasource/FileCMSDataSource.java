@@ -7,17 +7,17 @@
 package com.eustrosoft.cms.filedatasource;
 
 import com.eustrosoft.cms.CMSDataSource;
-import com.eustrosoft.cms.PropsContainer;
+import com.eustrosoft.cms.CMSType;
+import com.eustrosoft.cms.dto.CMSGeneralObject;
+import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.cms.exception.CMSException;
 import com.eustrosoft.cms.filedatasource.util.FileUtils;
 import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.cms.parameters.HexFileParams;
 import com.eustrosoft.cms.parameters.HexFileResult;
-import com.eustrosoft.core.dto.CMSGeneralObject;
-import com.eustrosoft.core.dto.CMSObject;
-import com.eustrosoft.core.model.ranges.CMSType;
 import com.eustrosoft.core.tools.ColorTextUtil;
+import com.eustrosoft.core.tools.PropsContainer;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 
@@ -29,7 +29,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.zip.CRC32;
 
-import static com.eustrosoft.cms.filedatasource.constants.Messages.*;
+import static com.eustrosoft.cms.constants.Messages.*;
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
 

@@ -1,5 +1,6 @@
 package com.eustrosoft.core.model.ranges;
 
+import com.eustrosoft.cms.CMSType;
 import lombok.Getter;
 
 public enum MSGMessageType {

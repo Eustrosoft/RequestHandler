@@ -11,7 +11,6 @@ import com.eustrosoft.cms.dbdatasource.DBDataSource;
 import com.eustrosoft.cms.filedatasource.FileCMSDataSource;
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.cms.providers.DataSourceProvider;
-import com.eustrosoft.core.context.DBPoolContext;
 import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
@@ -34,6 +33,7 @@ import com.eustrosoft.core.handlers.sam.SAMRequestBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.providers.SessionProvider;
+import com.eustrosoft.core.providers.context.DBPoolContext;
 import com.eustrosoft.core.tools.Json;
 import com.eustrosoft.core.tools.QJson;
 import com.google.gson.Gson;
@@ -58,7 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 

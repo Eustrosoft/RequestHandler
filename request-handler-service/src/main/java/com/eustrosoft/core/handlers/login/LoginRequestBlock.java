@@ -12,7 +12,7 @@ import com.eustrosoft.core.tools.QJson;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_LOGIN;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
 
 public class LoginRequestBlock extends BasicRequest {
     private String requestType;

@@ -1,6 +1,6 @@
 package com.eustrosoft.core.model;
 
-import com.eustrosoft.core.context.UserDTO;
+import com.eustrosoft.core.dto.UserDTO;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
 import lombok.*;
 

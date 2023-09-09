@@ -6,11 +6,11 @@
 
 package com.eustrosoft.cms;
 
+import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.cms.parameters.HexFileParams;
 import com.eustrosoft.cms.parameters.HexFileResult;
-import com.eustrosoft.core.dto.CMSObject;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -14,7 +14,7 @@ import lombok.Setter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_MSG;
 
 @Getter
 @Setter

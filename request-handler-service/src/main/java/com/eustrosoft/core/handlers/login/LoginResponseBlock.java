@@ -10,7 +10,7 @@ import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
 import com.google.gson.JsonObject;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
 
 public final class LoginResponseBlock extends BasicResponse {
     private String errMsg = "";

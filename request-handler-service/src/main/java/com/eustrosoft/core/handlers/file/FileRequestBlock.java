@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
-import static com.eustrosoft.core.Constants.PARAMETERS;
-import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.constants.Constants.*;
 
 public class FileRequestBlock extends BasicRequest {
     private byte[] fileBytes;

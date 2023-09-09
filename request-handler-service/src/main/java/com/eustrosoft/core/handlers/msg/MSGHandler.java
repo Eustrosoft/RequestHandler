@@ -6,11 +6,9 @@
 
 package com.eustrosoft.core.handlers.msg;
 
-import com.eustrosoft.cms.dbdatasource.core.DBFunctions;
-import com.eustrosoft.cms.dbdatasource.core.ExecStatus;
-import com.eustrosoft.core.context.User;
-import com.eustrosoft.core.context.UserDTO;
-import com.eustrosoft.core.context.UsersContext;
+import com.eustrosoft.core.db.core.DBFunctions;
+import com.eustrosoft.core.db.core.ExecStatus;
+import com.eustrosoft.core.dto.UserDTO;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
@@ -18,7 +16,9 @@ import com.eustrosoft.core.model.MSGChannel;
 import com.eustrosoft.core.model.MSGMessage;
 import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
+import com.eustrosoft.core.model.user.User;
 import com.eustrosoft.core.providers.SessionProvider;
+import com.eustrosoft.core.providers.context.UsersContext;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
@@ -27,9 +27,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.eustrosoft.cms.dbdatasource.util.ResultSetUtils.*;
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.db.util.ResultSetUtils.*;
 
 public final class MSGHandler implements Handler {
     private String requestType;

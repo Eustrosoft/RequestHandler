@@ -19,7 +19,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_MSG;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_MSG;
 
 @Getter
 @Setter

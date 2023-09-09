@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_SAM;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
 
 @Getter
 @Setter

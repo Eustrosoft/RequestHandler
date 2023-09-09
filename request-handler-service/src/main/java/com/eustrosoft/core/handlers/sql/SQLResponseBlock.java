@@ -8,7 +8,7 @@ package com.eustrosoft.core.handlers.sql;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.eustrosoft.core.handlers.sql.model.ResultSetAnswer;
+import com.eustrosoft.core.handlers.sql.dto.ResultSetAnswer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 

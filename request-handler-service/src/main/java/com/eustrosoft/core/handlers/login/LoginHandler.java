@@ -6,13 +6,13 @@
 
 package com.eustrosoft.core.handlers.login;
 
-import com.eustrosoft.core.Constants;
-import com.eustrosoft.core.context.DBPoolContext;
-import com.eustrosoft.core.context.User;
-import com.eustrosoft.core.context.UsersContext;
+import com.eustrosoft.core.constants.Constants;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.model.user.User;
+import com.eustrosoft.core.providers.context.DBPoolContext;
+import com.eustrosoft.core.providers.context.UsersContext;
 import com.eustrosoft.core.tools.WebParams;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 
-import static com.eustrosoft.core.Constants.REQUEST_LOGIN;
-import static com.eustrosoft.core.Constants.REQUEST_LOGOUT;
+import static com.eustrosoft.core.constants.Constants.REQUEST_LOGIN;
+import static com.eustrosoft.core.constants.Constants.REQUEST_LOGOUT;
 
 public final class LoginHandler implements Handler {
     private final String requestType;

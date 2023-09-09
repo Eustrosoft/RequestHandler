@@ -11,7 +11,7 @@ import com.eustrosoft.core.tools.QJson;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
+import static com.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
 
 public final class HexFileRequestBlock extends ChunkFileRequestBlock {
     private String hexString;

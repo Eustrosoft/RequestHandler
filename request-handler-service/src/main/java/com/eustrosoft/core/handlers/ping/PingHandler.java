@@ -6,20 +6,17 @@
 
 package com.eustrosoft.core.handlers.ping;
 
-import com.eustrosoft.core.context.DBPoolContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.eustrosoft.core.Constants.ERR_OK;
-import static com.eustrosoft.core.Constants.ERR_UNAUTHORIZED;
-import static com.eustrosoft.core.Constants.MSG_OK;
-import static com.eustrosoft.core.Constants.MSG_UNAUTHORIZED;
+import static com.eustrosoft.core.constants.Constants.*;
 
 public class PingHandler implements Handler {
     @Override

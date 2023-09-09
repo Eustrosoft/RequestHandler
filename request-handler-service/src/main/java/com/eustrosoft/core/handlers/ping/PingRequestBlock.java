@@ -22,7 +22,7 @@ import com.eustrosoft.core.tools.QJson;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_PING;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_PING;
 
 public class PingRequestBlock extends BasicRequest {
     public PingRequestBlock(HttpServletRequest request,

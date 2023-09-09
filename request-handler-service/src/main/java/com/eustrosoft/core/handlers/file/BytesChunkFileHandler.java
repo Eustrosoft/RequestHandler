@@ -6,12 +6,12 @@
 
 package com.eustrosoft.core.handlers.file;
 
-import com.eustrosoft.core.context.User;
-import com.eustrosoft.core.context.UserStorage;
-import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.model.user.User;
+import com.eustrosoft.core.providers.context.UsersContext;
+import com.eustrosoft.core.services.UserStorage;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;

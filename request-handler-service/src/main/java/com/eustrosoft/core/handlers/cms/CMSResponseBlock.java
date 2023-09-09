@@ -6,7 +6,7 @@
 
 package com.eustrosoft.core.handlers.cms;
 
-import com.eustrosoft.core.dto.CMSObject;
+import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
 import com.google.gson.Gson;
@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
 
 public final class CMSResponseBlock extends BasicResponse {
     private String errMsg = "";

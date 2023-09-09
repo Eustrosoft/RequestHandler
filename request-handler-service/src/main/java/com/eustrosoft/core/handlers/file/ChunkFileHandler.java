@@ -6,20 +6,16 @@
 
 package com.eustrosoft.core.handlers.file;
 
-import com.eustrosoft.core.context.User;
-import com.eustrosoft.core.context.UserStorage;
-import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.model.user.User;
+import com.eustrosoft.core.providers.context.UsersContext;
+import com.eustrosoft.core.services.UserStorage;
 import com.eustrosoft.core.tools.FileUtils;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Base64;
 
 public class ChunkFileHandler implements Handler {

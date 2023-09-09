@@ -7,18 +7,18 @@
 package com.eustrosoft.core.handlers.cms;
 
 import com.eustrosoft.cms.CMSDataSource;
+import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.cms.dbdatasource.DBDataSource;
+import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.cms.exception.CMSException;
 import com.eustrosoft.cms.providers.DataSourceProvider;
-import com.eustrosoft.core.context.UserStorage;
-import com.eustrosoft.core.context.UsersContext;
-import com.eustrosoft.core.dto.CMSObject;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.model.ranges.CMSType;
 import com.eustrosoft.core.providers.SessionProvider;
-import com.eustrosoft.core.tools.FileDownloadService;
+import com.eustrosoft.core.providers.context.UsersContext;
+import com.eustrosoft.core.services.FileDownloadService;
+import com.eustrosoft.core.services.UserStorage;
 import com.eustrosoft.core.tools.ZipService;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -31,7 +31,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 

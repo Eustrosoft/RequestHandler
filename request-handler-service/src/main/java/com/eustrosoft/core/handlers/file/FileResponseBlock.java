@@ -8,8 +8,8 @@ package com.eustrosoft.core.handlers.file;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 
-import static com.eustrosoft.core.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.Constants.SUBSYSTEM_FILE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_FILE;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 
 public class FileResponseBlock extends BasicResponse {

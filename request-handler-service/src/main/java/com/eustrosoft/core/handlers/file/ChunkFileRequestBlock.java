@@ -11,7 +11,7 @@ import com.eustrosoft.core.tools.QJson;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
+import static com.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
 
 public class ChunkFileRequestBlock extends FileRequestBlock {
     private Long chunkNumber;

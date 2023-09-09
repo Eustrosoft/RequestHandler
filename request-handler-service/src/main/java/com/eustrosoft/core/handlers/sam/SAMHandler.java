@@ -6,7 +6,7 @@
 
 package com.eustrosoft.core.handlers.sam;
 
-import com.eustrosoft.cms.dbdatasource.core.DBFunctions;
+import com.eustrosoft.core.db.core.DBFunctions;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
@@ -17,7 +17,7 @@ import org.eustrosoft.qdbp.QDBPSession;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static com.eustrosoft.core.Constants.*;
+import static com.eustrosoft.core.constants.Constants.*;
 
 public final class SAMHandler implements Handler {
     private QDBPConnection poolConnection;

@@ -6,14 +6,14 @@
 
 package com.eustrosoft.core.handlers.cms;
 
+import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.core.handlers.requests.BasicRequest;
-import com.eustrosoft.core.model.ranges.CMSType;
 import com.eustrosoft.core.tools.QJson;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
 
 public class CMSRequestBlock extends BasicRequest {
     private CMSType type;

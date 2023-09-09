@@ -7,11 +7,11 @@
 package com.eustrosoft.cms.providers;
 
 import com.eustrosoft.cms.CMSDataSource;
-import com.eustrosoft.cms.PropsContainer;
 import com.eustrosoft.cms.Source;
 import com.eustrosoft.cms.dbdatasource.DBDataSource;
 import com.eustrosoft.cms.filedatasource.FileCMSDataSource;
 import com.eustrosoft.core.tools.ColorTextUtil;
+import com.eustrosoft.core.tools.PropsContainer;
 import lombok.Getter;
 import org.eustrosoft.qdbp.QDBPConnection;
 
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import static com.eustrosoft.cms.Constants.PROPERTY_DATA_SOURCE;
+import static com.eustrosoft.cms.constants.Constants.PROPERTY_DATA_SOURCE;
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 
 public final class DataSourceProvider implements PropsContainer {

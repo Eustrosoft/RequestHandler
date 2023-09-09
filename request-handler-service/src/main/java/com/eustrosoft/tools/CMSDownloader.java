@@ -251,7 +251,7 @@ public class CMSDownloader {
                 return this;
             }
 
-            public Builder where(com.eustrosoft.cms.dbdatasource.queries.Query query) {
+            public Builder where(com.eustrosoft.core.db.Query query) {
                 this.query.addToQuery(
                         WHERE + SPACE + LEFT_BRACKET + query + RIGHT_BRACKET + SPACE
                 );
