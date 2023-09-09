@@ -52,5 +52,4 @@ Thumbs.db
 *.tmp
 tmp
 lib
-cms
-
+./cms

@@ -6,8 +6,8 @@
 
 package com.eustrosoft.core.context;
 
+import com.eustrosoft.cms.parameters.HexFileResult;
 import com.eustrosoft.core.tools.FileUtils;
-import com.eustrosoft.datasource.sources.HexFileResult;
 
 import java.io.File;
 import java.io.IOException;

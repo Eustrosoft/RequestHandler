@@ -6,11 +6,11 @@
 
 package com.eustrosoft.core.handlers.sam;
 
+import com.eustrosoft.cms.dbdatasource.core.DBFunctions;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.providers.SessionProvider;
-import com.eustrosoft.dbdatasource.core.DBFunctions;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 

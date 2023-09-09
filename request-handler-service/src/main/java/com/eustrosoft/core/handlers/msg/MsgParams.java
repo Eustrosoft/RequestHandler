@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MsgParams {
-    private String id;
+    private Long id;
     private String status;
     private String content;
     private String reference;
@@ -20,7 +20,7 @@ public class MsgParams {
 
     public static MsgParams fromJson(QJson qJson) {
         MsgParams params = new MsgParams();
-        params.setId(qJson.getItemString("id"));
+        params.setId(qJson.getItemLong("id"));
         params.setStatus(qJson.getItemString("status"));
         params.setContent(qJson.getItemString("content"));
         params.setReference(qJson.getItemString("reference"));

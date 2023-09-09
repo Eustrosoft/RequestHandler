@@ -6,43 +6,32 @@
 
 package com.eustrosoft.core.handlers.cms;
 
+import com.eustrosoft.cms.CMSDataSource;
+import com.eustrosoft.cms.dbdatasource.DBDataSource;
+import com.eustrosoft.cms.exception.CMSException;
+import com.eustrosoft.cms.providers.DataSourceProvider;
 import com.eustrosoft.core.context.UserStorage;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.providers.DataSourceProvider;
+import com.eustrosoft.core.model.CMSObject;
+import com.eustrosoft.core.model.ranges.CMSType;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.FileDownloadService;
 import com.eustrosoft.core.tools.ZipService;
-import com.eustrosoft.datasource.exception.CMSException;
-import com.eustrosoft.datasource.sources.CMSDataSource;
-import com.eustrosoft.datasource.sources.model.CMSObject;
-import com.eustrosoft.datasource.sources.ranges.CMSType;
-import com.eustrosoft.dbdatasource.core.DBDataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.Constants.REQUEST_COPY;
-import static com.eustrosoft.core.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.Constants.REQUEST_MOVE;
-import static com.eustrosoft.core.Constants.REQUEST_RENAME;
-import static com.eustrosoft.core.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.Constants.REQUEST_VIEW;
+import static com.eustrosoft.core.Constants.*;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 

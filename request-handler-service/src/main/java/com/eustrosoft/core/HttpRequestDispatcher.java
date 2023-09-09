@@ -6,6 +6,11 @@
 
 package com.eustrosoft.core;
 
+import com.eustrosoft.cms.CMSDataSource;
+import com.eustrosoft.cms.dbdatasource.DBDataSource;
+import com.eustrosoft.cms.filedatasource.FileCMSDataSource;
+import com.eustrosoft.cms.parameters.FileDetails;
+import com.eustrosoft.cms.providers.DataSourceProvider;
 import com.eustrosoft.core.context.DBPoolContext;
 import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
@@ -28,14 +33,9 @@ import com.eustrosoft.core.handlers.sam.SAMHandler;
 import com.eustrosoft.core.handlers.sam.SAMRequestBlock;
 import com.eustrosoft.core.handlers.sql.SQLHandler;
 import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
-import com.eustrosoft.core.providers.DataSourceProvider;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.Json;
 import com.eustrosoft.core.tools.QJson;
-import com.eustrosoft.datasource.sources.CMSDataSource;
-import com.eustrosoft.datasource.sources.FileDetails;
-import com.eustrosoft.dbdatasource.core.DBDataSource;
-import com.eustrosoft.filedatasource.FileCMSDataSource;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;

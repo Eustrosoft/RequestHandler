@@ -8,8 +8,8 @@ package com.eustrosoft.core.handlers.msg;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.eustrosoft.datasource.sources.model.MSGChannel;
-import com.eustrosoft.datasource.sources.model.MSGMessage;
+import com.eustrosoft.core.model.MSGChannel;
+import com.eustrosoft.core.model.MSGMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;

@@ -6,48 +6,30 @@
 
 package com.eustrosoft.core.handlers.msg;
 
+import com.eustrosoft.cms.dbdatasource.core.DBFunctions;
+import com.eustrosoft.cms.dbdatasource.core.ExecStatus;
 import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UserDTO;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
+import com.eustrosoft.core.model.MSGChannel;
+import com.eustrosoft.core.model.MSGMessage;
+import com.eustrosoft.core.model.ranges.MSGChannelStatus;
+import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.providers.SessionProvider;
-import com.eustrosoft.datasource.sources.model.MSGChannel;
-import com.eustrosoft.datasource.sources.model.MSGMessage;
-import com.eustrosoft.datasource.sources.ranges.MSGMessageType;
-import com.eustrosoft.dbdatasource.core.DBFunctions;
-import com.eustrosoft.dbdatasource.core.ExecStatus;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
-import static com.eustrosoft.core.Constants.ERR_OK;
-import static com.eustrosoft.core.Constants.MSG_OK;
-import static com.eustrosoft.core.Constants.REQUEST_CHANGE;
-import static com.eustrosoft.core.Constants.REQUEST_CHAT;
-import static com.eustrosoft.core.Constants.REQUEST_CHATS;
-import static com.eustrosoft.core.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.Constants.REQUEST_EDIT;
-import static com.eustrosoft.core.Constants.REQUEST_SEND;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.OBJ_ID;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.STATUS;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.SUBJECT;
-import static com.eustrosoft.dbdatasource.constants.DBConstants.ZLVL;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getValueOrEmpty;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.dbdatasource.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.cms.dbdatasource.constants.DBConstants.*;
+import static com.eustrosoft.cms.dbdatasource.util.ResultSetUtils.*;
+import static com.eustrosoft.core.Constants.*;
 
 public final class MSGHandler implements Handler {
     private String requestType;
@@ -118,7 +100,7 @@ public final class MSGHandler implements Handler {
         return channels;
     }
 
-    public List<MSGMessage> getChatMessages(String chatId) throws SQLException {
+    public List<MSGMessage> getChatMessages(Long chatId) throws SQLException {
         DBFunctions functions = new DBFunctions(poolConnection);
         List<MSGMessage> messages = new ArrayList<>();
         ResultSet chatsResultSet = functions.getMessages(chatId);
@@ -130,17 +112,21 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(String objId, Integer slvl, String subject) {
+    public String createChat(Long objId, Integer slvl, String subject) {
         DBFunctions functions = new DBFunctions(poolConnection);
-        ExecStatus chat = functions.createChat(subject, slvl, objId);
+        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.NEW), slvl);
         return chat.getZoid().toString();
     }
 
     public String createMessage(MsgParams params) {
         DBFunctions functions = new DBFunctions(poolConnection);
         ExecStatus message = functions.createMessage(
-                params.getId(), params.getContent(),
-                MSGMessageType.of(params.getType()), params.getReference()
+                params.getId(),
+                new MSGMessage(
+                        params.getContent(),
+                        params.getReference(),
+                        MSGMessageType.of(params.getType())
+                )
         );
         if (message.isOk()) {
             return message.getZoid().toString();
@@ -155,6 +141,7 @@ public final class MSGHandler implements Handler {
 
     public void deleteMessage(String messageId) {
         DBFunctions functions = new DBFunctions(poolConnection);
+
     }
 
     public void changeChannelStatus(MsgParams params) {
@@ -174,7 +161,7 @@ public final class MSGHandler implements Handler {
                     String content = splitted[3];
                     String answerId = splitted[4];
                     String messageType = splitted[5];
-                    String zrid = splitted[1];
+                    Long zrid = Long.parseLong(splitted[1]);
                     String userId = splitted[6];
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
@@ -201,13 +188,13 @@ public final class MSGHandler implements Handler {
         try {
             while (resultSet.next()) {
                 try {
-                    String subject = getValueOrEmpty(resultSet, SUBJECT);
-                    String chStatus = getValueOrEmpty(resultSet, STATUS);
-                    String objId = getValueOrEmpty(resultSet, OBJ_ID);
-                    String descr = getValueOrEmpty(resultSet, DESCRIPTION);
+                    String subject = getStrValueOrEmpty(resultSet, SUBJECT);
+                    String chStatus = getStrValueOrEmpty(resultSet, STATUS);
+                    Long objId = getLongValueOrEmpty(resultSet, OBJ_ID);
+                    String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
                     String sid = getZsid(resultSet);
-                    String zoid = getZoid(resultSet);
-                    String zlvl = getValueOrEmpty(resultSet, ZLVL);
+                    Long zoid = Long.parseLong(getZoid(resultSet));
+                    String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     MSGChannel msgChannel = new MSGChannel(zoid, subject, objId, chStatus);
                     objects.add(msgChannel);
                 } catch (Exception ex) {

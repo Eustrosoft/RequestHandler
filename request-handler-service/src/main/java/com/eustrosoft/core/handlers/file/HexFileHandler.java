@@ -6,19 +6,19 @@
 
 package com.eustrosoft.core.handlers.file;
 
+import com.eustrosoft.cms.CMSDataSource;
+import com.eustrosoft.cms.dbdatasource.DBDataSource;
+import com.eustrosoft.cms.filedatasource.FileCMSDataSource;
+import com.eustrosoft.cms.parameters.HexFileParams;
+import com.eustrosoft.cms.parameters.HexFileResult;
+import com.eustrosoft.cms.providers.DataSourceProvider;
 import com.eustrosoft.core.context.User;
 import com.eustrosoft.core.context.UserStorage;
 import com.eustrosoft.core.context.UsersContext;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.providers.DataSourceProvider;
 import com.eustrosoft.core.providers.SessionProvider;
-import com.eustrosoft.datasource.sources.CMSDataSource;
-import com.eustrosoft.datasource.sources.HexFileParams;
-import com.eustrosoft.datasource.sources.HexFileResult;
-import com.eustrosoft.dbdatasource.core.DBDataSource;
-import com.eustrosoft.filedatasource.FileCMSDataSource;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;

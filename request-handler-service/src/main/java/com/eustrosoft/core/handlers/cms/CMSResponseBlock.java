@@ -8,7 +8,7 @@ package com.eustrosoft.core.handlers.cms;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.eustrosoft.datasource.sources.model.CMSObject;
+import com.eustrosoft.core.model.CMSObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
