@@ -79,7 +79,7 @@ public final class MSGDao extends BasicDAO {
             createCParty(
                     objectInScope.getZoid().toString(),
                     status.getZver().toString(),
-                    new MSGParty(samDAO.getUserId(), MSGPartyRole.CREATOR, null)
+                    new MSGParty(samDAO.getUserId(), MSGPartyRole.C, null)
             ); // todo: maybe create a message for creator
         }
         commitObject(

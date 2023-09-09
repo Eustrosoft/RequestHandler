@@ -4,9 +4,9 @@ import com.eustrosoft.cms.CMSType;
 import lombok.Getter;
 
 public enum MSGMessageType {
-    SIMPLE("M"),
-    ANSWER("A"),
-    LIKE("L");
+    M("M"),
+    A("A"),
+    L("L");
 
     @Getter
     final String value;

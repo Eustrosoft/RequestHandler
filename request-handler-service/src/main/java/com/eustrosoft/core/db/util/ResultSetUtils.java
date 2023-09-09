@@ -57,26 +57,26 @@ public final class ResultSetUtils {
         return getType(resultSet, CMSType.UNKNOWN);
     }
 
-    public static String getZsid(ResultSet resultSet) {
-        String zsid = getStrValueOrEmpty(resultSet, SID);
-        if (zsid == null || zsid.isEmpty()) {
-            zsid = getStrValueOrEmpty(resultSet, ZSID);
+    public static Long getZsid(ResultSet resultSet) {
+        Long zsid = getLongValueOrEmpty(resultSet, SID);
+        if (zsid == null) {
+            zsid = getLongValueOrEmpty(resultSet, ZSID);
         }
         return zsid;
     }
 
-    public static String getZoid(ResultSet resultSet) {
-        String zoid = getStrValueOrEmpty(resultSet, ZOID);
-        if (zoid == null || zoid.isEmpty()) {
-            zoid = getStrValueOrEmpty(resultSet, ID);
+    public static Long getZoid(ResultSet resultSet) {
+        Long zoid = getLongValueOrEmpty(resultSet, ZOID);
+        if (zoid == null) {
+            zoid = getLongValueOrEmpty(resultSet, ID);
         }
         return zoid;
     }
 
-    public static String getZrid(ResultSet resultSet) {
-        String zrid = getStrValueOrEmpty(resultSet, ZRID);
-        if (zrid == null || zrid.isEmpty()) {
-            zrid = getStrValueOrEmpty(resultSet, ID);
+    public static Long getZrid(ResultSet resultSet) {
+        Long zrid = getLongValueOrEmpty(resultSet, ZRID);
+        if (zrid == null) {
+            zrid = getLongValueOrEmpty(resultSet, ID);
         }
         return zrid;
     }

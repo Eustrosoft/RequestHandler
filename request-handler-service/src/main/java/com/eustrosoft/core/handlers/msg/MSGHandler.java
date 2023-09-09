@@ -115,7 +115,7 @@ public final class MSGHandler implements Handler {
 
     public String createChat(Long objId, Integer slvl, String subject) {
         MSGDao functions = new MSGDao(poolConnection);
-        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.NEW), slvl);
+        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.N), slvl);
         return chat.getZoid().toString();
     }
 
@@ -159,14 +159,14 @@ public final class MSGHandler implements Handler {
                 try {
                     String str = resultSet.getString(1);
                     String[] splitted = str.substring(1, str.length() - 1).split(",");
-                    String content = getStrValueOrEmpty(resultSet, splitted[3]);
-                    Long answerId = getLongValueOrEmpty(resultSet, splitted[4]);
-                    String messageType = getStrValueOrEmpty(resultSet, splitted[5]);
-                    Long zrid = getLongValueOrEmpty(resultSet, splitted[1]);
-                    Long userId = getLongValueOrEmpty(resultSet, splitted[6]);
+                    String content = splitted[3];
+                    Long answerId = getLongOrNull(splitted[4]);
+                    String messageType = splitted[5];
+                    Long zrid = getZrid(resultSet);
+                    Long userId = getLongOrNull(splitted[6]);
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
-                        user = User.fromResultSet(Objects.requireNonNull(samDAO.getUserResultSetById(userId)));
+                        user = User.fromResultSet(samDAO.getUserResultSetById(userId));
                     } else {
                         user = userMapping.get(userId);
                     }
@@ -193,8 +193,8 @@ public final class MSGHandler implements Handler {
                     String chStatus = getStrValueOrEmpty(resultSet, STATUS);
                     Long objId = getLongValueOrEmpty(resultSet, OBJ_ID);
                     String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
-                    String sid = getZsid(resultSet);
-                    Long zoid = Long.parseLong(getZoid(resultSet));
+                    Long sid = getZsid(resultSet);
+                    Long zoid = getZoid(resultSet);
                     String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     MSGChannel msgChannel = new MSGChannel(zoid, subject, objId, chStatus);
                     objects.add(msgChannel);
@@ -208,5 +208,13 @@ public final class MSGHandler implements Handler {
         resultSet.close();
         Collections.reverse(objects);
         return objects;
+    }
+
+    private Long getLongOrNull(String str) {
+        try {
+            return Long.parseLong(str);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

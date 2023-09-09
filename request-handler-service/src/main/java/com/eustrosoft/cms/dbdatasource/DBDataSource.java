@@ -471,13 +471,13 @@ public class DBDataSource implements CMSDataSource {
                     String name = getStrValueOrEmpty(resultSet, NAME);
                     String fname = getStrValueOrEmpty(resultSet, F_NAME);
                     CMSType type = pathLvl < 2 ? CMSType.DIRECTORY : getType(resultSet);
-                    String sid = getZsid(resultSet);
-                    String zoid = getZoid(resultSet);
+                    Long sid = getZsid(resultSet);
+                    Long zoid = getZoid(resultSet);
                     String fid = getFid(resultSet);
                     String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
-                    String id = fid.isEmpty() ? zoid : fid;
+                    Long id = fid.isEmpty() ? zoid : Long.parseLong(fid);
                     CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
                             .description(descr)
                             .fullPath(new File(fullPath, finalName).getPath())
@@ -489,7 +489,7 @@ public class DBDataSource implements CMSDataSource {
                         ex.printStackTrace();
                     }
                     CMSGeneralObject build = builder.build();
-                    build.setZoid(Long.parseLong(id));
+                    build.setZoid(id);
                     objects.add(build);
                 } catch (Exception ex) {
                     ex.printStackTrace();

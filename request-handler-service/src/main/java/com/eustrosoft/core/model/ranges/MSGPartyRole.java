@@ -3,8 +3,8 @@ package com.eustrosoft.core.model.ranges;
 import lombok.Getter;
 
 public enum MSGPartyRole {
-    CREATOR("C"),
-    USER("U");
+    C("C"),
+    U("U");
     @Getter
     final String value;
 

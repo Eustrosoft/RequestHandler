@@ -23,13 +23,17 @@ public class MsgParams {
         params.setId(qJson.getItemLong("id"));
         params.setStatus(qJson.getItemString("status"));
         params.setContent(qJson.getItemString("content"));
-        params.setReference(qJson.getItemLong("reference"));
         params.setType(qJson.getItemString("type"));
-        try {
-            params.setSlvl(qJson.getItemLong("slvl").intValue());
-        } catch (Exception ex) {
-
-        }
+        params.setReference(getLongOrNull(qJson, "reference"));
+        params.setSlvl(getLongOrNull(qJson, "slvl") == null ? null : getLongOrNull(qJson, "slvl").intValue());
         return params;
+    }
+
+    private static Long getLongOrNull(QJson json, String name) {
+        try {
+            return json.getItemLong(name);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

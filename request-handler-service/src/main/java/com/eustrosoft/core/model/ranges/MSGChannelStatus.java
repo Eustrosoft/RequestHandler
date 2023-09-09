@@ -3,10 +3,10 @@ package com.eustrosoft.core.model.ranges;
 import lombok.Getter;
 
 public enum MSGChannelStatus {
-    NEW("N"),
-    WORK("W"),
-    INTERNAL("I"),
-    CLOSED("C");
+    N("N"),
+    W("W"),
+    I("I"),
+    C("C");
     @Getter
     final String value;
 
