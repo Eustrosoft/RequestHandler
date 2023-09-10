@@ -39,6 +39,7 @@ public class BasicDAO {
         return null; // todo
     }
 
+    // todo create throwing err if opened
     @SneakyThrows
     public ExecStatus openObject(String type, Long zoid) {
         return openObject(type, zoid, "null");

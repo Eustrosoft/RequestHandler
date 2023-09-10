@@ -11,7 +11,10 @@ import lombok.Setter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.ZLVL;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.constants.DBConstants.ZVER;
 
 @Getter
 @Setter
@@ -21,9 +24,16 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
     private Long zoid;
     private Long zver;
     private Long zrid;
+    private Long zlvl;
 
     public DBObject(ResultSet resultSet) throws SQLException {
         fillFromResultSet(resultSet);
+    }
+
+    public DBObject(Long zoid, Long zver, Long zrid) {
+        this.zoid = zoid;
+        this.zver = zver;
+        this.zrid = zrid;
     }
 
     @Override
@@ -31,10 +41,9 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         if (resultSet == null) {
             throw new SQLException("Result set is null while processing DBObject from ResultSet.");
         }
-        if (resultSet.next()) {
-            setZoid(resultSet.getLong(ZOID));
-            setZver(resultSet.getLong(ZVER));
-            setZrid(resultSet.getLong(ZRID));
-        }
+        setZoid(resultSet.getLong(ZOID));
+        setZver(resultSet.getLong(ZVER));
+        setZrid(resultSet.getLong(ZRID));
+        setZlvl(resultSet.getLong(ZLVL));
     }
 }

@@ -97,7 +97,7 @@ public final class MSGDao extends BasicDAO {
                 Query.builder()
                         .select()
                         .leftBracket()
-                        .add("cm.zoid, cm.zver, cm.zlvl, cm.content, cm.msg_id, cm.type, tz.zuid")
+                        .add("cm.zoid, cm.zver, cm.zrid, cm.zlvl, cm.content, cm.msg_id, cm.type, tz.zuid")
                         .rightBracket()
                         .from()
                         .add("MSG.v_cchannel as cc")
@@ -117,6 +117,10 @@ public final class MSGDao extends BasicDAO {
                                         .add(channelId)
                                         .eq()
                                         .add("tz.zoid")
+                                        .and()
+                                        .add("cc.zoid")
+                                        .eq()
+                                        .add(channelId)
                                         .build()
                         )
                         .buildWithSemicolon()
@@ -196,6 +200,118 @@ public final class MSGDao extends BasicDAO {
             status.fillFromResultSet(resultSet);
             preparedStatement.close();
             resultSet.close();
+        }
+        return status;
+    }
+
+    @SneakyThrows
+    public void updateMessage(MSGMessage message) {
+        ExecStatus status = null;
+        try {
+            if (message == null) {
+                throw new Exception("CMessage is null while updating.");
+            }
+            status = openObject("MSG.C", message.getZoid());
+            message.setZver(status.getZver());
+            if (status.isOk()) {
+                Connection connection = getPoolConnection().get();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        Query.builder()
+                                .select()
+                                .add("MSG.update_CMsg")
+                                .leftBracket()
+                                .add(message.toUpdateString())
+                                .rightBracket()
+                                .buildWithSemicolon()
+                                .toString()
+                );
+                ExecStatus updatedStatus = new ExecStatus();
+                if (preparedStatement != null) {
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    updatedStatus.fillFromResultSet(resultSet);
+                    preparedStatement.close();
+                    resultSet.close();
+                }
+            }
+        } finally {
+            if (status != null) {
+                commitObject("MSG.C", status.getZoid(), status.getZver());
+            }
+        }
+    }
+
+    @SneakyThrows
+    public void updateChannel(MSGChannel channel) {
+        ExecStatus status = null;
+        try {
+            if (channel == null) {
+                throw new Exception("CChannel is null while updating.");
+            }
+            status = openObject("MSG.C", channel.getZoid());
+            channel.setZver(status.getZver());
+            if (status.isOk()) {
+                Connection connection = getPoolConnection().get();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        Query.builder()
+                                .select()
+                                .add("MSG.update_CChannel")
+                                .leftBracket()
+                                .add(channel.toUpdateString())
+                                .rightBracket()
+                                .buildWithSemicolon()
+                                .toString()
+                );
+                ExecStatus updatedStatus = new ExecStatus();
+                if (preparedStatement != null) {
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    updatedStatus.fillFromResultSet(resultSet);
+                    preparedStatement.close();
+                    resultSet.close();
+                }
+                if (!updatedStatus.isOk()) {
+                    throw new Exception("Update failed.");
+                }
+            }
+        } finally {
+            if (status != null) {
+                commitObject("MSG.C", status.getZoid(), status.getZver());
+            }
+        }
+    }
+
+    @SneakyThrows
+    public ExecStatus deleteMessage(Long zoid, Long zrid) {
+        Connection connection = getPoolConnection().get();
+        ExecStatus openedObject = openObject("MSG.C", zoid);
+        ExecStatus status = new ExecStatus();
+        try {
+            if (!openedObject.isOk()) {
+                throw new Exception("Problem while delete message");
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    Query.builder()
+                            .select()
+                            .add("MSG.delete_CMsg")
+                            .leftBracket()
+                            .add(String.format(
+                                    "%s, %s, %s",
+                                    openedObject.getZoid(), openedObject.getZver(), zrid
+                            ))
+                            .rightBracket()
+                            .buildWithSemicolon()
+                            .toString()
+            );
+            if (preparedStatement != null) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                status.fillFromResultSet(resultSet);
+                preparedStatement.close();
+                resultSet.close();
+                if (!status.isOk()) {
+                    throw new Exception("Problem while delete message");
+                }
+            }
+        } finally {
+            commitObject("MSG.C", openedObject.getZoid(), openedObject.getZver());
         }
         return status;
     }

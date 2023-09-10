@@ -11,7 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MsgParams {
-    private Long id;
+    private Long zoid;
+    private Long zrid;
     private String status;
     private String content;
     private Long reference;
@@ -20,7 +21,8 @@ public class MsgParams {
 
     public static MsgParams fromJson(QJson qJson) {
         MsgParams params = new MsgParams();
-        params.setId(qJson.getItemLong("id"));
+        params.setZoid(getLongOrNull(qJson, "zoid"));
+        params.setZrid(getLongOrNull(qJson, "zrid"));
         params.setStatus(qJson.getItemString("status"));
         params.setContent(qJson.getItemString("content"));
         params.setType(qJson.getItemString("type"));

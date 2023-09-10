@@ -11,14 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    private String id;
+    private Long id;
     private String username;
     private String role;
     private String icon;
 
     public static UserDTO fromUser(User user) {
         UserDTO dto = new UserDTO();
-        dto.setId(String.valueOf(user.getId()));
+        dto.setId(user.getId());
         dto.setUsername(user.getUserName());
         dto.setIcon(null);
         return dto;
