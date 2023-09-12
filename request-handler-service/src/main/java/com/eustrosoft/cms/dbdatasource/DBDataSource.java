@@ -25,15 +25,34 @@ import org.eustrosoft.qdbp.QDBPConnection;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.eustrosoft.cms.util.DBStatements.getSelectForPath;
 import static com.eustrosoft.cms.util.DBStatements.getViewStatementForPath;
-import static com.eustrosoft.cms.util.FileUtils.*;
-import static com.eustrosoft.core.constants.DBConstants.*;
-import static com.eustrosoft.core.db.util.ResultSetUtils.*;
+import static com.eustrosoft.cms.util.FileUtils.getFirstLevelFromPath;
+import static com.eustrosoft.cms.util.FileUtils.getLastLevelFromPath;
+import static com.eustrosoft.cms.util.FileUtils.getPathLvl;
+import static com.eustrosoft.cms.util.FileUtils.getPathParts;
+import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.core.constants.DBConstants.F_NAME;
+import static com.eustrosoft.core.constants.DBConstants.ID;
+import static com.eustrosoft.core.constants.DBConstants.NAME;
+import static com.eustrosoft.core.constants.DBConstants.SEPARATOR;
+import static com.eustrosoft.core.constants.DBConstants.ZLVL;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.constants.DBConstants.ZSID;
+import static com.eustrosoft.core.db.util.ResultSetUtils.getFid;
+import static com.eustrosoft.core.db.util.ResultSetUtils.getStrValueOrEmpty;
+import static com.eustrosoft.core.db.util.ResultSetUtils.getType;
+import static com.eustrosoft.core.db.util.ResultSetUtils.getZoid;
+import static com.eustrosoft.core.db.util.ResultSetUtils.getZsid;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -172,6 +191,7 @@ public class DBDataSource implements CMSDataSource {
                     throw new Exception(opened.getCaption());
                 }
                 ExecStatus objectInScope = FSDao.createObjectInScope(
+                        "FS.F",
                         zsid,
                         String.valueOf(params.getSecurityLevel())
                 );
