@@ -19,10 +19,39 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZRID;
+
 public final class MSGDao extends BasicDAO {
 
     public MSGDao(QDBPConnection poolConnection) {
         super(poolConnection);
+    }
+
+    @SneakyThrows
+    public MSGChannel getChat(Long zoid) {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("MSG.V_CChannel")
+                        .where(String.format("%s = %d", ZOID, zoid))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            MSGChannel channel = new MSGChannel();
+            if (resultSet.next()) {
+                channel.fillFromResultSet(resultSet);
+            }
+            preparedStatement.close();
+            resultSet.close();
+            return channel;
+        }
+        return null;
     }
 
     @SneakyThrows
@@ -88,6 +117,32 @@ public final class MSGDao extends BasicDAO {
                 status.getZver()
         );
         return status;
+    }
+
+    @SneakyThrows
+    public MSGMessage getMessage(Long zoid, Long zrid) {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("MSG.V_CMsg")
+                        .where(String.format("%s = %d AND %s = %d", ZOID, zoid, ZRID, zrid))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            MSGMessage message = new MSGMessage();
+            if (resultSet.next()) {
+                message.fillFromResultSet(resultSet);
+            }
+            preparedStatement.close();
+            resultSet.close();
+            return message;
+        }
+        return null;
     }
 
     @SneakyThrows
@@ -215,6 +270,8 @@ public final class MSGDao extends BasicDAO {
             message.setZver(status.getZver());
             if (status.isOk()) {
                 Connection connection = getPoolConnection().get();
+                MSGMessage oldMessage = getMessage(message.getZoid(), message.getZrid());
+                message.merge(oldMessage); // todo: make it another way
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         Query.builder()
                                 .select()
@@ -250,6 +307,8 @@ public final class MSGDao extends BasicDAO {
             status = openObject("MSG.C", channel.getZoid());
             channel.setZver(status.getZver());
             if (status.isOk()) {
+                MSGChannel oldChannel = getChat(channel.getZoid());
+                channel.merge(oldChannel); // todo: make it another way
                 Connection connection = getPoolConnection().get();
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         Query.builder()

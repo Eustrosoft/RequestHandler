@@ -39,6 +39,18 @@ public class MSGChannel extends DBObject implements Updatable {
         setStatus(MSGChannelStatus.of(resultSet.getString(STATUS)));
     }
 
+    public void merge(MSGChannel otherChannel) {
+        if (this.subject == null) {
+            this.subject = otherChannel.getSubject();
+        }
+        if (this.documentId == null) {
+            this.documentId = otherChannel.getDocumentId();
+        }
+        if (this.status == null) {
+            this.status = otherChannel.getStatus();
+        }
+    }
+
     public String toUpdateString() {
         return String.format(
                 "%s, %s, %s, '%s', '%s', %s",

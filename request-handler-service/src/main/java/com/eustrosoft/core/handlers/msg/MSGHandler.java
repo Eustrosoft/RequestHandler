@@ -179,7 +179,14 @@ public final class MSGHandler implements Handler {
                     Long zoid = Long.valueOf(splitted[0]);
                     Long zver = Long.valueOf(splitted[1]);
                     Long zrid = Long.valueOf(splitted[2]);
-                    String content = splitted[4];
+                    String preparedStr = splitted[4];
+                    if (preparedStr.indexOf("\"") == 0) {
+                        preparedStr = preparedStr.substring(1);
+                    }
+                    if (preparedStr.lastIndexOf("\"") == preparedStr.length() - 1) {
+                        preparedStr = preparedStr.substring(0, preparedStr.length() - 1);
+                    }
+                    String content = preparedStr.replaceAll("\"\"", "\"");
                     Long answerId = getLongOrNull(splitted[5]);
                     String messageType = splitted[6];
                     Long userId = getLongOrNull(splitted[7]);

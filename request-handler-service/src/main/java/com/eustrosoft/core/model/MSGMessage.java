@@ -47,6 +47,18 @@ public class MSGMessage extends DBObject implements Updatable {
         setType(MSGMessageType.of(resultSet.getString(TYPE)));
     }
 
+    public void merge(MSGMessage otherMessage) {
+        if (this.content == null) {
+            this.content = otherMessage.getContent();
+        }
+        if (this.answerId == null) {
+            this.answerId = otherMessage.getAnswerId();
+        }
+        if (this.type == null) {
+            this.type = otherMessage.getType();
+        }
+    }
+
     public String toUpdateString() {
         return String.format(
                 "%s, %s, %s, '%s', %s, %s",
