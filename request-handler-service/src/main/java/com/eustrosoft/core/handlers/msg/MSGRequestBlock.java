@@ -20,13 +20,12 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_MSG;
 @Setter
 public class MSGRequestBlock extends BasicRequest {
     private String id;
-    private String requestType;
     private MsgParams params;
 
     public MSGRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
-        super(request, response);
+        super(request, response, qJson);
         parseQJson(qJson);
     }
 

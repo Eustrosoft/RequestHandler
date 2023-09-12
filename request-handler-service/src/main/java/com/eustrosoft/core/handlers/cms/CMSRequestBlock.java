@@ -17,7 +17,6 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
 
 public class CMSRequestBlock extends BasicRequest {
     private CMSType type;
-    private String requestType;
     private String path;
     private String fileName;
     private String from;
@@ -28,7 +27,7 @@ public class CMSRequestBlock extends BasicRequest {
     public CMSRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
-        super(request, response);
+        super(request, response, qJson);
         parseQJson(qJson);
     }
 
@@ -80,10 +79,6 @@ public class CMSRequestBlock extends BasicRequest {
         this.to = to;
     }
 
-    public String getRequestType() {
-        return requestType;
-    }
-
     public String getContentType() {
         return contentType;
     }
@@ -105,10 +100,6 @@ public class CMSRequestBlock extends BasicRequest {
     @Override
     public HttpServletRequest getHttpRequest() {
         return this.request;
-    }
-
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
     }
 
     private void parseQJson(QJson qJson) {

@@ -26,23 +26,32 @@ import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.constants.Constants.*;
+import static com.eustrosoft.core.constants.Constants.REQUEST_COPY;
+import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.constants.Constants.REQUEST_MOVE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_RENAME;
+import static com.eustrosoft.core.constants.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.constants.Constants.REQUEST_VIEW;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
 public final class CMSHandler implements Handler {
     private CMSDataSource cmsDataSource;
-    private String requestType;
     private UserStorage userStorage;
     private UsersContext usersContext;
 
-    public CMSHandler(String requestType) throws Exception {
-        this.requestType = requestType;
+    public CMSHandler() throws Exception {
     }
 
     @Override
@@ -63,6 +72,7 @@ public final class CMSHandler implements Handler {
         postProcessPath(path);
         postProcessPath(from);
         postProcessPath(to);
+        String requestType = cmsRequestBlock.getR();
         switch (requestType) {
             case REQUEST_VIEW:
                 List<CMSObject> directoryObjects = getDirectoryObjects(path);

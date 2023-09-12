@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
-import static com.eustrosoft.core.constants.Constants.*;
+import static com.eustrosoft.core.constants.Constants.PARAMETERS;
+import static com.eustrosoft.core.constants.Constants.REQUEST_FILE_UPLOAD;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_FILE;
 
 public class FileRequestBlock extends BasicRequest {
     private byte[] fileBytes;
@@ -29,7 +31,7 @@ public class FileRequestBlock extends BasicRequest {
     public FileRequestBlock(HttpServletRequest request,
                             HttpServletResponse response,
                             QJson qJson) {
-        super(request, response);
+        super(request, response, qJson);
         parseQJson(qJson);
     }
 

@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
 
 public class LoginRequestBlock extends BasicRequest {
-    private String requestType;
     private String login;
     private String password;
 
     public LoginRequestBlock(HttpServletRequest request,
                              HttpServletResponse response,
                              QJson qJson) {
-        super(request, response);
+        super(request, response, qJson);
         parseQJson(qJson);
     }
 
@@ -32,10 +31,6 @@ public class LoginRequestBlock extends BasicRequest {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRequestType() {
-        return requestType;
     }
 
     public String getLogin() {
@@ -59,10 +54,6 @@ public class LoginRequestBlock extends BasicRequest {
     @Override
     public HttpServletRequest getHttpRequest() {
         return this.request;
-    }
-
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
     }
 
     private void parseQJson(QJson qJson) {

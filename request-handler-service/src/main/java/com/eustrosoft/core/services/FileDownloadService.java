@@ -6,12 +6,19 @@
 
 package com.eustrosoft.core.services;
 
+import com.eustrosoft.core.handlers.cms.CMSHandler;
+import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
 import com.eustrosoft.core.handlers.cms.DownloadFileDetails;
 import com.eustrosoft.core.handlers.cms.FileDownloadMap;
 import com.eustrosoft.core.handlers.cms.FileTicket;
+import com.eustrosoft.core.tools.Json;
+import com.eustrosoft.core.tools.QJson;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -19,6 +26,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+
+import static com.eustrosoft.core.constants.Constants.ERR_SERVER;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.tools.HttpTools.getExceptionResponse;
+import static com.eustrosoft.core.tools.HttpTools.printError;
 
 public class FileDownloadService {
     private static final String GENERATING_ALGORITHM = "AES";
@@ -62,6 +75,33 @@ public class FileDownloadService {
         String ticket = URLEncoder.encode(id, StandardCharsets.UTF_8.displayName());
         DownloadFileDetails dfi = PATHS.get(id);
         return new FileTicket(ticket, dfi);
+    }
+
+    public void downloadFile(HttpServletRequest req, HttpServletResponse resp,
+                             String ticket, String contentType)
+            throws IOException {
+        Json.JsonBuilder builder = new Json().builder();
+        builder.addKeyValue("s", SUBSYSTEM_CMS);
+        if (ticket != null && !ticket.isEmpty()) {
+            Json.JsonBuilder jsonBuilder = builder.addKeyValue("ticket", ticket)
+                    .addKeyValue("r", REQUEST_DOWNLOAD);
+            if (contentType != null && !contentType.isEmpty()) {
+                jsonBuilder.addKeyValue("contentType", contentType);
+            }
+            Json json = jsonBuilder.build();
+            CMSRequestBlock cmsRequestBlock = new CMSRequestBlock(req, resp, new QJson(json.toString()));
+            try {
+                new CMSHandler().processRequest(cmsRequestBlock);
+            } catch (Exception e) {
+                printError(
+                        resp,
+                        getExceptionResponse(
+                                "Error while downloading file occurred.",
+                                SUBSYSTEM_CMS, REQUEST_DOWNLOAD, ERR_SERVER
+                        )
+                );
+            }
+        }
     }
 
     private FileDownloadService() {

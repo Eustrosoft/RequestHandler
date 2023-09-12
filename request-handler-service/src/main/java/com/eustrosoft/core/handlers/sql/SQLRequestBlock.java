@@ -17,7 +17,6 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SQL;
 
 public final class SQLRequestBlock extends BasicRequest {
     private String query;
-    private String method;
 
     public String getQuery() {
         return this.query;
@@ -53,14 +52,6 @@ public final class SQLRequestBlock extends BasicRequest {
     @Override
     public String getR() {
         return REQUEST_SQL;
-    }
-
-    public String getMethod() {
-        return this.method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
     }
 
     private void parseQJson(QJson qJson) {

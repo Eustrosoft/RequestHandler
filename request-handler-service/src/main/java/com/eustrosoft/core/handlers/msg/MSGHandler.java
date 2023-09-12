@@ -19,7 +19,6 @@ import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.model.user.User;
 import com.eustrosoft.core.providers.SessionProvider;
-import com.eustrosoft.core.providers.context.UsersContext;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
@@ -43,13 +42,9 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_EDIT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_SEND;
 
 public final class MSGHandler implements Handler {
-    private String requestType;
-    private UsersContext usersContext;
     private QDBPConnection poolConnection;
 
-    public MSGHandler(String requestType) {
-        this.requestType = requestType;
-        this.usersContext = UsersContext.getInstance();
+    public MSGHandler() {
     }
 
     @Override
@@ -62,6 +57,7 @@ public final class MSGHandler implements Handler {
         MSGResponseBlock msgResponseBlock = new MSGResponseBlock();
         msgResponseBlock.setE(ERR_OK);
         msgResponseBlock.setErrMsg(MSG_OK);
+        String requestType = msgRequestBlock.getR();
         msgResponseBlock.setResponseType(requestType);
         // TODO
         switch (requestType) {

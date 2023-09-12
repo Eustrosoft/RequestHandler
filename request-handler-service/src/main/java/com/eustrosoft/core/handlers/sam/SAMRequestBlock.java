@@ -20,12 +20,11 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
 @Setter
 public class SAMRequestBlock extends BasicRequest {
     private String id;
-    private String requestType;
 
     public SAMRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
-        super(request, response);
+        super(request, response, qJson);
         parseQJson(qJson);
     }
 
@@ -42,10 +41,6 @@ public class SAMRequestBlock extends BasicRequest {
     @Override
     public HttpServletRequest getHttpRequest() {
         return this.request;
-    }
-
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
     }
 
     private void parseQJson(QJson qJson) {

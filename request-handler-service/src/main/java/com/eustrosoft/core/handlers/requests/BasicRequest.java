@@ -6,16 +6,28 @@
 
 package com.eustrosoft.core.handlers.requests;
 
+import com.eustrosoft.core.tools.QJson;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.eustrosoft.core.constants.Constants.REQUEST;
 
 public abstract class BasicRequest implements RequestBlock {
     protected final HttpServletResponse response;
     protected final HttpServletRequest request;
+    protected final String requestType;
 
     public BasicRequest(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
+        this.requestType = "";
+    }
+
+    public BasicRequest(HttpServletRequest request, HttpServletResponse response, QJson qJson) {
+        this.request = request;
+        this.response = response;
+        this.requestType = qJson.getItemString(REQUEST);
     }
 
     @Override

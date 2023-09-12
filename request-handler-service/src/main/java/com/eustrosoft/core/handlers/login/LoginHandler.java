@@ -28,10 +28,8 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_LOGIN;
 import static com.eustrosoft.core.constants.Constants.REQUEST_LOGOUT;
 
 public final class LoginHandler implements Handler {
-    private final String requestType;
 
-    public LoginHandler(String requestType) {
-        this.requestType = requestType;
+    public LoginHandler() {
     }
 
     @Override
@@ -39,7 +37,7 @@ public final class LoginHandler implements Handler {
         LoginRequestBlock loginRequestBlock = (LoginRequestBlock) requestBlock;
         LoginResponseBlock responseBlock = new LoginResponseBlock();
         responseBlock.setE(0);
-        switch (requestType) {
+        switch (loginRequestBlock.getR()) {
             case REQUEST_LOGIN:
                 login(loginRequestBlock);
                 responseBlock.setErrMsg("Login success!");

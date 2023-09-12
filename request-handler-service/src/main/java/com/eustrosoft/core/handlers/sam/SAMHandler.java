@@ -17,7 +17,14 @@ import org.eustrosoft.qdbp.QDBPSession;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static com.eustrosoft.core.constants.Constants.*;
+import static com.eustrosoft.core.constants.Constants.ERR_OK;
+import static com.eustrosoft.core.constants.Constants.MSG_OK;
+import static com.eustrosoft.core.constants.Constants.MSG_REQUEST_TYPE_NOT_SUPPORTED;
+import static com.eustrosoft.core.constants.Constants.REQUEST_USER_AVAILABLE_SLVL;
+import static com.eustrosoft.core.constants.Constants.REQUEST_USER_ID;
+import static com.eustrosoft.core.constants.Constants.REQUEST_USER_LANG;
+import static com.eustrosoft.core.constants.Constants.REQUEST_USER_LOGIN;
+import static com.eustrosoft.core.constants.Constants.REQUEST_USER_SLVL;
 
 public final class SAMHandler implements Handler {
     private QDBPConnection poolConnection;
@@ -27,8 +34,8 @@ public final class SAMHandler implements Handler {
         QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
                 .getSession();
         this.poolConnection = session.getConnection();
-        SAMRequestBlock SAMRequestBlock = (SAMRequestBlock) requestBlock;
-        String requestType = SAMRequestBlock.getRequestType();
+        SAMRequestBlock samRequestBlock = (SAMRequestBlock) requestBlock;
+        String requestType = samRequestBlock.getR();
         SAMResponseBlock SAMResponseBLock = new SAMResponseBlock();
         SAMResponseBLock.setE(ERR_OK);
         SAMResponseBLock.setErrMsg(MSG_OK);
