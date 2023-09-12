@@ -180,6 +180,7 @@ public final class MSGHandler implements Handler {
                     Long zver = Long.valueOf(splitted[1]);
                     Long zrid = Long.valueOf(splitted[2]);
                     String preparedStr = splitted[4];
+                    // todo: shit
                     if (preparedStr.indexOf("\"") == 0) {
                         preparedStr = preparedStr.substring(1);
                     }
