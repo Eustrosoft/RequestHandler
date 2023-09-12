@@ -194,6 +194,7 @@ public final class MSGHandler implements Handler {
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
                         user = User.fromResultSet(samDAO.getUserResultSetById(userId));
+                        userMapping.put(userId, user);
                     } else {
                         user = userMapping.get(userId);
                     }
