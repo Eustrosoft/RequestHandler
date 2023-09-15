@@ -51,9 +51,6 @@ public final class CMSHandler implements Handler {
     private UserStorage userStorage;
     private UsersContext usersContext;
 
-    public CMSHandler() throws Exception {
-    }
-
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())

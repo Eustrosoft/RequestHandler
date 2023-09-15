@@ -77,6 +77,9 @@ public final class MSGDao extends BasicDAO {
         // ??? todo zsid
         SamDAO samDAO = new SamDAO(getPoolConnection());
         ExecStatus objectInScope = createObjectInScope("MSG.C", samDAO.getUserSid(), slvl == null ? "null" : slvl.toString());
+        if (!objectInScope.isOk()) {
+            throw new Exception(objectInScope.getCaption());
+        }
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()

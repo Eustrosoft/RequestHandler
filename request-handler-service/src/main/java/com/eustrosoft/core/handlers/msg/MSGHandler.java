@@ -121,7 +121,6 @@ public final class MSGHandler implements Handler {
             messages = processResultSetToMSGMessage(chatsResultSet);
             chatsResultSet.close();
         }
-        Collections.reverse(messages);
         return messages;
     }
 
