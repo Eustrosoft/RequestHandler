@@ -181,6 +181,7 @@ public final class MSGDao extends BasicDAO {
                                         .add(channelId)
                                         .build()
                         )
+                        .add("order by cc.zrid")
                         .buildWithSemicolon()
                         .getQuery().toString()
         );
