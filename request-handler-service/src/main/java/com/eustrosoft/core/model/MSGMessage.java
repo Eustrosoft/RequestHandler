@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Date;
 
 import static com.eustrosoft.core.constants.DBConstants.CONTENT;
 import static com.eustrosoft.core.constants.DBConstants.MSG_ID;
@@ -24,6 +25,13 @@ public class MSGMessage extends DBObject implements Updatable {
     private Long answerId;
     private MSGMessageType type;
     private UserDTO user;
+
+    public MSGMessage(Long id, Long zver, Long zrid, Date created, String content, Long answerId, MSGMessageType type) {
+        super(id, zver, zrid, created);
+        this.content = content;
+        this.answerId = answerId;
+        this.type = type;
+    }
 
     public MSGMessage(Long id, Long zver, Long zrid, String content, Long answerId, MSGMessageType type) {
         super(id, zver, zrid);

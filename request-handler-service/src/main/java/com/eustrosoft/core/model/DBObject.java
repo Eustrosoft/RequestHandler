@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
@@ -25,6 +26,7 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
     private Long zver;
     private Long zrid;
     private Long zlvl;
+    private Date created;
 
     public DBObject(ResultSet resultSet) throws SQLException {
         fillFromResultSet(resultSet);
@@ -34,6 +36,13 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         this.zoid = zoid;
         this.zver = zver;
         this.zrid = zrid;
+    }
+
+    public DBObject(Long zoid, Long zver, Long zrid, Date created) {
+        this.zoid = zoid;
+        this.zver = zver;
+        this.zrid = zrid;
+        this.created = created;
     }
 
     @Override

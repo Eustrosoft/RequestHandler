@@ -19,12 +19,14 @@ import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.model.user.User;
 import com.eustrosoft.core.providers.SessionProvider;
+import com.eustrosoft.tools.Constants;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -186,6 +188,7 @@ public final class MSGHandler implements Handler {
                     Long answerId = getLongOrNull(splitted[5]);
                     String messageType = splitted[6];
                     Long userId = getLongOrNull(splitted[7]);
+                    String created = splitted[8].substring(1, splitted[8].length() - 1);
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
                         user = User.fromResultSet(samDAO.getUserResultSetById(userId));
@@ -194,7 +197,8 @@ public final class MSGHandler implements Handler {
                         user = userMapping.get(userId);
                     }
                     MSGMessage msgChannel = new MSGMessage(
-                            zoid, zver, zrid, content, answerId, MSGMessageType.of(messageType)
+                            zoid, zver, zrid, new SimpleDateFormat(Constants.SQL_DATE_FORMAT).parse(created),
+                            content, answerId, MSGMessageType.of(messageType)
                     );
                     msgChannel.setUser(UserDTO.fromUser(user));
                     objects.add(msgChannel);
