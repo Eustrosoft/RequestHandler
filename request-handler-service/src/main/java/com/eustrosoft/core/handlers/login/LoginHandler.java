@@ -111,7 +111,7 @@ public final class LoginHandler implements Handler {
         UsersContext usersContext = UsersContext.getInstance();
         usersContext.setUserDetails(
                 dbps.getSessionSecretCookie(),
-                new User(login, password, request.getRequestedSessionId())
+                new User("", login, password, request.getRequestedSessionId())
         );
     }
 

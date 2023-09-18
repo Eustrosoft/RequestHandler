@@ -12,11 +12,13 @@ import java.sql.SQLException;
 public class User implements EustrosoftUser {
     private Long id;
     private String username;
+    private String fullName;
     private String password;
     private String ip;
     private String sessionPath;
 
-    public User(String username, String password, String ip) {
+    public User(String fullName, String username, String password, String ip) {
+        this.fullName = fullName;
         this.username = username;
         this.password = password;
         this.ip = ip;
@@ -43,6 +45,22 @@ public class User implements EustrosoftUser {
         return this.ip;
     }
 
+    public static User fromResultSet(ResultSet resultSet) throws SQLException {
+        resultSet.next();
+        User user = new User(
+                resultSet.getString("full_name"),
+                resultSet.getString("login"),
+                "", ""
+        );
+        user.setId(resultSet.getLong("id"));
+        resultSet.close();
+        return user;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
     @Override
     public String getUserName() {
         return this.username;
@@ -56,13 +74,7 @@ public class User implements EustrosoftUser {
         this.sessionPath = sessionPath;
     }
 
-    public static User fromResultSet(ResultSet resultSet) throws SQLException {
-        resultSet.next();
-        User user = new User(
-                resultSet.getString("login"), "", ""
-        );
-        user.setId(resultSet.getLong("id"));
-        resultSet.close();
-        return user;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }
