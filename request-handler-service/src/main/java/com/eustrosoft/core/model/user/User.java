@@ -21,11 +21,18 @@ public class User extends DBObject {
     private Long id;
     private String username;
     private String fullName;
+    private String dbUser;
     private String sessionPath;
 
     public User(String fullName, String username) {
         this.fullName = fullName;
         this.username = username;
+    }
+
+    public User(String fullName, String username, String dbUser) {
+        this.fullName = fullName;
+        this.username = username;
+        this.dbUser = dbUser;
     }
 
     @Override
@@ -34,6 +41,7 @@ public class User extends DBObject {
         super.fillFromResultSet(resultSet);
         setFullName(resultSet.getString("full_name"));
         setUsername(resultSet.getString("login"));
+        setDbUser(resultSet.getString("db_user"));
         setId(resultSet.getLong("id"));
         resultSet.close();
     }

@@ -23,6 +23,7 @@ public final class Constants {
     public static final String SUBSYSTEM_MSG = "msg";
     public static final String SUBSYSTEM_SAM = "sam";
 
+    public static final String REQUEST_PING = "ping";
     // Sql subsystem
     public static final String REQUEST_SQL = "sql";
     // File subsystem

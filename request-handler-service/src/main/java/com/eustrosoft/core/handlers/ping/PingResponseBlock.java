@@ -9,42 +9,30 @@ package com.eustrosoft.core.handlers.ping;
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 
+import static com.eustrosoft.core.constants.Constants.REQUEST_PING;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_PING;
+
+@Getter
+@Setter
 public class PingResponseBlock extends BasicResponse {
-    private Short errCode;
-    private String message;
+    private Short errCode = 0;
+    private String errMsg = "";
     private String userId;
     private String username;
     private String fullName;
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public void setErrCode(Short errCode) {
-        this.errCode = errCode;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    private String dbUser;
 
     @Override
     public String getS() {
-        return "ping";
+        return SUBSYSTEM_PING;
     }
 
     @Override
     public String getR() {
-        return "ping";
+        return REQUEST_PING;
     }
 
     @Override
@@ -54,24 +42,12 @@ public class PingResponseBlock extends BasicResponse {
 
     @Override
     public String getM() {
-        return this.message;
+        return this.errMsg;
     }
 
     @Override
     public String getL() {
         return ResponseLang.en_US; // TODO
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getFullName() {
-        return fullName;
     }
 
     @Override
@@ -85,6 +61,9 @@ public class PingResponseBlock extends BasicResponse {
         }
         if (getUsername() != null) {
             object.addProperty("username", getUsername());
+        }
+        if (getDbUser() != null) {
+            object.addProperty("dbUser", getDbUser());
         }
         return object;
     }
