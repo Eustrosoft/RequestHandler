@@ -189,7 +189,8 @@ public final class MSGHandler implements Handler {
                     String created = resultSet.getString(ZDATE); // todo
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
-                        user = User.fromResultSet(samDAO.getUserResultSetById(userId));
+                        user = new User();
+                        user.fillFromResultSet(samDAO.getUserResultSetById(userId));
                         userMapping.put(userId, user);
                     } else {
                         user = userMapping.get(userId);

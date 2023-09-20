@@ -21,6 +21,15 @@ public final class LoginChecker {
     public static void checkLogin(HttpServletRequest request,
                                   HttpServletResponse response,
                                   String subsystem) {
+        if (getSession(request, response) == null && !isLoginSubsystem(subsystem)) {
+            printError(response, getUnauthorizedResponse());
+            throw new Exception("Unauthorized access");
+        }
+    }
+
+    @SneakyThrows
+    public static QDBPSession getSession(HttpServletRequest request,
+                                         HttpServletResponse response) {
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);
         String cookieValue = qTisCookie.getCookieValue();
         QDBPool dbPool = DBPoolContext.getInstance(
@@ -28,12 +37,7 @@ public final class LoginChecker {
                 DBPoolContext.getUrl(request),
                 DBPoolContext.getDriverClass(request)
         );
-        QDBPSession session = dbPool.logon(cookieValue);
-
-        if (session == null && !isLoginSubsystem(subsystem)) {
-            printError(response, getUnauthorizedResponse());
-            throw new Exception("Unauthorized access");
-        }
+        return dbPool.logon(cookieValue);
     }
 
     public static boolean isLoginSubsystem(String subsystem) {

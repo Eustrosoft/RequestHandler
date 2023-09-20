@@ -13,7 +13,11 @@ import com.eustrosoft.core.tools.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_UPLOAD_DIRECTORY;
@@ -133,7 +137,7 @@ public class UserStorage implements StorageContext {
     }
 
     private String getUserDirectory() {
-        return String.format("%s_%d", user.getUserName(), System.currentTimeMillis());
+        return String.format("%s_%d", user.getUsername(), System.currentTimeMillis());
     }
 
     private synchronized void setUploadFilePath() throws IOException {

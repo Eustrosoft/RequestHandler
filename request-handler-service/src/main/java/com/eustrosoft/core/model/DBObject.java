@@ -50,9 +50,25 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         if (resultSet == null) {
             throw new SQLException("Result set is null while processing DBObject from ResultSet.");
         }
-        setZoid(resultSet.getLong(ZOID));
-        setZver(resultSet.getLong(ZVER));
-        setZrid(resultSet.getLong(ZRID));
-        setZlvl(resultSet.getLong(ZLVL));
+        try {
+            setZoid(resultSet.getLong(ZOID));
+        } catch (Exception ex) {
+            System.out.println("ZOID not found.");
+        }
+        try {
+            setZver(resultSet.getLong(ZVER));
+        } catch (Exception ex) {
+            System.out.println("ZVER not found.");
+        }
+        try {
+            setZrid(resultSet.getLong(ZRID));
+        } catch (Exception ex) {
+            System.out.println("ZRID not found.");
+        }
+        try {
+            setZlvl(resultSet.getLong(ZLVL));
+        } catch (Exception ex) {
+            System.out.println("ZLVL not found.");
+        }
     }
 }

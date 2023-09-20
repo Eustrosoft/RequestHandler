@@ -124,7 +124,20 @@ public class HttpRequestDispatcher extends HttpServlet {
             throws IOException {
         request.setCharacterEncoding("UTF-8");
         PostRequestProcessor requestProcessor = new PostRequestProcessor(request, response);
-        Response resp = requestProcessor.processRequest();
+        QDBPSession session = null;
+        try {
+            session = new SessionProvider(request, response).getSession();
+        } catch (Exception ex) {
+            System.out.println("User without session");
+        }
+        Response resp = null;
+        if (session != null) {
+            synchronized (session) {
+                resp = requestProcessor.processRequest();
+            }
+        } else {
+            resp = requestProcessor.processRequest();
+        }
         response.setContentType("application/json"); // todo think about it
         response.setHeader("Cache-Control", "nocache");
         response.setCharacterEncoding("UTF-8");

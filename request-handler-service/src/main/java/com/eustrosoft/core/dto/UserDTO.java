@@ -21,7 +21,7 @@ public class UserDTO {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setFullName(user.getFullName());
-        dto.setUsername(user.getUserName());
+        dto.setUsername(user.getUsername());
         dto.setIcon(null);
         return dto;
     }

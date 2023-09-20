@@ -64,6 +64,17 @@ public class SamDAO extends BasicDAO {
     }
 
     @SneakyThrows
+    public ResultSet getUserResultSet(String login) {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement preparedStatement =
+                connection.prepareStatement(String.format("SELECT * FROM SAM.V_User where db_user = '%s'", login));
+        if (preparedStatement != null) {
+            return preparedStatement.executeQuery();
+        }
+        return null;
+    }
+
+    @SneakyThrows
     public String getUserLogin() {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_login");

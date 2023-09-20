@@ -104,6 +104,7 @@ public class SQLResponseBlock extends BasicResponse {
             answer.setRows(allRows);
             answer.setRows_count(allRows.size());
             sets.add(answer);
+            set.close();
         }
         return sets;
     }

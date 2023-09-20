@@ -9,31 +9,28 @@ package com.eustrosoft.core.handlers.sql;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
-import com.eustrosoft.core.model.user.User;
-import com.eustrosoft.core.providers.context.UsersContext;
-import com.eustrosoft.core.tools.WebParams;
-import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
+import com.eustrosoft.core.providers.SessionProvider;
+import org.eustrosoft.qdbp.QDBPSession;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SQLHandler implements Handler {
-    private DBWrapper dbWrapper;
-    private String dbUrl;
+import static com.eustrosoft.core.constants.Constants.ERR_OK;
+import static com.eustrosoft.core.constants.Constants.ERR_UNEXPECTED;
+import static com.eustrosoft.core.constants.Constants.MSG_OK;
 
+public final class SQLHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         HttpServletRequest request = requestBlock.getHttpRequest();
-        UsersContext usersContext = UsersContext.getInstance();
-        User user = usersContext.getSQLUser(
-                new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                        .getCookieValue()
-        );
+        SessionProvider sessionProvider = new SessionProvider(request, requestBlock.getHttpResponse());
+        QDBPSession session = sessionProvider.getSession();
+        Connection sqlConnection = session.getSQLConnection();
 
-        this.dbUrl = WebParams.getString(request, WebParams.DB_URL);
-        this.dbWrapper = DBWrapper.getInstance(user.getUserName(), user.getPassword(), this.dbUrl);
         SQLRequestBlock sqlRequest = (SQLRequestBlock) requestBlock;
         String query = sqlRequest.getQuery();
 
@@ -42,13 +39,14 @@ public final class SQLHandler implements Handler {
         List<String> queries = getQueries(query);
         try {
             for (String targetQuery : queries) {
-                resultSet.add(this.dbWrapper.executeQuery(targetQuery));
-                responseBlock.setE(0);
-                responseBlock.setErrMsg("No errors");
+                PreparedStatement preparedStatement = sqlConnection.prepareStatement(targetQuery);
+                resultSet.add(preparedStatement.executeQuery());
+                responseBlock.setE(ERR_OK);
+                responseBlock.setErrMsg(MSG_OK);
             }
         } catch (Exception ex) {
             responseBlock.setErrMsg(ex.getMessage());
-            responseBlock.setE(1);
+            responseBlock.setE(ERR_UNEXPECTED);
         }
         responseBlock.setResultSet(resultSet);
         return responseBlock;
