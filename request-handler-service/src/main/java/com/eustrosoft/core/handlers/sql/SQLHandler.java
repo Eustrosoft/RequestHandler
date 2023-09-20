@@ -13,6 +13,7 @@ import com.eustrosoft.core.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPSession;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,7 +28,8 @@ public final class SQLHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         HttpServletRequest request = requestBlock.getHttpRequest();
-        SessionProvider sessionProvider = new SessionProvider(request, requestBlock.getHttpResponse());
+        HttpServletResponse httpResponse = requestBlock.getHttpResponse();
+        SessionProvider sessionProvider = new SessionProvider(request, httpResponse);
         QDBPSession session = sessionProvider.getSession();
         Connection sqlConnection = session.getSQLConnection();
 

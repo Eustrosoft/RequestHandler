@@ -88,13 +88,12 @@ public class SQLResponseBlock extends BasicResponse {
 
             List<String> columnNames = getColumnNames(resultSetMetaData);
             List<String> columnTypes = getColumnTypes(resultSetMetaData);
-            List<List<Object>> allRows = new ArrayList<>();
+            List<List<Object>> allRows = new ArrayList<>(100);
 
             while (set.next()) {
-                List<Object> values = new ArrayList<>();
+                List<Object> values = new ArrayList<>(columnCount);
                 for (int i = 1; i <= columnCount; i++) {
                     values.add(set.getObject(i));
-                    set.getMetaData().getColumnType(i);
                 }
                 allRows.add(values);
             }
@@ -111,7 +110,7 @@ public class SQLResponseBlock extends BasicResponse {
 
     private List<String> getColumnNames(ResultSetMetaData metadata) throws SQLException {
         final int columnCount = metadata.getColumnCount();
-        List<String> colNames = new ArrayList<>();
+        List<String> colNames = new ArrayList<>(columnCount);
         for (int i = 1; i <= columnCount; i++) {
             colNames.add(metadata.getColumnName(i));
         }
@@ -120,7 +119,7 @@ public class SQLResponseBlock extends BasicResponse {
 
     private List<String> getColumnTypes(ResultSetMetaData metadata) throws SQLException {
         final int columnCount = metadata.getColumnCount();
-        List<String> colNames = new ArrayList<>();
+        List<String> colNames = new ArrayList<>(columnCount);
         for (int i = 1; i <= columnCount; i++) {
             colNames.add(metadata.getColumnTypeName(i));
         }
