@@ -54,3 +54,4 @@ tmp
 lib
 ./cms
 .idea
+*.http
