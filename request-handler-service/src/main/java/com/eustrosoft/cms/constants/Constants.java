@@ -8,4 +8,6 @@ package com.eustrosoft.cms.constants;
 
 public final class Constants {
     public final static String PROPERTY_DATA_SOURCE = "dataSource";
+    public final static String ROOTS = "FS.V_FFile";
+    public final static String SCOPES = "sam.v_scope";
 }

@@ -23,8 +23,6 @@ public class DBConstants {
 
     public final static String SEPARATOR = "/";
 
-    public final static String SCOPES = "sam.v_scope";
-    public final static String ROOTS = "FS.V_FFile";
     public final static String NAME = "name";
     public final static String SUBJECT = "subject";
     public final static String STATUS = "status";
@@ -41,12 +39,14 @@ public class DBConstants {
     public final static String MIME_TYPE = "mimetype";
     public final static String TYPE = "type";
     public final static String FILE_ID = "f_id";
-    public final static String Z_LEVEL = "zlvl";
     public final static String SID = "sid";
     public final static String ID = "id";
-    public final static String ZSID = "zsid";
-    public final static String ZOID = "zoid";
-    public final static String ZRID = "zrid";
-    public final static String ZVER = "zver";
-    public final static String ZLVL = "zlvl";
+
+    public final static String ZOID = "ZOID";
+    public final static String ZRID = "ZRID";
+    public final static String ZVER = "ZVER";
+    public final static String ZSID = "ZSID";
+    public final static String ZUID = "ZUID";
+    public final static String ZLVL = "ZLVL";
+    public final static String ZDATE = "ZDATE";
 }

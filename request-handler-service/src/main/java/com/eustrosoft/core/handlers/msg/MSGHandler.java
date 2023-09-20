@@ -42,6 +42,14 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_EDIT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_SEND;
+import static com.eustrosoft.core.constants.DBConstants.CONTENT;
+import static com.eustrosoft.core.constants.DBConstants.MSG_ID;
+import static com.eustrosoft.core.constants.DBConstants.TYPE;
+import static com.eustrosoft.core.constants.DBConstants.ZDATE;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.constants.DBConstants.ZUID;
+import static com.eustrosoft.core.constants.DBConstants.ZVER;
 
 public final class MSGHandler implements Handler {
     private QDBPConnection poolConnection;
@@ -171,24 +179,14 @@ public final class MSGHandler implements Handler {
         try {
             while (resultSet.next()) {
                 try {
-                    String str = resultSet.getString(1);
-                    String[] splitted = str.substring(1, str.length() - 1).split(",");
-                    Long zoid = Long.valueOf(splitted[0]);
-                    Long zver = Long.valueOf(splitted[1]);
-                    Long zrid = Long.valueOf(splitted[2]);
-                    String preparedStr = splitted[4];
-                    // todo: shit
-                    if (preparedStr.indexOf("\"") == 0) {
-                        preparedStr = preparedStr.substring(1);
-                    }
-                    if (preparedStr.lastIndexOf("\"") == preparedStr.length() - 1) {
-                        preparedStr = preparedStr.substring(0, preparedStr.length() - 1);
-                    }
-                    String content = preparedStr.replaceAll("\"\"", "\"");
-                    Long answerId = getLongOrNull(splitted[5]);
-                    String messageType = splitted[6];
-                    Long userId = getLongOrNull(splitted[7]);
-                    String created = splitted[8].substring(1, splitted[8].length() - 1);
+                    Long zoid = resultSet.getLong(ZOID);
+                    Long zver = resultSet.getLong(ZVER);
+                    Long zrid = resultSet.getLong(ZRID);
+                    String content = resultSet.getString(CONTENT);
+                    Long answerId = resultSet.getLong(MSG_ID);
+                    String messageType = resultSet.getString(TYPE);
+                    Long userId = resultSet.getLong(ZUID);
+                    String created = resultSet.getString(ZDATE); // todo
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
                         user = User.fromResultSet(samDAO.getUserResultSetById(userId));
@@ -197,7 +195,8 @@ public final class MSGHandler implements Handler {
                         user = userMapping.get(userId);
                     }
                     MSGMessage msgChannel = new MSGMessage(
-                            zoid, zver, zrid, new SimpleDateFormat(Constants.SQL_DATE_FORMAT).parse(created),
+                            zoid, zver, zrid,
+                            new SimpleDateFormat(Constants.SQL_DATE_FORMAT).parse(created),
                             content, answerId, MSGMessageType.of(messageType)
                     );
                     msgChannel.setUser(UserDTO.fromUser(user));

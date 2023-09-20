@@ -18,6 +18,7 @@ import org.eustrosoft.qdbp.QDBPConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
@@ -154,10 +155,8 @@ public final class MSGDao extends BasicDAO {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
                         .select()
-                        .leftBracket()
                         .add("cm.zoid, cm.zver, cm.zrid, cm.zlvl, cm.content, cm.msg_id, cm.type, " +
                                 "zo.zuid, zo.zdate, xu.login, xu.full_name, zo.qrsq > cm.zrid")
-                        .rightBracket()
                         .from()
                         .add("msg.v_cmsg as cm")
                         .add("left outer join")
@@ -190,6 +189,9 @@ public final class MSGDao extends BasicDAO {
 
     @SneakyThrows
     public ExecStatus createMessage(Long chatId, MSGMessage message) {
+        if (message.getContent() == null || message.getContent().trim().isEmpty()) {
+            return null;
+        }
         ExecStatus openedChat = openObject("MSG.C", chatId);
         try {
             if (openedChat.isOk()) {
@@ -199,20 +201,26 @@ public final class MSGDao extends BasicDAO {
                                 .select()
                                 .add("MSG.Create_cmsg")
                                 .leftBracket()
-                                .add(String.format(
-                                        //v_zoid bigint, v_zver bigint, v_zpid bigint, v_content character varying, v_msg_id bigint, v_type character varying
-                                        "%s, %s, %s, '%s', %s, '%s'",
-                                        openedChat.getZoid(),
-                                        openedChat.getZver(),
-                                        1, // todo
-                                        message.getContent(),
-                                        message.getAnswerId(),
-                                        message.getType().getValue()
-                                ))
+                                .add("?, ?, ?, ?, ?, ?")
                                 .rightBracket()
                                 .buildWithSemicolon()
                                 .toString()
                 );
+                preparedStatement.setLong(1, openedChat.getZoid());
+                preparedStatement.setLong(2, openedChat.getZver());
+                preparedStatement.setLong(3, 1); // todo
+                preparedStatement.setString(4, message.getContent());
+                if (message.getAnswerId() != null) {
+                    preparedStatement.setLong(5, message.getAnswerId());
+                } else {
+                    preparedStatement.setNull(5, Types.BIGINT);
+                }
+                if (message.getType() != null) {
+                    preparedStatement.setString(6, message.getType().getValue());
+                } else {
+                    preparedStatement.setNull(5, Types.VARCHAR);
+                }
+
                 ExecStatus status = new ExecStatus();
                 if (preparedStatement != null) {
                     ResultSet resultSet = preparedStatement.executeQuery();
