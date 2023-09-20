@@ -8,7 +8,11 @@ package com.eustrosoft.cms.dto;
 
 import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.core.model.DBObject;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +32,6 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
     private String hash;
     private CMSType type;
     private String description;
-    private Date created;
     private Date modified;
 
     public CMSGeneralObject(String extension, String fileName, String fullPath, List<String> links,
