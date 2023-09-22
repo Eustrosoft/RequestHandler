@@ -19,14 +19,14 @@ import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.model.user.User;
 import com.eustrosoft.core.providers.SessionProvider;
-import com.eustrosoft.tools.Constants;
+import com.eustrosoft.core.tools.DateTimeZone;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -186,7 +186,7 @@ public final class MSGHandler implements Handler {
                     Long answerId = resultSet.getLong(MSG_ID);
                     String messageType = resultSet.getString(TYPE);
                     Long userId = resultSet.getLong(ZUID);
-                    String created = resultSet.getString(ZDATE); // todo
+                    Timestamp created = resultSet.getTimestamp(ZDATE); // todo
                     User user = null;
                     if (!userMapping.containsKey(userId)) {
                         user = new User();
@@ -196,8 +196,7 @@ public final class MSGHandler implements Handler {
                         user = userMapping.get(userId);
                     }
                     MSGMessage msgChannel = new MSGMessage(
-                            zoid, zver, zrid,
-                            new SimpleDateFormat(Constants.SQL_DATE_FORMAT).parse(created),
+                            zoid, zver, zrid, new DateTimeZone(created),
                             content, answerId, MSGMessageType.of(messageType)
                     );
                     msgChannel.setUser(UserDTO.fromUser(user));

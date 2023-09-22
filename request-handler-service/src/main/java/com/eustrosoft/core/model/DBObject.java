@@ -3,6 +3,7 @@ package com.eustrosoft.core.model;
 import com.eustrosoft.core.model.interfaces.IDBObject;
 import com.eustrosoft.core.model.interfaces.JsonFormat;
 import com.eustrosoft.core.model.interfaces.ResultSetConverter;
+import com.eustrosoft.core.tools.DateTimeZone;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,6 @@ import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
 import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
@@ -26,7 +26,7 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
     private Long zver;
     private Long zrid;
     private Long zlvl;
-    private Date created;
+    private String created;
 
     public DBObject(ResultSet resultSet) throws SQLException {
         fillFromResultSet(resultSet);
@@ -38,11 +38,11 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         this.zrid = zrid;
     }
 
-    public DBObject(Long zoid, Long zver, Long zrid, Date created) {
+    public DBObject(Long zoid, Long zver, Long zrid, DateTimeZone created) {
         this.zoid = zoid;
         this.zver = zver;
         this.zrid = zrid;
-        this.created = created;
+        this.created = created.toString();
     }
 
     @Override

@@ -17,19 +17,34 @@ import com.eustrosoft.cms.parameters.HexFileParams;
 import com.eustrosoft.cms.parameters.HexFileResult;
 import com.eustrosoft.cms.util.FileUtils;
 import com.eustrosoft.core.tools.ColorTextUtil;
+import com.eustrosoft.core.tools.DateTimeZone;
 import com.eustrosoft.core.tools.PropsContainer;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 import java.util.zip.CRC32;
 
-import static com.eustrosoft.cms.constants.Messages.*;
+import static com.eustrosoft.cms.constants.Messages.MSG_DIR_EXISTS;
+import static com.eustrosoft.cms.constants.Messages.MSG_DIR_NOT_CREATED;
+import static com.eustrosoft.cms.constants.Messages.MSG_DIR_NOT_EXIST;
+import static com.eustrosoft.cms.constants.Messages.MSG_FILE_EXIST;
+import static com.eustrosoft.cms.constants.Messages.MSG_FILE_NOT_CREATED;
+import static com.eustrosoft.cms.constants.Messages.MSG_FILE_NOT_EXIST;
+import static com.eustrosoft.cms.constants.Messages.MSG_NULL_PARAMS;
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
 
@@ -195,7 +210,10 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
             } else {
                 obj.setType(CMSType.FILE);
             }
-            obj.setCreated(new Date(attributes.creationTime().toMillis()));
+            try {
+                obj.setCreated(new DateTimeZone(attributes.creationTime().toMillis()).toString());
+            } catch (Exception ex) {
+            }
             obj.setModified(new Date(file.lastModified()));
             objects.add(obj);
         }
