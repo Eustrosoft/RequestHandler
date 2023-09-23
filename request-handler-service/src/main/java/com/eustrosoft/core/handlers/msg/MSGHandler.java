@@ -133,9 +133,12 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(Long objId, Integer slvl, String ticket, String content) throws Exception {
+    public String createChat(Long objId, Integer slvl, String subject, String content) throws Exception {
+        if (subject == null || subject.trim().isEmpty()) {
+            throw new IllegalArgumentException("Subject can not be null or empty");
+        }
         MSGDao functions = new MSGDao(poolConnection);
-        ExecStatus chat = functions.createChat(new MSGChannel(ticket, objId, MSGChannelStatus.N), slvl);
+        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.N), slvl);
         if (content != null && !content.trim().isEmpty()) {
             functions.createMessage(
                     chat.getZoid(),
@@ -150,6 +153,9 @@ public final class MSGHandler implements Handler {
     }
 
     public String createMessage(MsgParams params) throws SQLException {
+        if (params.getContent() == null || params.getContent().isEmpty()) {
+            throw new IllegalArgumentException("Message content can not be null or empty");
+        }
         MSGDao functions = new MSGDao(poolConnection);
         ExecStatus message = functions.createMessage(
                 params.getZoid(),
