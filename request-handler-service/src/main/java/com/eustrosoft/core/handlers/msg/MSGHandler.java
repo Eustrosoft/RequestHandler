@@ -79,7 +79,7 @@ public final class MSGHandler implements Handler {
                 msgResponseBlock.setMessages(chatMessages);
                 break;
             case REQUEST_CREATE:
-                createChat(params.getZoid(), params.getSlvl(), params.getTicket(), params.getContent());
+                createChat(params.getZoid(), params.getSlvl(), params.getSubject(), params.getContent());
                 break;
             case REQUEST_SEND:
                 String message = createMessage(params);
@@ -99,7 +99,7 @@ public final class MSGHandler implements Handler {
                 break;
             case REQUEST_CHANGE:
                 changeChannelStatus(
-                        params.getZoid(), params.getZrid(), params.getContent(),
+                        params.getZoid(), params.getZrid(), params.getSubject(),
                         params.getReference(), MSGChannelStatus.of(params.getStatus())
                 );
                 break;
