@@ -14,6 +14,7 @@ public class MsgParams {
     private Long zoid;
     private Long zrid;
     private String status;
+    private String ticket;
     private String content;
     private Long reference;
     private String type;
@@ -24,6 +25,7 @@ public class MsgParams {
         params.setZoid(getLongOrNull(qJson, "zoid"));
         params.setZrid(getLongOrNull(qJson, "zrid"));
         params.setStatus(qJson.getItemString("status"));
+        params.setTicket(qJson.getItemString("ticket"));
         params.setContent(qJson.getItemString("content"));
         params.setType(qJson.getItemString("type"));
         params.setReference(getLongOrNull(qJson, "reference"));

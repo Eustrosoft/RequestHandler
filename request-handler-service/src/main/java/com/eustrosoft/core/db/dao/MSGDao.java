@@ -12,12 +12,12 @@ import com.eustrosoft.core.model.MSGChannel;
 import com.eustrosoft.core.model.MSGMessage;
 import com.eustrosoft.core.model.MSGParty;
 import com.eustrosoft.core.model.ranges.MSGPartyRole;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
@@ -29,8 +29,7 @@ public final class MSGDao extends BasicDAO {
         super(poolConnection);
     }
 
-    @SneakyThrows
-    public MSGChannel getChat(Long zoid) {
+    public MSGChannel getChat(Long zoid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -55,8 +54,7 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public ResultSet getChats() {
+    public ResultSet getChats() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -73,8 +71,7 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public ExecStatus createChat(MSGChannel channel, Integer slvl) {
+    public ExecStatus createChat(MSGChannel channel, Integer slvl) throws Exception {
         // ??? todo zsid
         SamDAO samDAO = new SamDAO(getPoolConnection());
         ExecStatus objectInScope = createObjectInScope("MSG.C", samDAO.getUserSid(), slvl == null ? "null" : slvl.toString());
@@ -120,11 +117,10 @@ public final class MSGDao extends BasicDAO {
                 objectInScope.getZoid(),
                 status.getZver()
         );
-        return status;
+        return objectInScope;
     }
 
-    @SneakyThrows
-    public MSGMessage getMessage(Long zoid, Long zrid) {
+    public MSGMessage getMessage(Long zoid, Long zrid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -149,8 +145,7 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public ResultSet getMessages(Long channelId) {
+    public ResultSet getMessages(Long channelId) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -187,8 +182,7 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public ExecStatus createMessage(Long chatId, MSGMessage message) {
+    public ExecStatus createMessage(Long chatId, MSGMessage message) throws SQLException {
         if (message.getContent() == null || message.getContent().trim().isEmpty()) {
             return null;
         }
@@ -236,8 +230,7 @@ public final class MSGDao extends BasicDAO {
         }
     }
 
-    @SneakyThrows
-    private ExecStatus createCParty(String chatId, String chatVer, MSGParty party) {
+    private ExecStatus createCParty(String chatId, String chatVer, MSGParty party) throws SQLException {
         SamDAO samDAO = new SamDAO(getPoolConnection());
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
@@ -268,8 +261,7 @@ public final class MSGDao extends BasicDAO {
         return status;
     }
 
-    @SneakyThrows
-    public void updateMessage(MSGMessage message) {
+    public void updateMessage(MSGMessage message) throws Exception {
         ExecStatus status = null;
         try {
             if (message == null) {
@@ -306,8 +298,7 @@ public final class MSGDao extends BasicDAO {
         }
     }
 
-    @SneakyThrows
-    public void updateChannel(MSGChannel channel) {
+    public void updateChannel(MSGChannel channel) throws Exception {
         ExecStatus status = null;
         try {
             if (channel == null) {
@@ -315,30 +306,31 @@ public final class MSGDao extends BasicDAO {
             }
             status = openObject("MSG.C", channel.getZoid());
             channel.setZver(status.getZver());
-            if (status.isOk()) {
-                MSGChannel oldChannel = getChat(channel.getZoid());
-                channel.merge(oldChannel); // todo: make it another way
-                Connection connection = getPoolConnection().get();
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        Query.builder()
-                                .select()
-                                .add("MSG.update_CChannel")
-                                .leftBracket()
-                                .add(channel.toUpdateString())
-                                .rightBracket()
-                                .buildWithSemicolon()
-                                .toString()
-                );
-                ExecStatus updatedStatus = new ExecStatus();
-                if (preparedStatement != null) {
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    updatedStatus.fillFromResultSet(resultSet);
-                    preparedStatement.close();
-                    resultSet.close();
-                }
-                if (!updatedStatus.isOk()) {
-                    throw new Exception("Update failed.");
-                }
+            if (!status.isOk()) {
+                throw new Exception(status.getCaption());
+            }
+            MSGChannel oldChannel = getChat(channel.getZoid());
+            channel.merge(oldChannel); // todo: make it another way
+            Connection connection = getPoolConnection().get();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    Query.builder()
+                            .select()
+                            .add("MSG.update_CChannel")
+                            .leftBracket()
+                            .add(channel.toUpdateString())
+                            .rightBracket()
+                            .buildWithSemicolon()
+                            .toString()
+            );
+            ExecStatus updatedStatus = new ExecStatus();
+            if (preparedStatement != null) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                updatedStatus.fillFromResultSet(resultSet);
+                preparedStatement.close();
+                resultSet.close();
+            }
+            if (!updatedStatus.isOk()) {
+                throw new Exception("Update failed.");
             }
         } finally {
             if (status != null) {
@@ -347,8 +339,7 @@ public final class MSGDao extends BasicDAO {
         }
     }
 
-    @SneakyThrows
-    public ExecStatus deleteMessage(Long zoid, Long zrid) {
+    public ExecStatus deleteMessage(Long zoid, Long zrid) throws Exception {
         Connection connection = getPoolConnection().get();
         ExecStatus openedObject = openObject("MSG.C", zoid);
         ExecStatus status = new ExecStatus();

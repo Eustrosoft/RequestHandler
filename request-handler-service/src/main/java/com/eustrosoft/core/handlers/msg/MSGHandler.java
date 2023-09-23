@@ -20,7 +20,6 @@ import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.model.user.User;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.DateTimeZone;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 
@@ -58,7 +57,7 @@ public final class MSGHandler implements Handler {
     }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws SQLException {
+    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
                 .getSession();
         this.poolConnection = session.getConnection();
@@ -80,7 +79,7 @@ public final class MSGHandler implements Handler {
                 msgResponseBlock.setMessages(chatMessages);
                 break;
             case REQUEST_CREATE:
-                createChat(params.getZoid(), params.getSlvl(), params.getContent());
+                createChat(params.getZoid(), params.getSlvl(), params.getTicket(), params.getContent());
                 break;
             case REQUEST_SEND:
                 String message = createMessage(params);
@@ -101,7 +100,7 @@ public final class MSGHandler implements Handler {
             case REQUEST_CHANGE:
                 changeChannelStatus(
                         params.getZoid(), params.getZrid(), params.getContent(),
-                        params.getReference(), MSGChannelStatus.of(params.getType())
+                        params.getReference(), MSGChannelStatus.of(params.getStatus())
                 );
                 break;
             default:
@@ -134,13 +133,23 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(Long objId, Integer slvl, String subject) {
+    public String createChat(Long objId, Integer slvl, String ticket, String content) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
-        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.N), slvl);
+        ExecStatus chat = functions.createChat(new MSGChannel(ticket, objId, MSGChannelStatus.N), slvl);
+        if (content != null && !content.trim().isEmpty()) {
+            functions.createMessage(
+                    chat.getZoid(),
+                    new MSGMessage(
+                            content,
+                            null,
+                            MSGMessageType.M
+                    )
+            );
+        }
         return chat.getZoid().toString();
     }
 
-    public String createMessage(MsgParams params) {
+    public String createMessage(MsgParams params) throws SQLException {
         MSGDao functions = new MSGDao(poolConnection);
         ExecStatus message = functions.createMessage(
                 params.getZoid(),
@@ -156,22 +165,21 @@ public final class MSGHandler implements Handler {
         return null;
     }
 
-    public void updateMessage(Long zoid, Long zrid, String content, Long answerId, MSGMessageType type) {
+    public void updateMessage(Long zoid, Long zrid, String content, Long answerId, MSGMessageType type) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         functions.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
     }
 
-    public void deleteMessage(Long chatId, Long messageId) {
+    public void deleteMessage(Long chatId, Long messageId) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         functions.deleteMessage(chatId, messageId);
     }
 
-    public void changeChannelStatus(Long zoid, Long zrid, String content, Long docId, MSGChannelStatus status) {
+    public void changeChannelStatus(Long zoid, Long zrid, String content, Long docId, MSGChannelStatus status) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         functions.updateChannel(new MSGChannel(zoid, null, zrid, content, docId, status));
     }
 
-    @SneakyThrows
     private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
         List<MSGMessage> objects = new ArrayList<>();
         Map<Long, User> userMapping = new HashMap<>();
@@ -211,8 +219,7 @@ public final class MSGHandler implements Handler {
         return objects;
     }
 
-    @SneakyThrows
-    private List<MSGChannel> processResultSetToMSGChannels(ResultSet resultSet) {
+    private List<MSGChannel> processResultSetToMSGChannels(ResultSet resultSet) throws SQLException {
         List<MSGChannel> objects = new ArrayList<>();
         while (resultSet.next()) {
             try {
