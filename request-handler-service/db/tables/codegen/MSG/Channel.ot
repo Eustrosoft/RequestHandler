@@ -1,0 +1,5 @@
+# Атрибут	Значение	Значение2/код	
+OBJECT	Channel	C
+SUBSYS	MSG
+RECORD	MSG.CMsg	CM
+RECORD	MSG.CParty	CP

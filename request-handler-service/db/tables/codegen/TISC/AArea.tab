@@ -1,0 +1,12 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.AArea	AA	
+OBJECT	Area	A	
+HEADER	STD_HEADER
+MAXREC	1
+MINREC	1
+INDEX	name		
+INDEX	scope_id		
+#	Поле	Тип	Атрибуты	Название	Описание
+01	name	varchar(32)	NN,ZNAME	Название	
+02	scope_id	bigint	NUL,SID,UNIQ	Область данных	
+03	descr	varchar(99)	NUL	Описание	

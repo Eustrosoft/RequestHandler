@@ -1,0 +1,43 @@
+# Атрибут	Значение	Значение2/код	
+NAME	FS.FFile	FF
+OBJECT	File	F	
+MAXREC	1
+MINREC	1
+CHILD	FS.FDir	FD
+CHILD	FS.FBlob	FB
+CHILD	FS.FText	FT
+INDEX	mimetype
+HEADER	STD_HEADER		
+#	Поле	Тип	Атрибуты	Название	Описание
+01	name	varchar(255)	NUL	Имя	Имя файла, директории или документа, оригинальное	
+02	type	char(1)	NN,DIC=FILE_TYPE	Тип	'B' - бинарный файл, 'D' - директория, 'T' - текстовый файл, 'R' - Корень иерархии, 'M' - смешанный тип, 'C' договор, 'W' wiki
+03	extstore	char(1)	NN,DIC=YESNO	Внешнее хранение	Содержимое файла находится во внешнем хранилище
+04	mimetype	varchar(127)	NUL	mime-type	mime-type хранимого содержимого
+05	descr	varchar(1024)	NUL	описание	описание файла
+06	b_size	bigint	NUL	размер(b)	размер бинарного содержимого в байтах суммарный
+07	b_chcnt	bigint	NUL	записей(b)	размер бинарного содержимого в записях (chunks)
+08	b_algo	varchar(6)	NUL	алгоритм(b)	алгоритм контрольной суммы бинарного содержимого
+09	b_digest	varchar(127)	NUL	chsum(b)	контрольная сумма бинарного содержимого
+11	t_size	bigint	NUL	размер(t)	размер текстового содержимого в символах суммарный
+12	t_chcnt	bigint	NUL	записей(t)	размер текстового содержимого в записях (chunks)
+13	t_algo	varchar(6)	NUL	алгоритм(t)	алгоритм контрольной суммы текстового содержимого
+14	t_digest	varchar(127)	NUL	chsum(t)	контрольная сумма текстового содержимого
+#-- QTIS project
+#--
+#-- (c) Alex V Eustrop & EustroSoft.org 2022
+#-- project's home: qtis.eustrosoft.org
+#--
+#-- LICENSE (whole project): see LICENSE.QTIS file at root directory of project
+#-- LICENSE (this file): BALES, BSD or MIT on your choice.
+#--    see LICENSE.BALES file at the root of project or bales.eustrosoft.org
+#--
+#
+#-- DROP TABLE IF EXISTS TIS.QOHead CASCADE;
+#CREATE TABLE FS.QFile (
+#	--STD_HEADER
+#	name	varchar(255),
+#	type	char(1), -- F,D,T,S
+#	mimetype	varchar(63),
+#	descr	varchar(1024)
+#	PRIMARY KEY (QOID,QRID,QVER)
+#	);

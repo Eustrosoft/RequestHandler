@@ -1,0 +1,10 @@
+# Атрибут	Значение	Значение2/код	
+NAME	FS.FDir	FD	
+OBJECT	File	F	
+HEADER	STD_HEADER		
+PARENT	FS.FFile	FF	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	f_id	bigint	NN,REF=D	File	ссылка на объект файл	
+02	fname	varchar(255)	NUL	Имя	Имя, назначенное файлу в этой директории
+03	mimetype	varchar(127)	NUL	mime-type	mime-type назначенный файлу в этой директории
+04	descr	varchar(1024)	NUL	Описание	Описание файла или полное название документа

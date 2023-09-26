@@ -1,0 +1,29 @@
+image: maven:3.6.3
+
+pipelines:
+  default:
+    - parallel:
+        - step:
+            name: Build Back
+            caches:
+              - maven
+            script:
+              - cd request-handler-service
+              - mvn clean package
+              - cd ..
+            after-script:
+              - pipe: atlassian/checkstyle-report:0.3.0
+        - step:
+            name: Build Front
+            image: node:latest
+            script:
+              - cd request-handler-front-angular
+              - npm install
+              - npm run build:stage
+              - cd ..
+            after-script:
+              - pipe: atlassian/checkstyle-report:0.3.0
+        - step:
+            name: Security Scan
+            script:
+              - pipe: atlassian/git-secrets-scan:0.5.1

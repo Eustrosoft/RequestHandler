@@ -1,0 +1,490 @@
+/* 2023-03-26 - started by eustrop & yadzuka. based on 2022-12-xx work */
+/*
+JSON standard for TIS systems
+Request format type:
+All requests contains the follow format of json. This json provides information about version of this json*, body (requests) and end beacon.
+Version of json is a number format in integer. Requests are a massive with standard parameters.
+In addition, the ending beacon is a Boolean type, that marks is this request final or not.
+*/
+{
+//"p":1, // qtisver - версия протокола число, упразднено
+[
+  s
+  :
+  1234
+  //session_id: - id сессии, если не указан, заполняется из кук, иначе - сравнивается с допустимым для данной куки]
+  [
+    p
+    :
+    "sdasdfadfaf"
+  ]
+  // session_password: - передача сессионного пароля в протоколе, опционально, зарезервировано
+  "r"
+  :
+  [
+    …
+  ],
+  // requests/responses - массив запросов или ответов
+  "t"
+  :
+  0
+  // qtistiming число. время в миллисекундах потраченное на обработку, или 0 если отключено
+  // "qtisend": true - упразднено, используем qtistiming, чтобы убедится в полноте полученного json
+  }
+  /*
+  Request consist of subsystem, request (type) and parameters. For example, in login subsystem, we have “LOGIN” subsystem and request with parameters login and password.
+  Requests can contain multiple types of interactions with service.
+  Located in: request-handler-front/src/request.json (https://bitbucket.org/Yadzuka/requesthandler/src/master/request-handler-front/src/request.json)
+  */
+  /* Login/Logout/Ping/Whoami/ */
+  // Запрос:
+  {
+    r: {
+      "s": "au"
+  [
+    ,
+  "l"
+  :
+  "en"
+]}, // спрашиваем подсистему Ау! кто я такой
+t: 0
+}
+// Ответ:
+{
+r: {
+s="au", e=401, m="No session"[, qtisver=1]},
+t: 10
+}
+// Запрос logon (invalid)
+{
+r: {"s": "login", "r": "login", "method":"plain", "username": "john@example.com", "wrong_password": "password"[, l="en"]}, // предьявляемся системе
+}
+// Ответ:
+{
+r: {
+"s": "login", "r": "login", e=401, m="Invalid user or password",["method": "plain", "username": "john@example.com",][, l="en"]}, //
+//!!! коды ответов проработать, в коде использовать константы! (чтобы можно было их перенумеровть, потом)
+}
+// Запрос logon (valid)
+{
+r: {
+"s": "login", "r": "login", "method": "plain", "username": "john@example.com", "valid_password": "password"[, l="en"]}, // предьявляемся системе
+}
+// Ответ:
+{
+r: {
+"s": "login", "r": "login", e=0, m="Ok","user_id": 1234, full_name: "John Doe", "username":"john@example.com"[, "method": "plain",,][, l="en"]}, // Ok
+}
+// Запрос:
+{
+r: {
+"s": "au"[, "l": "en"]}, // спрашиваем подсистему Ау! кто я такой
+t: 0
+}
+// Ответ:
+{
+r: {s="au", e=0, m="Ok", "user_id":1234, "username": "john@example.com", full_name: "John Doe"[, "session_id": 12345, qtisver: 1]}, // может быть еще что-то?
+t: 10
+}
+// Запрос logoff (valid)
+{
+r: {"s": "login", "r": "logoff"[, "session_id": 12345, l="en"]}, // отключаемся от системы
+}
+// Ответ:
+{
+r: {
+"s": "login", "r": "logoff", e=0, m="Ok"[, "session_id": 12345, l="en"]}, // отключаемся от системы
+}
+// Запрос logoff (invalid)
+{
+r: {
+"s": "login", "r": "logoff"[, "session_id": 12345, l="en"]}, // отключаемся от системы
+}
+// Ответ:
+{
+r: {
+"s": "login", "r": "logoff", e=401, m="No session"[, "session_id": 12345, l="en"]}, // отключаемся от системы
+}
+//  повторяем вход в систему, см. выше
+//..
+// запросы к подсистеме SQL
+// Запрос
+{
+"r": [
+{
+"s": "sql",
+"r": "sql",
+"query": "select * from tis.v_users;"
+},
+{
+"s": "sql",
+"r": "sql",
+"query": "select * from tis.v_users where id = ? or name like ?;",
+parameters: [1234, "%john%"],
+param_types: [bigint, text]
+},
+{
+"s": "sql",
+"r": "ps", // prepared statment - предопределенный запрос
+"query": "SQL_WHO_AM_I", // на сервере ему соответстует "select * from tis.v_users where id = ?;"
+parameters: [1234],
+param_types: [bigint]
+}
+],
+"t": 0
+}
+// Ответ
+{
+"r": [
+{
+"s": "sql",
+"r": "sql",
+["query": "select * from tis.v_users;",]
+"sets": [
+{
+"columns": [
+"",
+...
+],
+"data_types": [
+"",
+...
+],
+"rows": [
+[
+"",
+...
+]
+...
+],
+"rows_count": 1,
+"status": "",
+//
+"e": 0,
+//1,2
+"m": "Ok"
+}[, ...]
+"e": 0, // ??
+"m": "Ok"
+},
+{
+"s": "sql",
+"r": "sql",
+[
+"query": "select * from tis.v_users where id = ? or name like ?;",
+parameters: [1234, "%john%"],
+param_types: [bigint, text],
+]
+"sets": [{}]
+"e": 0, // ??
+"m": "Ok"
+},
+{
+"s": "sql",
+"r": "ps", // prepared statment - предопределенный запрос
+[
+"query": "SQL_WHO_AM_I", // на сервере ему соответстует "select * from tis.v_users where id = ?;"
+parameters: [1234],
+param_types: [bigint]
+]
+"e": 555, // ??
+"m": "Not implemented"
+}
+],
+"t": 1000
+}
+/////
+{
+"qtisver": 1,
+"requests":[
+{
+"parameters": {"method": "plain/text", "query":"select * from tis.samusers;select * from tis.files;"
+},
+"request": "sql", "subsystem": "sql"},
+{
+"parameters": {
+"method": "plain/text","query": "select * from tis.samacl;select * from tis.comments;"
+},
+"request": "sql", "subsystem": "sql"}
+],
+"qtisend": true
+}
+//
+{
+"requests": [
+{
+"subsystem": "login",
+"request": "login",
+"parameters": {
+"method": "plane/text",
+//md5,sha,sms,oauth2
+"login": "",
+"password": ""
+}
+}, ……
+],
+"qtisend": true
+}
+/*
+Response contains as well version, responses and ending.
+*/
+{
+"qtisver": 1,
+"response": […],
+"qtisend": true
+}
+/*
+The responses contains status, qid, err_code and err_msg.
+Response format type:
+Located in: request-handler-front/src/response.json (https://bitbucket.org/Yadzuka/requesthandler/src/master/request-handler-front/src/request.json)
+*/
+"response": [
+{
+//"subsystem": "login",
+//"request": "login",
+"status": 0,
+//1,2
+"qid": 7890886,
+"err_code": 0,
+//1,2
+"err_msg": "success"
+}
+]
+
+// Get directory files
+        Request:
+{
+"r": [
+{
+"s": "cms",
+"r": "view",
+"path" : "/some"
+}
+],
+"t": 0
+}
+
+Response:
+
+{
+"r": [
+{
+"s": "cms",
+"r": "view",
+        "l" :"en-US"
+"content" : [
+{
+"fileName": "Dir1",
+"fullPath": "/some",
+"created": 1235345345,
+"modified": 165652342,
+"space": 12343242,
+"type": "DIRECTORY",
+"links": []
+},
+{
+"fileName": "Dir2",
+"fullPath": "/some",
+"created": 1235345345,
+"modified": 165652342,
+"space": 12343242,
+"type": "DIRECTORY",
+"links": []
+},
+{
+"fileName": "File123.txt",
+"fullPath": "/some",
+"created": 1235345345,
+"modified": 165652342,
+"space": 12343242,
+"type": "FILE",
+"links": []
+}
+]
+}
+],
+"t": 0
+}
+
+// Create file
+        Request:
+{
+"r": [
+"l" :"en",
+"s": "cms",
+"r": "create",
+"path" : "/some",
+"type" : "FILE",
+"fileName" : "NewTempFile123.txt"
+}
+],
+"t": 0
+}
+      Response:
+{
+"r": [
+{
+"s": "cms",
+"r": "create",
+        "e" : 0
+"m" : "Ok"
+}
+],
+"t": 0
+}
+
+
+// Create directory
+      Request:
+{
+"r": [
+{
+"l" : "en"
+"s": "cms",
+"r": "create",
+"path" : "/some",
+"type" : "DIRECTORY",
+"fileName" : "NewDir123"
+}
+],
+"t": 0
+}
+      Response:
+{
+"r": [
+{
+        "l" : "en-US"
+"s": "cms",
+"r": "create",
+"e" : 0
+"m" : "Ok"
+}
+],
+"t": 0
+}
+
+// Move file
+Request:
+{
+"r": [
+{
+"l" : "en"
+"s": "cms",
+"r": "move",
+"from" : "/some",
+"to" : "/some/some2/"
+}
+],
+"t": 0
+}
+Response:
+{
+"r": [
+{
+"l" : "en-US"
+"s": "cms",
+"r": "move",
+"e" : 0
+"m" : "Ok"
+}
+],
+"t": 0
+}
+
+// Copy file
+Request:
+{
+"r": [
+{
+"l" : "en"
+"s": "cms",
+"r": "copy",
+"from" : "/some",
+"to" : "/some/some2/"
+}
+],
+"t": 0
+}
+Response:
+{
+"r": [
+{
+"l" : "en-US"
+"s": "cms",
+"r": "copy",
+"e" : 0
+"m" : "Ok"
+}
+],
+"t": 0
+}
+
+// Delete file/dir
+Request:
+{
+"r": [
+{
+"l" : "en"
+"s": "cms",
+"r": "delete",
+"path" : "/some"
+}
+],
+"t": 0
+}
+Response:
+{
+"r": [
+{
+"l" : "en-US"
+"s": "cms",
+"r": "delete",
+"e" : 0
+"m" : "Ok"
+}
+],
+"t": 0
+}
+
+// Get file/folder ticket
+Request:
+{
+"r": [
+{
+"s": "cms",
+"r": "ticket",
+"path" : "/some"
+}
+],
+"t": 0
+}
+
+Response:
+{
+"r": [
+{
+"s": "cms",
+"m": "12345432542dkfmsdkfms",
+"r": "ticket",
+"l" : "en-US",
+"e" : 0
+}
+],
+"t": 0
+}
+
+// Download by ticket
+Request:
+{
+"r": [
+{
+"s": "cms",
+"r": "download",
+"ticket" : "asdad1231asda"
+}
+],
+"t": 0
+}
+
+Response:
+dinary data

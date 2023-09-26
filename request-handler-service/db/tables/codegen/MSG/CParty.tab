@@ -1,0 +1,8 @@
+# Атрибут	Значение	Значение2/код	
+NAME	MSG.CParty	CP
+OBJECT	Channel	C
+HEADER	STD_HEADER
+#	Поле	Тип	Атрибуты	Название	Описание
+01  uid bigint  NN  Пользователь    Айди пользователя
+02  role    char(1) NN,DIC=MSG_PARTY_ROLE Роль    Роль в канале
+03  last_read   bigint  NUL Прочитанное Последнее прочитанное сообщение

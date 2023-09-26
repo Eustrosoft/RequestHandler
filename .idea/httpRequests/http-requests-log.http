@@ -1,0 +1,901 @@
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "user_slvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013633.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "zlvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013614.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "zlvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013613.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "slvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013605.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "slvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013603.200.json
+
+###
+
+POST http://fudo.eustrosoft.org:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "slvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013557.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "msg",
+      "r" : "chat",
+      "params" : {
+        "zoid" : 1552402
+      }
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013549.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; SELECT * from sam.v_user"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013539.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013523.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013519.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013517.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013515.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013510.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013333.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T013330.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012929.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012917.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012857.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012610.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012601.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "cms",
+      "r" : "view",
+      "path" : "/LOCAL/RootEustrop/Dir5"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012553.200.json
+
+###
+
+POST http://fudo.eustrosoft.org:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "cms",
+      "r" : "view",
+      "path" : "/LOCAL/RootEustrop/Dir5"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012525.200.json
+
+###
+
+POST http://fudo.eustrosoft.org:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "cms",
+      "r" : "view",
+      "path" : "/LOCAL/RootEustrop/Dir5"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012518.200.json
+
+###
+
+POST http://fudo.eustrosoft.org:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "cms",
+      "r" : "view",
+      "path" : "/LOCAL/RootEustrop/Dir5"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012507.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012500.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012458.200.json
+
+###
+
+POST http://fudo.eustrosoft.org:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sam",
+      "r" : "user_available_slvl"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012454.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; SELECT * from sam.v_user"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012447.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012444.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; SELECT * from sam.v_user"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012401.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; SELECT * from sam.v_user;"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012355.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; select * from sam_v_user"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012331.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; select * from sam_v_users"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012324.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user; select * from sam_v_asd"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012307.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "sql",
+      "r" : "sql",
+      "query" : "SELECT * from sam.v_user"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012137.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T012034.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T005052.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "ping",
+      "r" : "ping"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004943.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004933.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004845.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004715.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004526.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004510.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004457.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004442.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004226.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004209.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004154.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004139.200.json
+
+###
+
+POST http://localhost:8080/eustrosofthandler_war/api/dispatch
+Content-Type: application/json
+
+{
+  "r" : [
+    {
+      "s" : "login",
+      "r" : "login",
+      "login" : "qtisuser1",
+      "password" : "OnFawvOdIjee"
+    }
+  ],
+  "t" : 0
+}
+
+<> 2023-09-21T004106.404.json
+
+###
+

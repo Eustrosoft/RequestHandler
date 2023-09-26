@@ -1,0 +1,9 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.DRow	DW	
+OBJECT	Document	D	
+HEADER	STD_HEADER		
+PARENT	TISC.DDocument	DD	
+CHILD	TISC.DRProperty	DP	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	num	int	NN,UNIQ=OBJECT	Номер строки	
+02	item	varchar(64)	NUL	Строка	

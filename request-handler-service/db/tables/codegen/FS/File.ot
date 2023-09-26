@@ -1,0 +1,7 @@
+# Атрибут	Значение	Значение2/код	
+OBJECT	File	F	
+SUBSYS	FS
+RECORD	FS.FFile	FF
+RECORD	FS.FDir	FD	PARENT=FF
+RECORD	FS.FBlob	FB	PARENT=FF
+RECORD	FS.FText	FT	PARENT=FF

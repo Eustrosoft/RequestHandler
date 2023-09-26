@@ -1,0 +1,25 @@
+# Атрибут	Значение	Значение2/код	
+NAME	FS.FBlob	FB	
+OBJECT	File	F	
+HEADER	STD_HEADER		
+PARENT	FS.FFile	FF	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	chunk	bytea	NUL	Chunk	Фрагмент файла
+02	no	bigint	NUL	ChunkNo	Номер фрагмента	опциональный номер фрагмента файла, как он был передан загрузчиком (контрольная информация! для сборки используется ZRID!)
+03	size	bigint	NUL	ChunkZise	размер фрагмента в байтах, как он был передан загрузчиком (контрольная информация)
+04	crc32	int	NUL	CRC32	CRC32 контрольная сумма фрагмента, как она была передана загрузчиком. опционально
+#-- QTIS project
+#--
+#-- (c) Alex V Eustrop & EustroSoft.org 2022
+#-- project's home: qtis.eustrosoft.org
+#--
+#-- LICENSE (whole project): see LICENSE.QTIS file at root directory of project
+#-- LICENSE (this file): BALES, BSD or MIT on your choice.
+#--    see LICENSE.BALES file at the root of project or bales.eustrosoft.org
+#--
+#
+#-- DROP TABLE IF EXISTS TIS.QOBlob CASCADE;
+#CREATE TABLE TIS.QOBLob (
+#	chunk	bytea NOT NULL,
+#	PRIMARY KEY (QOID,QRID,QVER)
+#	);

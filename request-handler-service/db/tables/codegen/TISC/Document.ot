@@ -1,0 +1,7 @@
+# Атрибут	Значение	Значение2/код	
+OBJECT	Document	D	
+SUBSYS	TISC
+RECORD	TISC.DDocument	DD
+RECORD	TISC.DRef	DR	PARENT=DD
+RECORD	TISC.DRow	DW	PARENT=DD
+RECORD	TISC.DRProperty	DP	PARENT=DW

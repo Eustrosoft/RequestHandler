@@ -1,0 +1,15 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.DDocument	DD	
+OBJECT	Document	D	
+HEADER	STD_HEADER		
+CHILD	TISC.DRow	DW	
+CHILD	TISC.DRef	DR	
+MAXREC	1		
+MINREC	1		
+INDEX	symbol		
+#	Поле	Тип	Атрибуты	Название	Описание
+01	symbol	varchar(32)	NUL,ZNAME	номер документа	Уникальный, юридический номер. может отсутствовать.
+02	type	char(4)	NN,DIC	Тип документа	Рукопись (MANU), статья (ARTL), книга(BOOK), диссертация (DISS), энциклопедия (ENC), справочник (REF), список (LIST), приложение (ANNX),сайт (SITE)
+03	title	varchar(99)	NUL	Название	Название документа
+04	auth	varchar(255)	NUL	Авторы	Список авторов
+05	abstr	varchar(255)	NUL	Abstract	Краткое содержание документа

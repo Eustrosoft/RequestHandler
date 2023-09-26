@@ -1,0 +1,7 @@
+# Атрибут	Значение	Значение2/код	
+NAME	TISC.CEntry	CE	
+OBJECT	Container	C	
+HEADER	STD_HEADER		
+PARENT	TISC.CContainer	CC	
+#	Поле	Тип	Атрибуты	Название	Описание
+01	obj_id	bigint	NN,REF=C|D,UNIQ	Вложенный объект	Ссылка на вложенный объект.
