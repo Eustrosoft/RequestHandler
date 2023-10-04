@@ -11,6 +11,7 @@ import com.eustrosoft.core.db.Query;
 import com.eustrosoft.core.model.MSGChannel;
 import com.eustrosoft.core.model.MSGMessage;
 import com.eustrosoft.core.model.MSGParty;
+import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGPartyRole;
 import org.eustrosoft.qdbp.QDBPConnection;
 
@@ -19,7 +20,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 
+import static com.eustrosoft.core.constants.DBConstants.STATUS;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
 
@@ -54,16 +57,19 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    public ResultSet getChats() throws SQLException {
+    public ResultSet getChats(List<MSGChannelStatus> statuses) throws SQLException {
         Connection connection = getPoolConnection().get();
+        String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
+        Query.Builder query = Query.builder()
+                .select()
+                .all()
+                .from()
+                .add("MSG.V_CChannel");
+        if (condition != null && !condition.isEmpty()) {
+            query.where(condition);
+        }
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("MSG.V_CChannel")
-                        .buildWithSemicolon()
-                        .toString()
+                query.buildWithSemicolon().toString()
         );
         if (preparedStatement != null) {
             return preparedStatement.executeQuery();
@@ -98,6 +104,7 @@ public final class MSGDao extends BasicDAO {
                         .buildWithSemicolon()
                         .toString()
         );
+        // todo: create prep statement with ?
         ExecStatus status = new ExecStatus();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -182,55 +189,47 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    public ExecStatus createMessage(Long chatId, MSGMessage message) throws SQLException {
+    public ExecStatus createMessage(Long chatId, MSGMessage message) throws Exception {
         if (message.getContent() == null || message.getContent().trim().isEmpty()) {
             return null;
         }
         ExecStatus openedChat = openObject("MSG.C", chatId);
         try {
-            if (openedChat.isOk()) {
-                Connection connection = getPoolConnection().get();
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        Query.builder()
-                                .select()
-                                .add("MSG.Create_cmsg")
-                                .leftBracket()
-                                .add("?, ?, ?, ?, ?, ?")
-                                .rightBracket()
-                                .buildWithSemicolon()
-                                .toString()
-                );
-                preparedStatement.setLong(1, openedChat.getZoid());
-                preparedStatement.setLong(2, openedChat.getZver());
-                preparedStatement.setLong(3, 1); // todo
-                preparedStatement.setString(4, message.getContent());
-                if (message.getAnswerId() != null) {
-                    preparedStatement.setLong(5, message.getAnswerId());
-                } else {
-                    preparedStatement.setNull(5, Types.BIGINT);
-                }
-                if (message.getType() != null) {
-                    preparedStatement.setString(6, message.getType().getValue());
-                } else {
-                    preparedStatement.setNull(5, Types.VARCHAR);
-                }
-
-                ExecStatus status = new ExecStatus();
-                if (preparedStatement != null) {
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    status.fillFromResultSet(resultSet);
-                    preparedStatement.close();
-                    resultSet.close();
-                }
-                return status;
+            if (!openedChat.isOk()) {
+                throw new Exception(openedChat.getCaption());
             }
-            return new ExecStatus();
+            Connection connection = getPoolConnection().get();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    Query.builder()
+                            .select()
+                            .add("MSG.Create_cmsg")
+                            .leftBracket()
+                            .add("?, ?, ?, ?, ?, ?")
+                            .rightBracket()
+                            .buildWithSemicolon()
+                            .toString()
+            );
+            preparedStatement.setLong(1, openedChat.getZoid());
+            preparedStatement.setLong(2, openedChat.getZver());
+            preparedStatement.setLong(3, 1); // todo
+            preparedStatement.setString(4, message.getContent());
+            if (message.getAnswerId() != null) {
+                preparedStatement.setLong(5, message.getAnswerId());
+            } else {
+                preparedStatement.setNull(5, Types.BIGINT);
+            }
+            if (message.getType() != null) {
+                preparedStatement.setString(6, message.getType().getValue());
+            } else {
+                preparedStatement.setNull(5, Types.VARCHAR);
+            }
+            return execute(preparedStatement);
         } finally {
             commitObject("MSG.C", openedChat.getZoid(), openedChat.getZver());
         }
     }
 
-    private ExecStatus createCParty(String chatId, String chatVer, MSGParty party) throws SQLException {
+    private ExecStatus createCParty(String chatId, String chatVer, MSGParty party) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
@@ -251,14 +250,7 @@ public final class MSGDao extends BasicDAO {
                         .buildWithSemicolon()
                         .toString()
         );
-        ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
-        }
-        return status;
+        return execute(preparedStatement);
     }
 
     public void updateMessage(MSGMessage message) throws Exception {
@@ -283,13 +275,7 @@ public final class MSGDao extends BasicDAO {
                                 .buildWithSemicolon()
                                 .toString()
                 );
-                ExecStatus updatedStatus = new ExecStatus();
-                if (preparedStatement != null) {
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    updatedStatus.fillFromResultSet(resultSet);
-                    preparedStatement.close();
-                    resultSet.close();
-                }
+                execute(preparedStatement);
             }
         } finally {
             if (status != null) {
@@ -322,16 +308,7 @@ public final class MSGDao extends BasicDAO {
                             .buildWithSemicolon()
                             .toString()
             );
-            ExecStatus updatedStatus = new ExecStatus();
-            if (preparedStatement != null) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-                updatedStatus.fillFromResultSet(resultSet);
-                preparedStatement.close();
-                resultSet.close();
-            }
-            if (!updatedStatus.isOk()) {
-                throw new Exception("Update failed.");
-            }
+            execute(preparedStatement);
         } finally {
             if (status != null) {
                 commitObject("MSG.C", status.getZoid(), status.getZver());
@@ -345,7 +322,7 @@ public final class MSGDao extends BasicDAO {
         ExecStatus status = new ExecStatus();
         try {
             if (!openedObject.isOk()) {
-                throw new Exception("Problem while delete message");
+                throw new Exception(openedObject.getCaption());
             }
             PreparedStatement preparedStatement = connection.prepareStatement(
                     Query.builder()
@@ -360,15 +337,35 @@ public final class MSGDao extends BasicDAO {
                             .buildWithSemicolon()
                             .toString()
             );
-            if (preparedStatement != null) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-                status.fillFromResultSet(resultSet);
-                preparedStatement.close();
-                resultSet.close();
-                if (!status.isOk()) {
-                    throw new Exception("Problem while delete message");
-                }
+            status = execute(preparedStatement);
+        } finally {
+            commitObject("MSG.C", openedObject.getZoid(), openedObject.getZver());
+        }
+        return status;
+    }
+
+    public ExecStatus deleteChannel(Long zoid) throws Exception {
+        Connection connection = getPoolConnection().get();
+        ExecStatus openedObject = openObject("MSG.C", zoid);
+        ExecStatus status = null;
+        try {
+            if (!openedObject.isOk()) {
+                throw new Exception(openedObject.getCaption());
             }
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    Query.builder()
+                            .select()
+                            .add("MSG.delete_CChannel")
+                            .leftBracket()
+                            .add(String.format(
+                                    "%s, %s, null",
+                                    openedObject.getZoid(), openedObject.getZver()
+                            ))
+                            .rightBracket()
+                            .buildWithSemicolon()
+                            .toString()
+            );
+            status = execute(preparedStatement);
         } finally {
             commitObject("MSG.C", openedObject.getZoid(), openedObject.getZver());
         }

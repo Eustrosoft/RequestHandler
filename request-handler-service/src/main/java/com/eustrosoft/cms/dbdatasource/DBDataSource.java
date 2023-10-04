@@ -447,17 +447,17 @@ public class DBDataSource implements CMSDataSource {
         String parentPath = file.getParent();
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
 
-        FSDao FSDao = new FSDao(poolConnection);
-        ExecStatus open = FSDao.openObject("FS.F", parentZoid);
+        FSDao fsDao = new FSDao(poolConnection);
+        ExecStatus open = fsDao.openObject("FS.F", parentZoid);
         if (!open.isOk()) {
             throw new Exception(open.getCaption());
         }
-        ResultSet directoryByNameAndId = FSDao.getDirectoryByNameAndId(parentZoid, dirName);
+        ResultSet directoryByNameAndId = fsDao.getDirectoryByNameAndId(parentZoid, dirName);
         ExecStatus commit = null;
         try {
             directoryByNameAndId.next();
             long zrid = directoryByNameAndId.getLong(ZRID);
-            ExecStatus delete = FSDao.deleteFDir(
+            ExecStatus delete = fsDao.deleteFDir(
                     String.valueOf(open.getZoid()),
                     String.valueOf(zrid),
                     String.valueOf(open.getZver())
@@ -469,11 +469,11 @@ public class DBDataSource implements CMSDataSource {
             throw new Exception(ex.getMessage());
         } finally {
             // todo: rollback
-            commit = FSDao.commitObject("FS.F", parentZoid, open.getZver());
+            commit = fsDao.commitObject("FS.F", parentZoid, open.getZver());
             directoryByNameAndId.close();
         }
         if (commit == null) {
-            commit = FSDao.commitObject("FS.F", parentZoid, open.getZver());
+            commit = fsDao.commitObject("FS.F", parentZoid, open.getZver());
         }
         if (!commit.isOk()) {
             throw new Exception(open.getCaption());

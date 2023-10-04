@@ -9,26 +9,18 @@ package com.eustrosoft.core.tools;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.List;
 import java.util.Vector;
 
 public class QJson {
-    public static final int QJSON_TYPE_NULL = 0; //
-    public static final int QJSON_TYPE_OBJECT = 1;
-    public static final int QJSON_TYPE_ARRAY = 2;
-    public static final int QJSON_TYPE_PARSER = 3; //
-    public static final int QJSON_TYPE_VALUE = 4; // one-value container
+    // next 5 constants not used yet (2023-04-28) remove it?
     public static final int QJSON_ITEM_TYPE_NULL = 0; // null value
-    public static final int QJSON_ITEM_TYPE_QJSON = 1;
-    public static final int QJSON_ITEM_TYPE_STRING = 2;
-    public static final int QJSON_ITEM_TYPE_LONG = 3;
-    public static final int QJSON_ITEM_TYPE_NUMBER = 4; //literal (String) of number (for float,decimal and so on)
+    // QJSON_PRINT_MODE_COLUMN used only once (2023-04-28) mb remove it and print_mode field above?
     public static final int QJSON_PRINT_MODE_COLUMN = 0;
-    public static final int QJSON_PRINT_MODE_ROW = 1;
     // START PARSING SECTION
     public static final String SZ_CLASS_SPACE_ANY = " \n\r\t";
     public static final String SZ_CLASS_CRLF = "\n\r";
@@ -44,8 +36,21 @@ public class QJson {
     public static final String LITERAL_FALSE = "false";
     public static final String LITERAL_NULL = "null";
     private static final String[] CONTEXT_NAMES = {"", "GLOBAL", "OBJECT", "ARRAY", "ARRAY_VALUE", "NAME", "NAME_AFTER", "VALUE", "VALUE_STRING", "VALUE_LITERAL"};
+
+
+    public static final int QJSON_TYPE_NULL = 0; //
+    public static final int QJSON_TYPE_OBJECT = 1;
+    public static final int QJSON_TYPE_ARRAY = 2;
+    public static final int QJSON_TYPE_PARSER = 3; //
+    public static final int QJSON_TYPE_VALUE = 4; // one-value container
     private static final int CONTEXT_GLOBAL = 1;
+    public static final int QJSON_ITEM_TYPE_QJSON = 1;
+    public static final int QJSON_ITEM_TYPE_STRING = 2;
+    public static final int QJSON_ITEM_TYPE_LONG = 3;
+    public static final int QJSON_ITEM_TYPE_NUMBER = 4; //literal (String) of number (for float,decimal and so on)
     private static final int CONTEXT_OBJECT = 2;
+    public static final int QJSON_PRINT_MODE_ROW = 1;
+    //
     private static final int CONTEXT_ARRAY = 3;
     private static final int CONTEXT_ARRAY_VALUE = 4;
     private static final int CONTEXT_NAME = 5;
@@ -53,13 +58,23 @@ public class QJson {
     private static final int CONTEXT_VALUE = 7;
     private static final int CONTEXT_VALUE_STRING = 8;
     private static final int CONTEXT_VALUE_LITERAL = 9;
+    // static version fields & methods
+    private static int ver_major = 0;
+    private static int ver_minor = 6;
+    private static int ver_build = 2023042902;
+    private static String ver_status = "BETA3";
+    private static String COPYRIGHT = "Alex V Eustrop & EustroSoft.org 2009-2023";
+    private static String LICENSE = "BALES, MIT or BSD on your choice - see http://bales.eustrosoft.org";
+    private static String LICENSE_DETAIL = "you can do with this source code anything that you want while keeping the list of its authors until this code will be rewritten by you";
     // DEBUGGING METHODS SECTION
     private static Writer debug = null;
+    // instance fields : 4 words or 4*4=16 bytes for each instance at least
     private int type = QJSON_TYPE_OBJECT; // QJSON_TYPE_OBJECT,  QJSON_TYPE_ARRAY, QJSON_TYPE_PARSER?
     private int print_mode = QJSON_PRINT_MODE_COLUMN; // QJSON_PRINT_MODE_ROW, QJSON_PRINT_MODE_COLUMN
     private Vector names;
     private Vector items;
 
+    // Constructors
     public QJson() {
         clear();
         setType(QJSON_TYPE_OBJECT);
@@ -79,6 +94,26 @@ public class QJson {
     public QJson(String json) throws IOException {
         this(QJSON_TYPE_PARSER);
         this.parseJSONString(json);
+    }
+
+    public static int getVerMajor() {
+        return (ver_major);
+    }
+
+    public static int getVerMinor() {
+        return (ver_minor);
+    }
+
+    public static int getVerBuild() {
+        return (ver_build);
+    }
+
+    public static String getVerStatus() {
+        return (ver_status);
+    }
+
+    public static String getVer() {
+        return ("" + ver_major + "." + ver_minor + "-" + ver_status + "-b" + ver_build);
     }
 
     private static void not_implemented() {
@@ -141,6 +176,10 @@ public class QJson {
         return (new IOException("JSON parsing error: invalid character \"" + (char) c + "\"[" + c + "] for context : " + CONTEXT_NAMES[context]));
     }
 
+    public static IOException parseLiteralException(int context, String c) {
+        return (new IOException("JSON parsing error: invalid literal \"" + c + "\" for context : " + CONTEXT_NAMES[context]));
+    }
+
     // returns nexh character from json (normally one from stop_class or -1)
     public static int readJString(Reader json, StringBuffer sb) throws IOException {
         return (readJString(json, sb, "\""));
@@ -187,16 +226,18 @@ public class QJson {
 
     public static int readJLiteral(Reader json, StringBuffer sb) throws IOException {
         int c = json.read();
+        //dodebug("readJLiteral:" );
         while (c != -1) {
             if (isCharInClass(c, SZ_CLASS_LITERAL_STOP)) break;
             if (!isCharInClass(c, SZ_CLASS_LITERAL)) throw (parseException(CONTEXT_VALUE_LITERAL, c));
             sb.append((char) c);
             c = json.read();
         }
+        //dodebug("readJLiteral:exit" );
         return (c);
     } //readLiteral
 
-    public static Object literal2value(String literal) {
+    public static Object literal2value(String literal) throws IOException {
         if (LITERAL_NULL.equals(literal)) return (null);
         if (LITERAL_TRUE.equals(literal)) return (Boolean.TRUE);
         if (LITERAL_FALSE.equals(literal)) return (Boolean.FALSE);
@@ -211,7 +252,8 @@ public class QJson {
         } catch (NumberFormatException nfe) {
         } // ignore it and step forward
 //if(!isCharInClass(literal,SZ_CLASS_LITERAL_NUMBER) throw(parseException(CONTEXT_VALUE_LITERAL,c)); //sketch
-        return (literal);
+        throw (parseLiteralException(CONTEXT_VALUE_LITERAL, literal)); //
+//return(literal);
     } // literal2value(String literal)
 
     public static void setDebug(Writer debug_writer) {
@@ -228,25 +270,90 @@ public class QJson {
         }
     }
 
-    public static void startExecuting()
-            throws IOException {
+    /**
+     * read in parse it and write result to out
+     */
+    public static void testStreamJsonParsing(Reader in, Writer out) throws IOException {
         QJson json = new QJson();
-        Writer out_writer = new OutputStreamWriter(System.out);
+        PrintWriter out_writer = new PrintWriter(out);
         IOException ioe = null;
 
-        System.out.println("Hello type test JSON here:");
-        setDebug(out_writer);
+//json.addItem("start_parsing", "start");
+
+        System.out.println("// TEST_PARSING type test JSON here:");
+        json.setDebug(out_writer);
         try {
-            json.parseJSONReader(new InputStreamReader(System.in));
+            json.parseJSONReader(in);
         } catch (IOException e) {
             ioe = e;
         }
-        System.out.println("result:");
+//json.addItem("end_parsing", "end");
+        System.out.println("//result:");
         json.writeJSONString(out_writer, 1);
-        System.out.println();
+        System.out.println("");
         if (ioe != null) {
-            System.out.println(ioe);
-        } else System.out.println("Ok!");
+            System.out.println("//" + ioe);
+        } else System.out.println("//Ok!");
+// try decode JSON built by QJson with QJson parser
+        try {
+            System.out.print("//Reparse just built json : ");
+            QJson new_json = new QJson(json.toString());
+            System.out.println("//Ok!");
+        } catch (IOException e) {
+            System.out.println("// " + e);
+        }
+    } //testStreamJsonParsing
+
+    public static void testConstructStreamJson(Writer out) throws IOException {
+        QJson json = new QJson();
+        PrintWriter out_writer = new PrintWriter(out);
+        System.out.println("// TEST_CONSTUCTING :");
+        json.addItem("r", "r");
+        json.addItem("r", new Double(1.1));
+        json.addItem("r", new Long(1));
+        json.addItem("r", json.getItem("r")); // must be last added "r"
+        QJson json_object = new QJson();
+        json_object.addItem("rr", "rr");
+        json_object.addItem("rr2", "rr2");
+        json.addItem("o", json_object);
+        QJson json_array = new QJson(QJSON_TYPE_ARRAY);
+        json_array.addItem("o");
+        json_array.addItem("o");
+        json_array.addItem(new Long(1));
+        json_array.addItem(new Double(1.1));
+//json_array.addItem(json_array); // it is joke ;)
+        json.addItem("a", json_array);
+        json.addItem("a", json_array);
+        json.addItem("a", json_array);
+        json.addItem("a", json_array);
+        json.addItem("a2", new QJson(QJSON_TYPE_ARRAY));
+        ((QJson) json.getItem("a2")).addItem(new QJson(QJSON_TYPE_ARRAY));
+        ((QJson) json.getItem("a2")).addItem(new QJson(QJSON_TYPE_ARRAY));
+        ((QJson) json.getItem("a2")).addItem(new QJson(QJSON_TYPE_ARRAY));
+        json.addItem("b", new Boolean(true));
+        json.addItem("b", false);
+        json.addItem("n", null);
+        json.addItem("i", 1);
+        json.addItem("l", 1L);
+        json.addItem("f", 1.1);
+        json.addItem("b", (byte) 0xFF);
+        json.addItem("s", (short) 0xFF);
+        json.addItem("bigdec", new java.math.BigDecimal("1234567890123456789.12345678"));
+        Object[] objects = new Object[3];
+        objects[0] = "test";
+        objects[1] = 1;
+        objects[2] = 1.1;
+        json.addItemArray("array", objects);
+//
+        json.writeJSONString(out_writer, 1);
+
+//json_array.writeJSONString(out_writer,1);
+    }
+
+    public static void main(String[] args) throws IOException {
+        System.out.println("// QJson (" + getVer() + ") ");
+        testConstructStreamJson(new OutputStreamWriter(System.out));
+        testStreamJsonParsing(new InputStreamReader(System.in), new OutputStreamWriter(System.out));
     }
 
     public void clear() {
@@ -263,10 +370,6 @@ public class QJson {
         return (name);
     } // can be used to return String object.equals(name) from dictionary (to minimize memory usage)
 
-    private String parseArrayObjectToString(Object object) {
-        return object.toString();
-    }
-
     public int size() {
         return (items.size());
     }
@@ -281,9 +384,9 @@ public class QJson {
         items.add(value2qvalue(value));
     }
 
-    public void addItems(String name, List value) {
+    public void addItemArray(String name, Object[] values) {
         names.add(name2qname(name));
-        items.add(value2qvalue(value));
+        items.add(newQJsonFromArray(values));
     }
 
     public void setItem(String name, Object value) {
@@ -309,12 +412,12 @@ public class QJson {
     }
 
     public int getNameIndex(String name) {
-        return (names.indexOf(name));
-    }
+        return (names.lastIndexOf(name));
+    } // last added element with the same name used
 
     public String[] listNames() {
         not_implemented();
-        return (null);
+        return(null);
     }
 
     public Object getItem(String name) {
@@ -326,8 +429,7 @@ public class QJson {
     }
 
     public int getItemType(String name) {
-        not_implemented();
-        return (-1);
+        not_implemented();return (-1);
     }
 
     public int getItemType(int number) {
@@ -339,41 +441,39 @@ public class QJson {
         try {
             return ((String) getItem(name));
         } catch (Exception ex) {
-            return null; // TODO
+            return null;
         }
     }
 
     public String getItemString(int index) {
-        try {
-            return ((String) getItem(index));
-        } catch (Exception ex) {
-            return null; // TODO
-        }
+        return ((String) getItem(index));
     }
 
     public Long getItemLong(String name) {
-        return ((Long) getItem(name));
+        try {
+            return ((Long) getItem(name));
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public Long getItemLong(int index) {
         return ((Long) getItem(index));
     }
 
-    public Integer getItemInteger(String name) {
-        return ((Integer) getItem(name));
-    }
-
-    public Integer getItemInteger(int index) {
-        return ((Integer) getItem(index));
-    }
-
     public QJson getItemQJson(String name) {
-        return ((QJson) getItem(name));
+        try {
+            return ((QJson) getItem(name));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public QJson getItemQJson(int index) {
         return ((QJson) getItem(index));
     }
+
+// END PARSING SECTION
 
     //
     public String toString() {
@@ -383,8 +483,6 @@ public class QJson {
     public String toJSONString() {
         return (toJSONString(1));
     }
-
-// END PARSING SECTION
 
     public String toJSONString(int level) {
         StringWriter sbw = new StringWriter();
@@ -430,7 +528,7 @@ public class QJson {
         out.write(close_item);
         out.write(close_char);
         out.flush();
-        return (0);
+        return(0);
     } // writeJSONString(Writer out)
 
     private void print_item(Writer out, int index, int level)
@@ -443,6 +541,25 @@ public class QJson {
         if (item == null) {
             out.write("null");
             return;
+        }
+        // next operations sorted on probability of occurance
+        try {
+            String str = (String) item;
+            write_jstr(out, str);
+            return;
+        } catch (Exception e) {
+        }
+        try {
+            Long num = (Long) item;
+            write_jlit(out, num.toString());
+            return;
+        } catch (Exception e) {
+        }
+        try {
+            Double num = (Double) item;
+            write_jlit(out, num.toString());
+            return;
+        } catch (Exception e) {
         }
         QJson json = null;
         try {
@@ -460,27 +577,36 @@ public class QJson {
         } catch (Exception e) {
         }
         try {
-            Long num = (Long) item;
+            Integer num = (Integer) item;
             write_jlit(out, num.toString());
             return;
         } catch (Exception e) {
         }
         try {
-            Double num = (Double) item;
+            Short num = (Short) item;
             write_jlit(out, num.toString());
             return;
         } catch (Exception e) {
         }
-        write_jstr(out, (String) (item));
+        try {
+            Byte num = (Byte) item;
+            write_jlit(out, num.toString());
+            return;
+        } catch (Exception e) {
+        }
+        try {
+            java.math.BigDecimal num = (java.math.BigDecimal) item;
+            write_jstr(out, num.toString());
+            return;
+        } catch (Exception e) {
+        }
+        write_jstr(out, item.toString()); // any other data types converted to string
     } // //print_item(out,i);
 
     public void parseJSONString(String json) throws IOException {
         StringReader sr = new StringReader(json);
-        try {
-            parseJSONReader(sr);
-        } catch (IOException ioe) {
-            addItem("exception", ioe.toString());
-        }
+        //try{ parseJSONReader(sr); } catch(IOException ioe)  {addItem("exception",ioe.toString());}
+        parseJSONReader(sr);
     } // parseJSONString
 
     public int parseJSONReader(Reader json) throws IOException {
@@ -578,11 +704,11 @@ public class QJson {
             //dodebug("Continue switch on:" + CONTEXT_NAMES[context] + " with c=" + c);
             //c = json.read();
         } // while( c != -1 )
-        return (c);
+        return(c);
     } // parseJSONReader()
 
     // return next string token from stream
-    // word, spaces, string, crlf, {, [, },], \
+// word, spaces, string, crlf, {, [, },], \
     private int skipSpaceAny(Reader json)
             throws IOException {
         int c = json.read();
@@ -609,4 +735,24 @@ public class QJson {
     public void setPrintMode(int mode) {
         print_mode = mode;
     }
-}
+
+    // QJson as Factory
+// override this methods in children classes to use your implementation of QJson
+// this code sketch reserved to next step of QJson implementation refactoring&testing
+// using separate children classes
+/*
+public QJson newQJson() { return(new QJson()); }
+public QJson newQJson(int type) { return(new QJson(type)); }
+public QJson newQJson(int type, int print_mode) { return(new QJson(type, print_mode)); }
+public QJson newQJson(String json) { return(new QJson(json)); }
+*/
+    public QJson newQJsonFromArray(Object[] values) {
+        QJson json = new QJson(QJSON_TYPE_ARRAY);
+        if (values == null) return (json);
+        for (int i = 0; i < values.length; i++) {
+            json.addItem(values[i]);
+        }
+        return (json);
+    }
+
+} //QJson

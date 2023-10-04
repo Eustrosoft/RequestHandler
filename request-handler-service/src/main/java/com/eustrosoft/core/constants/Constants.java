@@ -55,11 +55,14 @@ public final class Constants {
     public static final String REQUEST_MOVE = "move";
     public static final String REQUEST_COPY = "copy";
     public static final String REQUEST_DELETE = "delete";
+    public static final String REQUEST_DELETE_MSG = "delete_msg";
+    public static final String REQUEST_DELETE_CH = "delete_ch";
     public static final String REQUEST_DOWNLOAD = "download";
     public static final String REQUEST_RENAME = "rename";
 
     public static final Integer SESSION_TIMEOUT = 100 * 60;
 
+    public static final String UNKNOWN = "Unknown";
     // ERR codes
     public static final Short ERR_UNAUTHORIZED = 401;
     public static final Short ERR_SERVER = 500;

@@ -38,9 +38,11 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_CHANGE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CHAT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CHATS;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_CH;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_MSG;
 import static com.eustrosoft.core.constants.Constants.REQUEST_EDIT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_SEND;
+import static com.eustrosoft.core.constants.Constants.UNKNOWN;
 import static com.eustrosoft.core.constants.DBConstants.CONTENT;
 import static com.eustrosoft.core.constants.DBConstants.MSG_ID;
 import static com.eustrosoft.core.constants.DBConstants.TYPE;
@@ -71,7 +73,7 @@ public final class MSGHandler implements Handler {
         // TODO
         switch (requestType) {
             case REQUEST_CHATS:
-                List<MSGChannel> chats = getChats();
+                List<MSGChannel> chats = getChats(params.getStatuses());
                 msgResponseBlock.setChats(chats);
                 break;
             case REQUEST_CHAT:
@@ -94,8 +96,11 @@ public final class MSGHandler implements Handler {
                         params.getReference(), MSGMessageType.of(params.getType())
                 );
                 break;
-            case REQUEST_DELETE:
+            case REQUEST_DELETE_MSG:
                 deleteMessage(params.getZoid(), params.getZrid());
+                break;
+            case REQUEST_DELETE_CH:
+                deleteChannel(params.getZoid());
                 break;
             case REQUEST_CHANGE:
                 changeChannelStatus(
@@ -111,10 +116,10 @@ public final class MSGHandler implements Handler {
         return msgResponseBlock;
     }
 
-    public List<MSGChannel> getChats() throws SQLException {
+    public List<MSGChannel> getChats(List<String> statuses) throws SQLException {
         MSGDao functions = new MSGDao(poolConnection);
         List<MSGChannel> channels = new ArrayList<>();
-        ResultSet chatsResultSet = functions.getChats();
+        ResultSet chatsResultSet = functions.getChats(MSGChannelStatus.of(statuses));
         if (chatsResultSet != null) {
             channels = processResultSetToMSGChannels(chatsResultSet);
             chatsResultSet.close();
@@ -122,7 +127,7 @@ public final class MSGHandler implements Handler {
         return channels;
     }
 
-    public List<MSGMessage> getChatMessages(Long chatId) throws SQLException {
+    public List<MSGMessage> getChatMessages(Long chatId) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         List<MSGMessage> messages = new ArrayList<>();
         ResultSet chatsResultSet = functions.getMessages(chatId);
@@ -152,7 +157,7 @@ public final class MSGHandler implements Handler {
         return chat.getZoid().toString();
     }
 
-    public String createMessage(MsgParams params) throws SQLException {
+    public String createMessage(MsgParams params) throws Exception {
         if (params.getContent() == null || params.getContent().isEmpty()) {
             throw new IllegalArgumentException("Message content can not be null or empty");
         }
@@ -176,6 +181,11 @@ public final class MSGHandler implements Handler {
         functions.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
     }
 
+    private void deleteChannel(Long zoid) throws Exception {
+        MSGDao functions = new MSGDao(poolConnection);
+        functions.deleteChannel(zoid);
+    }
+
     public void deleteMessage(Long chatId, Long messageId) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         functions.deleteMessage(chatId, messageId);
@@ -186,41 +196,40 @@ public final class MSGHandler implements Handler {
         functions.updateChannel(new MSGChannel(zoid, null, zrid, content, docId, status));
     }
 
-    private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
+    private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) throws Exception {
         List<MSGMessage> objects = new ArrayList<>();
         Map<Long, User> userMapping = new HashMap<>();
         SamDAO samDAO = new SamDAO(poolConnection);
-        try {
-            while (resultSet.next()) {
+        while (resultSet.next()) {
+            Long zoid = resultSet.getLong(ZOID);
+            Long zver = resultSet.getLong(ZVER);
+            Long zrid = resultSet.getLong(ZRID);
+            String content = resultSet.getString(CONTENT);
+            Long answerId = resultSet.getLong(MSG_ID);
+            String messageType = resultSet.getString(TYPE);
+            Long userId = resultSet.getLong(ZUID);
+            Timestamp created = resultSet.getTimestamp(ZDATE); // todo
+            User user = null;
+            if (!userMapping.containsKey(userId)) {
+                user = new User();
                 try {
-                    Long zoid = resultSet.getLong(ZOID);
-                    Long zver = resultSet.getLong(ZVER);
-                    Long zrid = resultSet.getLong(ZRID);
-                    String content = resultSet.getString(CONTENT);
-                    Long answerId = resultSet.getLong(MSG_ID);
-                    String messageType = resultSet.getString(TYPE);
-                    Long userId = resultSet.getLong(ZUID);
-                    Timestamp created = resultSet.getTimestamp(ZDATE); // todo
-                    User user = null;
-                    if (!userMapping.containsKey(userId)) {
-                        user = new User();
-                        user.fillFromResultSet(samDAO.getUserResultSetById(userId));
-                        userMapping.put(userId, user);
-                    } else {
-                        user = userMapping.get(userId);
-                    }
-                    MSGMessage msgChannel = new MSGMessage(
-                            zoid, zver, zrid, new DateTimeZone(created),
-                            content, answerId, MSGMessageType.of(messageType)
-                    );
-                    msgChannel.setUser(UserDTO.fromUser(user));
-                    objects.add(msgChannel);
+                    user.fillFromResultSet(samDAO.getUserResultSetById(userId));
+                    userMapping.put(userId, user);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    user.setId(userId);
+                    user.setUsername(UNKNOWN);
+                    user.setFullName(UNKNOWN);
+                    userMapping.put(userId, user);
                 }
+            } else {
+                user = userMapping.get(userId);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            MSGMessage msgChannel = new MSGMessage(
+                    zoid, zver, zrid, new DateTimeZone(created),
+                    content, answerId, MSGMessageType.of(messageType)
+            );
+            msgChannel.setUser(UserDTO.fromUser(user));
+            objects.add(msgChannel);
         }
         return objects;
     }

@@ -42,11 +42,13 @@ public class BasicDAO {
     // todo create throwing err if opened
     @SneakyThrows
     public ExecStatus openObject(String type, Long zoid) {
-        return openObject(type, zoid, "null");
+        return openObject(type, zoid, (Long) null);
     }
 
+
     @SneakyThrows
-    public ExecStatus openObject(String type, Long zoid, String zver) {
+    @Deprecated
+    public ExecStatus openObject(String type, Long zoid, Long zver) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -61,14 +63,35 @@ public class BasicDAO {
                         .buildWithSemicolon()
                         .toString()
         );
-        ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
+        return execute(preparedStatement);
+    }
+
+    @SneakyThrows
+    @Deprecated
+    public ExecStatus openObject(String type, Long zoid, String zver) {
+        if (zver.equalsIgnoreCase("null")) {
+            return openObject(type, zoid, (Long) null);
         }
-        return status;
+        return openObject(type, zoid, Long.valueOf(zver));
+    }
+
+    @SneakyThrows
+    public ExecStatus deleteObject(String type, Long zoid, Long zver) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .add("TIS.delete_object")
+                        .leftBracket()
+                        .add(String.format(
+                                "'%s', %s, %s",
+                                type, zoid, zver
+                        ))
+                        .rightBracket()
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        return execute(preparedStatement);
     }
 
     @SneakyThrows
@@ -92,14 +115,7 @@ public class BasicDAO {
                         .buildWithSemicolon()
                         .toString()
         );
-        ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
-        }
-        return status;
+        return execute(preparedStatement);
     }
 
     @SneakyThrows
@@ -120,12 +136,20 @@ public class BasicDAO {
                         .buildWithSemicolon()
                         .toString()
         );
+        return execute(preparedStatement);
+    }
+
+    protected ExecStatus execute(PreparedStatement preparedStatement) throws Exception {
+        if (preparedStatement == null) {
+            throw new NullPointerException("Prepared Statement was null");
+        }
+        ResultSet resultSet = preparedStatement.executeQuery();
         ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
+        status.fillFromResultSet(resultSet);
+        preparedStatement.close();
+        resultSet.close();
+        if (!status.isOk()) {
+            throw new Exception(status.getCaption());
         }
         return status;
     }
