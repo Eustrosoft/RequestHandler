@@ -37,12 +37,15 @@ public class User extends DBObject {
 
     @Override
     public <T extends DBObject> void fillFromResultSet(ResultSet resultSet) throws SQLException {
-        resultSet.next();
-        super.fillFromResultSet(resultSet);
-        setFullName(resultSet.getString("full_name"));
-        setUsername(resultSet.getString("login"));
-        setDbUser(resultSet.getString("db_user"));
-        setId(resultSet.getLong("id"));
-        resultSet.close();
+        try {
+            resultSet.next();
+            super.fillFromResultSet(resultSet);
+            setFullName(resultSet.getString("full_name"));
+            setUsername(resultSet.getString("login"));
+            setDbUser(resultSet.getString("db_user"));
+            setId(resultSet.getLong("id"));
+        } finally {
+            resultSet.close();
+        }
     }
 }
