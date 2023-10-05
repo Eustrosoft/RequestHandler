@@ -217,8 +217,8 @@ public final class MSGHandler implements Handler {
                     userMapping.put(userId, user);
                 } catch (Exception ex) {
                     user.setId(userId);
-                    user.setUsername(UNKNOWN);
-                    user.setFullName(UNKNOWN);
+                    user.setUsername(String.format("%s_%d", UNKNOWN, userId));
+                    user.setFullName(String.format("%s_%d", UNKNOWN, userId));
                     userMapping.put(userId, user);
                 }
             } else {
