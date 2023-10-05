@@ -17,6 +17,7 @@ import java.util.List;
 public class MsgParams {
     private Long zoid;
     private Long zrid;
+    private Long zver;
     private String status;
     private String subject;
     private String content;
@@ -29,6 +30,7 @@ public class MsgParams {
         MsgParams params = new MsgParams();
         params.setZoid(getLongOrNull(qJson, "zoid"));
         params.setZrid(getLongOrNull(qJson, "zrid"));
+        params.setZver(getLongOrNull(qJson, "zver"));
         params.setStatus(qJson.getItemString("status"));
         params.setSubject(qJson.getItemString("subject"));
         params.setContent(qJson.getItemString("content"));

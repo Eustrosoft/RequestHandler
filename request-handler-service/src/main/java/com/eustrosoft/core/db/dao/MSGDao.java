@@ -344,7 +344,7 @@ public final class MSGDao extends BasicDAO {
         return status;
     }
 
-    public ExecStatus deleteChannel(Long zoid) throws Exception {
-        return deleteObject("MSG.C", zoid, 1L);
+    public ExecStatus deleteChannel(Long zoid, Long zver) throws Exception {
+        return deleteObject("MSG.C", zoid, zver);
     }
 }

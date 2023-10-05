@@ -100,7 +100,7 @@ public final class MSGHandler implements Handler {
                 deleteMessage(params.getZoid(), params.getZrid());
                 break;
             case REQUEST_DELETE_CH:
-                deleteChannel(params.getZoid());
+                deleteChannel(params.getZoid(), params.getZver());
                 break;
             case REQUEST_CHANGE:
                 changeChannelStatus(
@@ -181,9 +181,9 @@ public final class MSGHandler implements Handler {
         functions.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
     }
 
-    private void deleteChannel(Long zoid) throws Exception {
+    private void deleteChannel(Long zoid, Long zver) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
-        functions.deleteChannel(zoid);
+        functions.deleteChannel(zoid, zver);
     }
 
     public void deleteMessage(Long chatId, Long messageId) throws Exception {
