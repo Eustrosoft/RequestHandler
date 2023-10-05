@@ -139,7 +139,8 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
-    protected ExecStatus execute(PreparedStatement preparedStatement) throws Exception {
+    @SneakyThrows
+    protected ExecStatus execute(PreparedStatement preparedStatement) {
         if (preparedStatement == null) {
             throw new NullPointerException("Prepared Statement was null");
         }

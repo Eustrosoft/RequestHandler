@@ -345,30 +345,6 @@ public final class MSGDao extends BasicDAO {
     }
 
     public ExecStatus deleteChannel(Long zoid) throws Exception {
-        Connection connection = getPoolConnection().get();
-        ExecStatus openedObject = openObject("MSG.C", zoid);
-        ExecStatus status = null;
-        try {
-            if (!openedObject.isOk()) {
-                throw new Exception(openedObject.getCaption());
-            }
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    Query.builder()
-                            .select()
-                            .add("MSG.delete_CChannel")
-                            .leftBracket()
-                            .add(String.format(
-                                    "%s, %s, null",
-                                    openedObject.getZoid(), openedObject.getZver()
-                            ))
-                            .rightBracket()
-                            .buildWithSemicolon()
-                            .toString()
-            );
-            status = execute(preparedStatement);
-        } finally {
-            commitObject("MSG.C", openedObject.getZoid(), openedObject.getZver());
-        }
-        return status;
+        return deleteObject("MSG.C", zoid, 1L);
     }
 }
