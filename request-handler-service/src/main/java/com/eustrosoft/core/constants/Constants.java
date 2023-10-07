@@ -12,7 +12,9 @@ public final class Constants {
     public static final String REQUEST = "r";
     public static final String TIMEOUT = "t";
     public static final String PARAMETERS = "parameters";
+    @Deprecated
     public static final String QTISEND = "qend";
+    @Deprecated
     public static final String QTISVER = "qver";
 
     public static final String SUBSYSTEM_SQL = "sql";
@@ -22,6 +24,7 @@ public final class Constants {
     public static final String SUBSYSTEM_LOGIN = "login";
     public static final String SUBSYSTEM_MSG = "msg";
     public static final String SUBSYSTEM_SAM = "sam";
+    public static final String SUBSYSTEM_DIC = "dic";
 
     public static final String REQUEST_PING = "ping";
     // Sql subsystem
@@ -38,6 +41,9 @@ public final class Constants {
     // Login subsystem
     public static final String REQUEST_LOGIN = "login";
     public static final String REQUEST_LOGOUT = "logout";
+    // Dic subsystem
+    public static final String REQUEST_VALUES = "values";
+    public static final String REQUEST_DICS = "dics";
 
     // TIS Subsystem
     public static final String REQUEST_USER_LOGIN = "user_login";
@@ -60,9 +66,10 @@ public final class Constants {
     public static final String REQUEST_DOWNLOAD = "download";
     public static final String REQUEST_RENAME = "rename";
 
+    // Other data
     public static final Integer SESSION_TIMEOUT = 100 * 60;
-
     public static final String UNKNOWN = "Unknown";
+
     // ERR codes
     public static final Short ERR_UNAUTHORIZED = 401;
     public static final Short ERR_SERVER = 500;

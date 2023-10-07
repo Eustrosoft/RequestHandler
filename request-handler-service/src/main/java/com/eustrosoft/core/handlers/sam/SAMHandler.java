@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 import static com.eustrosoft.core.constants.Constants.ERR_OK;
+import static com.eustrosoft.core.constants.Constants.ERR_UNEXPECTED;
 import static com.eustrosoft.core.constants.Constants.MSG_OK;
 import static com.eustrosoft.core.constants.Constants.MSG_REQUEST_TYPE_NOT_SUPPORTED;
 import static com.eustrosoft.core.constants.Constants.REQUEST_USER_AVAILABLE_SLVL;
@@ -36,33 +37,33 @@ public final class SAMHandler implements Handler {
         this.poolConnection = session.getConnection();
         SAMRequestBlock samRequestBlock = (SAMRequestBlock) requestBlock;
         String requestType = samRequestBlock.getR();
-        SAMResponseBlock SAMResponseBLock = new SAMResponseBlock();
-        SAMResponseBLock.setE(ERR_OK);
-        SAMResponseBLock.setErrMsg(MSG_OK);
-        SAMResponseBLock.setResponseType(requestType);
+        SAMResponseBlock respBlock = new SAMResponseBlock();
+        respBlock.setResponseType(requestType);
 
         SamDAO dao = new SamDAO(poolConnection);
         switch (requestType) {
             case REQUEST_USER_ID:
-                SAMResponseBLock.setData(dao.getUserId().toString());
+                respBlock.setData(dao.getUserId().toString());
                 break;
             case REQUEST_USER_LOGIN:
-                SAMResponseBLock.setData(dao.getUserLogin());
+                respBlock.setData(dao.getUserLogin());
                 break;
             case REQUEST_USER_SLVL:
-                SAMResponseBLock.setData(dao.getUserSLvl().toString());
+                respBlock.setData(dao.getUserSLvl().toString());
                 break;
             case REQUEST_USER_AVAILABLE_SLVL:
-                SAMResponseBLock.setData(Arrays.toString(dao.getUserAvailableSlvl()));
+                respBlock.setData(Arrays.toString(dao.getUserAvailableSlvl()));
                 break;
             case REQUEST_USER_LANG:
-                SAMResponseBLock.setData(dao.getUserLang());
+                respBlock.setData(dao.getUserLang());
                 break;
             default:
-                SAMResponseBLock.setE(ERR_OK);
-                SAMResponseBLock.setErrMsg(MSG_REQUEST_TYPE_NOT_SUPPORTED);
+                respBlock.setE(ERR_UNEXPECTED);
+                respBlock.setErrMsg(MSG_REQUEST_TYPE_NOT_SUPPORTED);
                 break;
         }
-        return SAMResponseBLock;
+        respBlock.setE(ERR_OK);
+        respBlock.setErrMsg(MSG_OK);
+        return respBlock;
     }
 }
