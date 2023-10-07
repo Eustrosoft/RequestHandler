@@ -84,8 +84,8 @@ public class BasicDAO {
                         .add("TIS.delete_object")
                         .leftBracket()
                         .add(String.format(
-                                "'%s', %s, %s",
-                                type, zoid, zver
+                                "'%s', %s, null",
+                                type, zoid
                         ))
                         .rightBracket()
                         .buildWithSemicolon()

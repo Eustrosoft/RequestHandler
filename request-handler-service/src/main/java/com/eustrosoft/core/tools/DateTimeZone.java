@@ -2,7 +2,6 @@ package com.eustrosoft.core.tools;
 
 import lombok.Getter;
 import lombok.Setter;
-import sun.util.calendar.CalendarDate;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -40,12 +39,6 @@ public class DateTimeZone {
 
     public DateTimeZone(Timestamp date) throws ParseException {
         this.stringDate = sdf.format(date.getTime());
-        this.utilDate = sdf.parse(this.stringDate);
-        this.sqlDate = new Timestamp(this.utilDate.getTime());
-    }
-
-    public DateTimeZone(CalendarDate date) throws ParseException {
-        this.stringDate = sdf.format(date.toString());
         this.utilDate = sdf.parse(this.stringDate);
         this.sqlDate = new Timestamp(this.utilDate.getTime());
     }

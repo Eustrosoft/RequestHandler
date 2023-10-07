@@ -38,6 +38,7 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_CHANGE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CHAT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CHATS;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_CH;
 import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_MSG;
 import static com.eustrosoft.core.constants.Constants.REQUEST_EDIT;
@@ -73,8 +74,8 @@ public final class MSGHandler implements Handler {
         // TODO
         switch (requestType) {
             case REQUEST_CHATS:
-                List<MSGChannel> chats = getChats(params.getStatuses());
-                msgResponseBlock.setChats(chats);
+                List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
+                msgResponseBlock.setChats(getChats(statuses));
                 break;
             case REQUEST_CHAT:
                 List<MSGMessage> chatMessages = getChatMessages(params.getZoid());
@@ -97,6 +98,7 @@ public final class MSGHandler implements Handler {
                 );
                 break;
             case REQUEST_DELETE_MSG:
+            case REQUEST_DELETE:
                 deleteMessage(params.getZoid(), params.getZrid());
                 break;
             case REQUEST_DELETE_CH:
