@@ -36,9 +36,9 @@ public final class DICHandler implements Handler {
         String requestType = dicRequestBlock.getR();
         switch (requestType) {
             case REQUEST_VALUES:
-                String name = dicRequestBlock.getName();
+                String name = dicRequestBlock.getDic();
                 if (name == null || name.isEmpty()) {
-                    throw new Exception("Name in values request was incorrect");
+                    throw new Exception("Dic in values request was incorrect");
                 }
                 respBlock.setValues(dao.getDictionaryValues(name));
                 break;

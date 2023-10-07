@@ -20,7 +20,7 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_DIC;
 @Setter
 public class DICRequestBlock extends BasicRequest {
     private String id;
-    private String name;
+    private String dic;
 
     public DICRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
@@ -48,6 +48,6 @@ public class DICRequestBlock extends BasicRequest {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
         }
-        setName(qJson.getItemString("name"));
+        setDic(qJson.getItemString("dic"));
     }
 }
