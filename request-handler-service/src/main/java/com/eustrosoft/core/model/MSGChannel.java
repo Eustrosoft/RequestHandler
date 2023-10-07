@@ -1,6 +1,5 @@
 package com.eustrosoft.core.model;
 
-import com.eustrosoft.core.model.interfaces.Updatable;
 import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +17,7 @@ import static com.eustrosoft.core.constants.DBConstants.SUBJECT;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MSGChannel extends DBObject implements Updatable {
+public class MSGChannel extends DBObject {
     private String subject;
     private Long documentId;
     private MSGChannelStatus status;
@@ -49,17 +48,5 @@ public class MSGChannel extends DBObject implements Updatable {
         if (this.status == null) {
             this.status = otherChannel.getStatus();
         }
-    }
-
-    public String toUpdateString() {
-        return String.format(
-                "%s, %s, %s, '%s', '%s', %s",
-                getZoid(),
-                getZver(),
-                getZrid(),
-                subject,
-                status == null ? "null" : status.getValue(),
-                documentId
-        );
     }
 }

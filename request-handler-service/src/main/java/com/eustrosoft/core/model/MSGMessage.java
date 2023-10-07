@@ -1,7 +1,6 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.dto.UserDTO;
-import com.eustrosoft.core.model.interfaces.Updatable;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.tools.DateTimeZone;
 import lombok.AllArgsConstructor;
@@ -20,7 +19,7 @@ import static com.eustrosoft.core.constants.DBConstants.TYPE;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MSGMessage extends DBObject implements Updatable {
+public class MSGMessage extends DBObject {
     private String content;
     private Long answerId;
     private MSGMessageType type;
@@ -65,17 +64,5 @@ public class MSGMessage extends DBObject implements Updatable {
         if (this.type == null) {
             this.type = otherMessage.getType();
         }
-    }
-
-    public String toUpdateString() {
-        return String.format(
-                "%s, %s, %s, '%s', %s, %s",
-                getZoid(),
-                getZver(),
-                getZrid(),
-                content,
-                answerId,
-                type == null ? "null" : String.format("'%s'", type.getValue())
-        );
     }
 }

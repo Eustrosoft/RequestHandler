@@ -7,7 +7,6 @@
 package com.eustrosoft.core.db.dao;
 
 import com.eustrosoft.core.db.ExecStatus;
-import com.eustrosoft.core.db.Query;
 import com.eustrosoft.core.model.MSGChannel;
 import com.eustrosoft.core.model.MSGMessage;
 import com.eustrosoft.core.model.MSGParty;
@@ -23,8 +22,8 @@ import java.sql.Types;
 import java.util.List;
 
 import static com.eustrosoft.core.constants.DBConstants.STATUS;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
-import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
 
 public final class MSGDao extends BasicDAO {
 
@@ -35,15 +34,9 @@ public final class MSGDao extends BasicDAO {
     public MSGChannel getChat(Long zoid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("MSG.V_CChannel")
-                        .where(String.format("%s = %d", ZOID, zoid))
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT * FROM MSG.V_CChannel WHERE ZOID = ?"
         );
+        setLongOrNull(preparedStatement, 1, zoid);
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             MSGChannel channel = new MSGChannel();
@@ -60,16 +53,12 @@ public final class MSGDao extends BasicDAO {
     public ResultSet getChats(List<MSGChannelStatus> statuses) throws SQLException {
         Connection connection = getPoolConnection().get();
         String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
-        Query.Builder query = Query.builder()
-                .select()
-                .all()
-                .from()
-                .add("MSG.V_CChannel");
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM MSG.V_CChannel");
         if (condition != null && !condition.isEmpty()) {
-            query.where(condition);
+            queryBuilder.append(" WHERE ").append(condition);
         }
         PreparedStatement preparedStatement = connection.prepareStatement(
-                query.buildWithSemicolon().toString()
+                queryBuilder.toString()
         );
         if (preparedStatement != null) {
             return preparedStatement.executeQuery();
@@ -77,34 +66,22 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    public ExecStatus createChat(MSGChannel channel, Integer slvl) throws Exception {
-        // ??? todo zsid
+    public ExecStatus createChat(MSGChannel channel, Short slvl) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
-        ExecStatus objectInScope = createObjectInScope("MSG.C", samDAO.getUserSid(), slvl == null ? "null" : slvl.toString());
+        ExecStatus objectInScope = createObjectInScope("MSG.C", samDAO.getUserSid(), slvl);
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("MSG.create_cchannel")
-                        .leftBracket()
-                        .add(String.format(
-                                //v_zoid bigint, v_zver bigint, v_zpid bigint, v_subject character varying, v_status character, v_obj_id bigint
-                                "%s, %s, %s, '%s', '%s', %s",
-                                objectInScope.getZoid(),
-                                objectInScope.getZver(),
-                                null,
-                                channel.getSubject(),
-                                channel.getStatus().getValue(),
-                                channel.getDocumentId()
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT MSG.create_CChannel(?, ?, ?, ?, ?, ?)"
         );
-        // todo: create prep statement with ?
+        setLongOrNull(preparedStatement, 1, objectInScope.getZoid());
+        setLongOrNull(preparedStatement, 2, objectInScope.getZver());
+        preparedStatement.setNull(3, Types.BIGINT);
+        setStringOrNull(preparedStatement, 4, channel.getSubject());
+        setStringOrNull(preparedStatement, 5, channel.getStatus().getValue());
+        setLongOrNull(preparedStatement, 6, channel.getDocumentId());
         ExecStatus status = new ExecStatus();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -114,10 +91,9 @@ public final class MSGDao extends BasicDAO {
         }
         if (status.isOk()) {
             createCParty(
-                    objectInScope.getZoid().toString(),
-                    status.getZver().toString(),
+                    objectInScope.getZoid(), status.getZver(),
                     new MSGParty(samDAO.getUserId(), MSGPartyRole.C, null)
-            ); // todo: maybe create a message for creator
+            );
         }
         commitObject(
                 "MSG.C",
@@ -130,15 +106,10 @@ public final class MSGDao extends BasicDAO {
     public MSGMessage getMessage(Long zoid, Long zrid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("MSG.V_CMsg")
-                        .where(String.format("%s = %d AND %s = %d", ZOID, zoid, ZRID, zrid))
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT * FROM MSG.V_CMsg where ZOID = ? AND ZRID = ?"
         );
+        setLongOrNull(preparedStatement, 1, zoid);
+        setLongOrNull(preparedStatement, 2, zrid);
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             MSGMessage message = new MSGMessage();
@@ -155,34 +126,12 @@ public final class MSGDao extends BasicDAO {
     public ResultSet getMessages(Long channelId) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("cm.zoid, cm.zver, cm.zrid, cm.zlvl, cm.content, cm.msg_id, cm.type, " +
-                                "zo.zuid, zo.zdate, xu.login, xu.full_name, zo.qrsq > cm.zrid")
-                        .from()
-                        .add("msg.v_cmsg as cm")
-                        .add("left outer join")
-                        .add("tis.vh_zobject as zo")
-                        .on()
-                        .leftBracket()
-                        .add("cm.zoid = zo.zoid and cm.zver = zo.zver")
-                        .rightBracket()
-                        .add("left outer join sam.V_User as xu")
-                        .on()
-                        .leftBracket()
-                        .add("xu.id = zo.zuid")
-                        .rightBracket()
-                        .where(
-                                Query.builder()
-                                        .add("cm.zoid")
-                                        .eq()
-                                        .add(channelId)
-                                        .build()
-                        )
-                        .add("order by cm.zrid")
-                        .buildWithSemicolon()
-                        .getQuery().toString()
+                "SELECT CM.zoid, CM.zver, CM.zrid, CM.zlvl, CM.content, CM.msg_id, CM.type, ZO.zuid, ZO.zdate, XU.login, XU.full_name, ZO.qrsq > CM.zrid " +
+                        "FROM msg.V_CMsg as CM LEFT OUTER JOIN TIS.VH_ZObject as ZO " +
+                        "ON (CM.zoid = ZO.zoid AND CM.zver = ZO.zver) LEFT OUTER JOIN SAM.V_User as XU " +
+                        "ON (XU.id = ZO.zuid) WHERE (CM.zoid = ?) ORDER BY CM.zrid"
         );
+        setLongOrNull(preparedStatement, 1, channelId);
         if (preparedStatement != null) {
             return preparedStatement.executeQuery();
         }
@@ -200,14 +149,7 @@ public final class MSGDao extends BasicDAO {
             }
             Connection connection = getPoolConnection().get();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    Query.builder()
-                            .select()
-                            .add("MSG.Create_cmsg")
-                            .leftBracket()
-                            .add("?, ?, ?, ?, ?, ?")
-                            .rightBracket()
-                            .buildWithSemicolon()
-                            .toString()
+                    "SELECT MSG.create_CMsg(?, ?, ?, ?, ?, ?)"
             );
             preparedStatement.setLong(1, openedChat.getZoid());
             preparedStatement.setLong(2, openedChat.getZver());
@@ -229,27 +171,18 @@ public final class MSGDao extends BasicDAO {
         }
     }
 
-    private ExecStatus createCParty(String chatId, String chatVer, MSGParty party) throws Exception {
+    private ExecStatus createCParty(Long chatId, Long chatVer, MSGParty party) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("MSG.create_cparty")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s, %s, '%s', %s",
-                                chatId,
-                                chatVer,
-                                1, // todo
-                                samDAO.getUserId(),
-                                party.getRole().getValue(),
-                                null
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT MSG.create_CParty(?, ?, ?, ?, ?, ?)"
         );
+        setLongOrNull(preparedStatement, 1, chatId);
+        setLongOrNull(preparedStatement, 2, chatVer);
+        setLongOrNull(preparedStatement, 3, 1L);
+        setLongOrNull(preparedStatement, 4, samDAO.getUserId());
+        setStringOrNull(preparedStatement, 5, party.getRole().getValue());
+        preparedStatement.setNull(6, Types.BIGINT);
         return execute(preparedStatement);
     }
 
@@ -266,15 +199,14 @@ public final class MSGDao extends BasicDAO {
                 MSGMessage oldMessage = getMessage(message.getZoid(), message.getZrid());
                 message.merge(oldMessage); // todo: make it another way
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                        Query.builder()
-                                .select()
-                                .add("MSG.update_CMsg")
-                                .leftBracket()
-                                .add(message.toUpdateString())
-                                .rightBracket()
-                                .buildWithSemicolon()
-                                .toString()
+                        "SELECT MSG.update_CMsg(?, ?, ?, ?, ?, ?)"
                 );
+                setLongOrNull(preparedStatement, 1, message.getZoid());
+                setLongOrNull(preparedStatement, 2, message.getZver());
+                setLongOrNull(preparedStatement, 3, message.getZrid());
+                setStringOrNull(preparedStatement, 4, message.getContent());
+                setLongOrNull(preparedStatement, 5, message.getAnswerId());
+                setStringOrNull(preparedStatement, 6, message.getType().getValue());
                 execute(preparedStatement);
             }
         } finally {
@@ -296,18 +228,17 @@ public final class MSGDao extends BasicDAO {
                 throw new Exception(status.getCaption());
             }
             MSGChannel oldChannel = getChat(channel.getZoid());
-            channel.merge(oldChannel); // todo: make it another way
+            channel.merge(oldChannel);
             Connection connection = getPoolConnection().get();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    Query.builder()
-                            .select()
-                            .add("MSG.update_CChannel")
-                            .leftBracket()
-                            .add(channel.toUpdateString())
-                            .rightBracket()
-                            .buildWithSemicolon()
-                            .toString()
+                    "SELECT MSG.update_CChannel(?, ?, ?, ?, ?, ?)"
             );
+            setLongOrNull(preparedStatement, 1, channel.getZoid());
+            setLongOrNull(preparedStatement, 2, channel.getZver());
+            setLongOrNull(preparedStatement, 3, channel.getZrid());
+            setStringOrNull(preparedStatement, 4, channel.getSubject());
+            setStringOrNull(preparedStatement, 5, channel.getStatus().getValue());
+            setLongOrNull(preparedStatement, 6, channel.getDocumentId());
             execute(preparedStatement);
         } finally {
             if (status != null) {
@@ -325,18 +256,11 @@ public final class MSGDao extends BasicDAO {
                 throw new Exception(openedObject.getCaption());
             }
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    Query.builder()
-                            .select()
-                            .add("MSG.delete_CMsg")
-                            .leftBracket()
-                            .add(String.format(
-                                    "%s, %s, %s",
-                                    openedObject.getZoid(), openedObject.getZver(), zrid
-                            ))
-                            .rightBracket()
-                            .buildWithSemicolon()
-                            .toString()
+                    "SELECT MSG.delete_CMsg(?, ?, ?)"
             );
+            setLongOrNull(preparedStatement, 1, openedObject.getZoid());
+            setLongOrNull(preparedStatement, 2, openedObject.getZver());
+            setLongOrNull(preparedStatement, 3, zrid);
             status = execute(preparedStatement);
         } finally {
             commitObject("MSG.C", openedObject.getZoid(), openedObject.getZver());
@@ -345,6 +269,6 @@ public final class MSGDao extends BasicDAO {
     }
 
     public ExecStatus deleteChannel(Long zoid, Long zver) throws Exception {
-        return deleteObject("MSG.C", zoid, zver);
+        return deleteObject("MSG.C", zoid, null);
     }
 }

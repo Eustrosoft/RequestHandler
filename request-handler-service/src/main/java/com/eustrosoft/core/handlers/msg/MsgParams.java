@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -23,7 +24,7 @@ public class MsgParams {
     private String content;
     private Long reference;
     private String type;
-    private Integer slvl;
+    private Short slvl;
     private List<String> statuses;
 
     public static MsgParams fromJson(QJson qJson) {
@@ -37,7 +38,9 @@ public class MsgParams {
         params.setType(qJson.getItemString("type"));
         params.setStatuses(getStatuses(qJson.getItemQJson("statuses")));
         params.setReference(getLongOrNull(qJson, "reference"));
-        params.setSlvl(getLongOrNull(qJson, "slvl") == null ? null : getLongOrNull(qJson, "slvl").intValue());
+        params.setSlvl(getLongOrNull(qJson, "slvl") == null ?
+                null : Objects.requireNonNull(getLongOrNull(qJson, "slvl")).shortValue()
+        );
         return params;
     }
 

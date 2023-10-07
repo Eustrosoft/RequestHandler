@@ -140,7 +140,7 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(Long objId, Integer slvl, String subject, String content) throws Exception {
+    public String createChat(Long objId, Short slvl, String subject, String content) throws Exception {
         if (subject == null || subject.trim().isEmpty()) {
             throw new IllegalArgumentException("Subject can not be null or empty");
         }

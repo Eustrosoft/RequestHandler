@@ -1,7 +1,6 @@
 package com.eustrosoft.core.db.dao;
 
 import com.eustrosoft.core.db.ExecStatus;
-import com.eustrosoft.core.db.Query;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
@@ -10,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setShortOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
 
 public class BasicDAO {
     @Getter
@@ -24,45 +25,30 @@ public class BasicDAO {
     public ResultSet selectObject(Long zoid) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("TIS.V_ZObject")
-                        .where(String.format("%s = %s", ZOID, zoid))
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT * FROM TIS.V_ZObject WHERE ZOID = ?"
         );
+        preparedStatement.setLong(1, zoid);
         if (preparedStatement != null) {
             return preparedStatement.executeQuery();
         }
         return null; // todo
     }
 
-    // todo create throwing err if opened
     @SneakyThrows
     public ExecStatus openObject(String type, Long zoid) {
         return openObject(type, zoid, (Long) null);
     }
-
 
     @SneakyThrows
     @Deprecated
     public ExecStatus openObject(String type, Long zoid, Long zver) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("TIS.open_object")
-                        .leftBracket()
-                        .add(String.format(
-                                "'%s', %s, %s",
-                                type, zoid, zver
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT TIS.open_object(?, ?, ?)"
         );
+        preparedStatement.setString(1, type);
+        setLongOrNull(preparedStatement, 2, zoid);
+        setLongOrNull(preparedStatement, 3, zver);
         return execute(preparedStatement);
     }
 
@@ -79,42 +65,43 @@ public class BasicDAO {
     public ExecStatus deleteObject(String type, Long zoid, Long zver) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("TIS.delete_object")
-                        .leftBracket()
-                        .add(String.format(
-                                "'%s', %s, null",
-                                type, zoid
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT TIS.delete_object(?, ?, ?)"
         );
+        preparedStatement.setString(1, type);
+        setLongOrNull(preparedStatement, 2, zoid);
+        setLongOrNull(preparedStatement, 3, zver);
         return execute(preparedStatement);
     }
 
     @SneakyThrows
     public ExecStatus createObjectInScope(String type, String scopeZoid) {
-        return createObjectInScope(type, scopeZoid, "null");
+        return createObjectInScope(type, Long.valueOf(scopeZoid));
     }
 
     @SneakyThrows
-    public ExecStatus createObjectInScope(String type, String scopeZoid, String zlvl) {
+    public ExecStatus createObjectInScope(String type, String scopeZoid, Short slvl) {
+        return createObjectInScope(type, Long.valueOf(scopeZoid), slvl);
+    }
+
+    @SneakyThrows
+    public ExecStatus createObjectInScope(String type, Long scopeZoid) {
+        return createObjectInScope(type, scopeZoid, null);
+    }
+
+    @SneakyThrows
+    public ExecStatus createObjectInScope(String type, String scopeZoid, String slvl) {
+        return createObjectInScope(type, Long.valueOf(scopeZoid), Short.valueOf(slvl));
+    }
+
+    @SneakyThrows
+    public ExecStatus createObjectInScope(String type, Long scopeZoid, Short slvl) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("TIS.create_object")
-                        .leftBracket()
-                        .add(String.format(
-                                "'%s', %s, %s::smallint",
-                                type, scopeZoid, zlvl
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT TIS.create_object(?, ?, ?)"
         );
+        setStringOrNull(preparedStatement, 1, type);
+        setLongOrNull(preparedStatement, 2, scopeZoid);
+        setShortOrNull(preparedStatement, 3, slvl);
         return execute(preparedStatement);
     }
 
@@ -122,20 +109,11 @@ public class BasicDAO {
     public ExecStatus commitObject(String type, Long objectZoid, Long objectVer) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("TIS.commit_object")
-                        .leftBracket()
-                        .add(String.format(
-                                "'%s', %s, %s",
-                                type,
-                                objectZoid,
-                                objectVer
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT TIS.commit_object(?, ?, ?)"
         );
+        setStringOrNull(preparedStatement, 1, type);
+        setLongOrNull(preparedStatement, 2, objectZoid);
+        setLongOrNull(preparedStatement, 3, objectVer);
         return execute(preparedStatement);
     }
 

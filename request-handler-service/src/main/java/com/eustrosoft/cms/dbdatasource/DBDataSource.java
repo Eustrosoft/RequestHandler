@@ -48,11 +48,11 @@ import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
 import static com.eustrosoft.core.constants.DBConstants.ZSID;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getFid;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getStrValueOrEmpty;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getType;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.core.db.util.DBUtils.getFid;
+import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
+import static com.eustrosoft.core.db.util.DBUtils.getType;
+import static com.eustrosoft.core.db.util.DBUtils.getZoid;
+import static com.eustrosoft.core.db.util.DBUtils.getZsid;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
