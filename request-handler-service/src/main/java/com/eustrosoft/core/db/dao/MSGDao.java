@@ -66,9 +66,10 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
-    public ExecStatus createChat(MSGChannel channel, Short slvl) throws Exception {
+    public ExecStatus createChat(MSGChannel channel) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
-        ExecStatus objectInScope = createObjectInScope("MSG.C", samDAO.getUserSid(), slvl);
+        Long zsid = channel.getZsid() == null ? samDAO.getUserSid() : channel.getZsid();
+        ExecStatus objectInScope = createObjectInScope("MSG.C", zsid, channel.getZlvl());
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }

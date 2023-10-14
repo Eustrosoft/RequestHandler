@@ -19,6 +19,7 @@ public class MsgParams {
     private Long zoid;
     private Long zrid;
     private Long zver;
+    private Long zsid;
     private String status;
     private String subject;
     private String content;
@@ -32,6 +33,7 @@ public class MsgParams {
         params.setZoid(getLongOrNull(qJson, "zoid"));
         params.setZrid(getLongOrNull(qJson, "zrid"));
         params.setZver(getLongOrNull(qJson, "zver"));
+        params.setZsid(qJson.getItemLong("zsid"));
         params.setStatus(qJson.getItemString("status"));
         params.setSubject(qJson.getItemString("subject"));
         params.setContent(qJson.getItemString("content"));

@@ -85,11 +85,6 @@ public class BasicDAO {
     }
 
     @SneakyThrows
-    public ExecStatus createObjectInScope(String type, String scopeZoid, Short slvl) {
-        return createObjectInScope(type, Long.valueOf(scopeZoid), slvl);
-    }
-
-    @SneakyThrows
     public ExecStatus createObjectInScope(String type, Long scopeZoid) {
         return createObjectInScope(type, scopeZoid, null);
     }

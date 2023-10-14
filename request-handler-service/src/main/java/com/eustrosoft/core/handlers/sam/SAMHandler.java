@@ -26,6 +26,7 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_USER_ID;
 import static com.eustrosoft.core.constants.Constants.REQUEST_USER_LANG;
 import static com.eustrosoft.core.constants.Constants.REQUEST_USER_LOGIN;
 import static com.eustrosoft.core.constants.Constants.REQUEST_USER_SLVL;
+import static com.eustrosoft.core.constants.Constants.REQUEST_ZSID;
 
 public final class SAMHandler implements Handler {
     private QDBPConnection poolConnection;
@@ -56,6 +57,9 @@ public final class SAMHandler implements Handler {
                 break;
             case REQUEST_USER_LANG:
                 respBlock.setData(dao.getUserLang());
+                break;
+            case REQUEST_ZSID:
+                respBlock.setZsid(dao.getZsids(samRequestBlock.getType()));
                 break;
             default:
                 respBlock.setE(ERR_UNEXPECTED);

@@ -25,7 +25,8 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
     private Long zoid;
     private Long zver;
     private Long zrid;
-    private Long zlvl;
+    private Long zsid;
+    private Short zlvl;
     private String created;
 
     public DBObject(ResultSet resultSet) throws SQLException {
@@ -36,6 +37,13 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         this.zoid = zoid;
         this.zver = zver;
         this.zrid = zrid;
+    }
+
+    public DBObject(Long zoid, Long zver, Long zrid, Long zsid) {
+        this.zoid = zoid;
+        this.zver = zver;
+        this.zrid = zrid;
+        this.zsid = zsid;
     }
 
     public DBObject(Long zoid, Long zver, Long zrid, DateTimeZone created) {
@@ -66,7 +74,7 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
             System.out.println("ZRID not found.");
         }
         try {
-            setZlvl(resultSet.getLong(ZLVL));
+            setZlvl(resultSet.getShort(ZLVL));
         } catch (Exception ex) {
             System.out.println("ZLVL not found.");
         }

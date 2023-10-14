@@ -71,7 +71,6 @@ public final class MSGHandler implements Handler {
         msgResponseBlock.setErrMsg(MSG_OK);
         String requestType = msgRequestBlock.getR();
         msgResponseBlock.setResponseType(requestType);
-        // TODO
         switch (requestType) {
             case REQUEST_CHATS:
                 List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
@@ -82,7 +81,7 @@ public final class MSGHandler implements Handler {
                 msgResponseBlock.setMessages(chatMessages);
                 break;
             case REQUEST_CREATE:
-                createChat(params.getZoid(), params.getSlvl(), params.getSubject(), params.getContent());
+                createChat(params.getZoid(), params.getSlvl(), params.getZsid(), params.getSubject(), params.getContent());
                 break;
             case REQUEST_SEND:
                 String message = createMessage(params);
@@ -140,12 +139,15 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(Long objId, Short slvl, String subject, String content) throws Exception {
+    public String createChat(Long objId, Short slvl, Long sid, String subject, String content) throws Exception {
         if (subject == null || subject.trim().isEmpty()) {
             throw new IllegalArgumentException("Subject can not be null or empty");
         }
         MSGDao functions = new MSGDao(poolConnection);
-        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.N), slvl);
+        MSGChannel newChannel = new MSGChannel(subject, objId, MSGChannelStatus.N);
+        newChannel.setZlvl(slvl);
+        newChannel.setZsid(sid);
+        ExecStatus chat = functions.createChat(newChannel);
         if (content != null && !content.trim().isEmpty()) {
             functions.createMessage(
                     chat.getZoid(),

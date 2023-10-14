@@ -45,12 +45,13 @@ public final class Constants {
     public static final String REQUEST_VALUES = "values";
     public static final String REQUEST_DICS = "dics";
 
-    // TIS Subsystem
+    // TIS/SAM Subsystem
     public static final String REQUEST_USER_LOGIN = "user_login";
     public static final String REQUEST_USER_ID = "user_id";
     public static final String REQUEST_USER_SLVL = "user_slvl";
     public static final String REQUEST_USER_AVAILABLE_SLVL = "user_available_slvl";
     public static final String REQUEST_USER_LANG = "user_lang";
+    public static final String REQUEST_ZSID = "zsid";
 
     // All subsystems
     public static final String REQUEST_SEND = "send";

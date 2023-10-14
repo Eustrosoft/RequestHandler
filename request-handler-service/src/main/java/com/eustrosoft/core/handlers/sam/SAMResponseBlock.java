@@ -8,11 +8,14 @@ package com.eustrosoft.core.handlers.sam;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
 
@@ -25,6 +28,7 @@ public final class SAMResponseBlock extends BasicResponse {
     private Short errCode = 0;
     private String responseType;
     private String data;
+    private List<Long> zsid;
 
     @Override
     public String getS() {
@@ -62,7 +66,12 @@ public final class SAMResponseBlock extends BasicResponse {
     @Override
     public JsonObject toJsonObject() throws Exception {
         JsonObject object = super.toJsonObject();
-        object.addProperty("data", getData());
+        if (getData() != null && !getData().isEmpty()) {
+            object.addProperty("data", getData());
+        }
+        if (zsid != null) {
+            object.add("zsid", new Gson().toJsonTree(zsid));
+        }
         return object;
     }
 }

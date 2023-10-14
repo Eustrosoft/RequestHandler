@@ -20,6 +20,7 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
 @Setter
 public class SAMRequestBlock extends BasicRequest {
     private String id;
+    private String type;
 
     public SAMRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
@@ -47,5 +48,6 @@ public class SAMRequestBlock extends BasicRequest {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
         }
+        setType(qJson.getItemString("type"));
     }
 }
