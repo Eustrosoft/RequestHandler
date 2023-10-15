@@ -1,6 +1,7 @@
 package com.eustrosoft.core.db.dao;
 
 import com.eustrosoft.core.db.util.DBUtils;
+import com.eustrosoft.core.model.user.User;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
@@ -8,14 +9,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static com.eustrosoft.core.constants.Constants.UNKNOWN;
 import static com.eustrosoft.core.constants.DBConstants.SID;
 
 public class SamDAO extends BasicDAO {
 
+    private static Map<Long, User> userCache;
     public SamDAO(QDBPConnection poolConnection) {
         super(poolConnection);
+        if (userCache == null) {
+            userCache = new HashMap<>();
+        }
     }
 
     @SneakyThrows
@@ -46,6 +54,26 @@ public class SamDAO extends BasicDAO {
             resultSet.close();
         }
         return userId;
+    }
+
+    @SneakyThrows
+    public User getUserById(Long id) {
+        User user;
+        if (!userCache.containsKey(id)) {
+            user = new User();
+            try {
+                user.fillFromResultSet(getUserResultSetById(id));
+                userCache.put(id, user);
+            } catch (Exception ex) {
+                user.setId(id);
+                user.setUsername(String.format("%s_%d", UNKNOWN, id));
+                user.setFullName(String.format("%s_%d", UNKNOWN, id));
+                userCache.put(id, user);
+            }
+        } else {
+            user = userCache.get(id);
+        }
+        return user;
     }
 
     @SneakyThrows

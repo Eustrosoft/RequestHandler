@@ -39,9 +39,16 @@ public class MSGChannel extends DBObject {
     @SneakyThrows
     public void fillFromResultSet(ResultSet resultSet) {
         super.fillFromResultSet(resultSet);
-        setSubject(resultSet.getString(SUBJECT));
-        setDocumentId(resultSet.getLong(OBJ_ID));
-        setStatus(MSGChannelStatus.of(resultSet.getString(STATUS)));
+        trySet(this::setSubject, resultSet, SUBJECT);
+        trySet(this::setDocumentId, resultSet, OBJ_ID);
+        trySet(this::setStatus, resultSet, STATUS);
+    }
+
+    // In database it is String - need to extract from string to Enum
+    public void setStatus(String status) {
+        if (status != null) {
+            this.status = MSGChannelStatus.of(status);
+        }
     }
 
     public void merge(MSGChannel otherChannel) {

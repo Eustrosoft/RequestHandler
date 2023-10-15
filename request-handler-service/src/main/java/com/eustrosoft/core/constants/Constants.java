@@ -37,6 +37,7 @@ public final class Constants {
     public static final String REQUEST_TICKET = "ticket";
     // Chats subsystem
     public static final String REQUEST_CHATS = "chats";
+    public static final String REQUEST_UPDATE = "update";
     public static final String REQUEST_CHAT = "chat";
     // Login subsystem
     public static final String REQUEST_LOGIN = "login";

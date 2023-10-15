@@ -11,10 +11,12 @@ import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.constants.DBConstants.ZSID;
 import static com.eustrosoft.core.constants.DBConstants.ZVER;
 
 @Getter
@@ -50,7 +52,17 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         this.zoid = zoid;
         this.zver = zver;
         this.zrid = zrid;
-        this.created = created.toString();
+        if (created != null) {
+            this.created = created.toString();
+        }
+    }
+
+    protected <T> void trySet(Consumer<T> function, ResultSet resultSet, String name) {
+        try {
+            function.accept((T) resultSet.getObject(name));
+        } catch (Exception ex) {
+            function.accept(null);
+        }
     }
 
     @Override
@@ -58,25 +70,10 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         if (resultSet == null) {
             throw new SQLException("Result set is null while processing DBObject from ResultSet.");
         }
-        try {
-            setZoid(resultSet.getLong(ZOID));
-        } catch (Exception ex) {
-            System.out.println("ZOID not found.");
-        }
-        try {
-            setZver(resultSet.getLong(ZVER));
-        } catch (Exception ex) {
-            System.out.println("ZVER not found.");
-        }
-        try {
-            setZrid(resultSet.getLong(ZRID));
-        } catch (Exception ex) {
-            System.out.println("ZRID not found.");
-        }
-        try {
-            setZlvl(resultSet.getShort(ZLVL));
-        } catch (Exception ex) {
-            System.out.println("ZLVL not found.");
-        }
+        trySet(this::setZoid, resultSet, ZOID);
+        trySet(this::setZver, resultSet, ZVER);
+        trySet(this::setZrid, resultSet, ZRID);
+        trySet(this::setZlvl, resultSet, ZLVL);
+        trySet(this::setZsid, resultSet, ZSID);
     }
 }

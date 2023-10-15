@@ -66,6 +66,22 @@ public final class MSGDao extends BasicDAO {
         return null;
     }
 
+    public ResultSet getChatsVersions(List<MSGChannelStatus> statuses) throws SQLException {
+        Connection connection = getPoolConnection().get();
+        String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
+        StringBuilder queryBuilder = new StringBuilder("SELECT ZOID, ZVER FROM MSG.V_CChannel");
+        if (condition != null && !condition.isEmpty()) {
+            queryBuilder.append(" WHERE ").append(condition);
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                queryBuilder.toString()
+        );
+        if (preparedStatement != null) {
+            return preparedStatement.executeQuery();
+        }
+        return null;
+    }
+
     public ExecStatus createChat(MSGChannel channel) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
         Long zsid = channel.getZsid() == null ? samDAO.getUserSid() : channel.getZsid();
