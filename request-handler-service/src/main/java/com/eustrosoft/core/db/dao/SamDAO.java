@@ -66,8 +66,13 @@ public class SamDAO extends BasicDAO {
                 userCache.put(id, user);
             } catch (Exception ex) {
                 user.setId(id);
-                user.setUsername(String.format("%s_%d", UNKNOWN, id));
-                user.setFullName(String.format("%s_%d", UNKNOWN, id));
+                if (id != null) {
+                    user.setUsername(String.format("%s_%d", UNKNOWN, id));
+                    user.setFullName(String.format("%s_%d", UNKNOWN, id));
+                } else {
+                    user.setUsername(UNKNOWN);
+                    user.setFullName(UNKNOWN);
+                }
                 userCache.put(id, user);
             }
         } else {
