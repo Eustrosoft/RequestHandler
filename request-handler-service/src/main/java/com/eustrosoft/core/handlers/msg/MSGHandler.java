@@ -218,13 +218,11 @@ public final class MSGHandler implements Handler {
                 msgMessage.setCreated(new DateTimeZone(created).toString());
             }
             Long userId = DBUtils.getLongValueOrEmpty(resultSet, ZUID);
-            if (userId != null) {
-                msgMessage.setUser(
-                        UserDTO.fromUser(
-                                samDAO.getUserById(userId)
-                        )
-                );
-            }
+            msgMessage.setUser(
+                    UserDTO.fromUser(
+                            samDAO.getUserById(userId)
+                    )
+            );
             objects.add(msgMessage);
         }
         if (resultSet != null) {
