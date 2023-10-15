@@ -212,7 +212,7 @@ public final class MSGHandler implements Handler {
             Long answerId = resultSet.getLong(MSG_ID);
             String messageType = resultSet.getString(TYPE);
             Long userId = resultSet.getLong(ZUID);
-            Timestamp created = resultSet.getTimestamp(ZDATE); // todo
+            Timestamp created = resultSet.getTimestamp(ZDATE);
             User user = null;
             if (!userMapping.containsKey(userId)) {
                 user = new User();
