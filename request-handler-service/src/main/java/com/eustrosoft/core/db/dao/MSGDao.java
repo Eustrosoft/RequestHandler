@@ -53,9 +53,13 @@ public final class MSGDao extends BasicDAO {
     public ResultSet getChats(List<MSGChannelStatus> statuses) throws SQLException {
         Connection connection = getPoolConnection().get();
         String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
-        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM MSG.V_CChannel");
+        StringBuilder queryBuilder = new StringBuilder(
+                "select ts.zoid, ts.zver, msg.zrid, msg.zsid, msg.zlvl, msg.zpid, " +
+                        "msg.subject, msg.status, msg.obj_id from msg.v_cchannel as msg " +
+                        "left outer join tis.vh_zobject as ts on msg.zoid = ts.zoid where ts.zsta = 'N'"
+        );
         if (condition != null && !condition.isEmpty()) {
-            queryBuilder.append(" WHERE ").append(condition);
+            queryBuilder.append(" AND ").append(condition);
         }
         PreparedStatement preparedStatement = connection.prepareStatement(
                 queryBuilder.toString()
@@ -69,9 +73,11 @@ public final class MSGDao extends BasicDAO {
     public ResultSet getChatsVersions(List<MSGChannelStatus> statuses) throws SQLException {
         Connection connection = getPoolConnection().get();
         String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
-        StringBuilder queryBuilder = new StringBuilder("SELECT ZOID, ZVER FROM MSG.V_CChannel");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT ZOID, ZVER FROM TIS.VH_ZObject WHERE ztype = 'MSG.C' AND zsta = 'N'"
+        );
         if (condition != null && !condition.isEmpty()) {
-            queryBuilder.append(" WHERE ").append(condition);
+            queryBuilder.append(" AND ").append(condition);
         }
         PreparedStatement preparedStatement = connection.prepareStatement(
                 queryBuilder.toString()
