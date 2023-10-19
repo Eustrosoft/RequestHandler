@@ -54,9 +54,10 @@ public final class MSGDao extends BasicDAO {
         Connection connection = getPoolConnection().get();
         String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
         StringBuilder queryBuilder = new StringBuilder(
-                "select ts.zoid, ts.zver, msg.zrid, msg.zsid, msg.zlvl, msg.zpid, " +
-                        "msg.subject, msg.status, msg.obj_id from msg.v_cchannel as msg " +
-                        "left outer join tis.vh_zobject as ts on msg.zoid = ts.zoid where ts.zsta = 'N'"
+                "select ts.zoid, ts.zver, msg.zrid, msg.zsid, msg.zlvl, msg.zpid, msg.subject, msg.status, msg.obj_id " +
+                        "from msg.v_cchannel as msg " +
+                        "left join tis.v_zobject as ts " +
+                        "on msg.zoid = ts.zoid"
         );
         if (condition != null && !condition.isEmpty()) {
             queryBuilder.append(" AND ").append(condition);
@@ -74,11 +75,11 @@ public final class MSGDao extends BasicDAO {
         Connection connection = getPoolConnection().get();
         String condition = MSGChannelStatus.toSQLWhere("msg." + STATUS, statuses);
         StringBuilder queryBuilder = new StringBuilder(
-                "select ts.zoid, ts.zver, msg.zrid, msg.status from msg.v_cchannel as msg " +
-                        "left outer join tis.vh_zobject as ts on msg.zoid = ts.zoid where ts.zsta = 'N'"
+                "select ts.zoid, ts.zver, msg.status from msg.v_cchannel as msg left join " +
+                        "tis.v_zobject as ts on msg.zoid = ts.zoid where ts.ztype = 'MSG.C'"
         );
         if (condition != null && !condition.isEmpty()) {
-            queryBuilder.append(" AND ").append(condition);
+            queryBuilder.append(" WHERE ").append(condition);
         }
         PreparedStatement preparedStatement = connection.prepareStatement(
                 queryBuilder.toString()
