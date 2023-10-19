@@ -60,7 +60,7 @@ public final class MSGDao extends BasicDAO {
                         "on msg.zoid = ts.zoid"
         );
         if (condition != null && !condition.isEmpty()) {
-            queryBuilder.append(" AND ").append(condition);
+            queryBuilder.append(" WHERE ").append(condition);
         }
         PreparedStatement preparedStatement = connection.prepareStatement(
                 queryBuilder.toString()
