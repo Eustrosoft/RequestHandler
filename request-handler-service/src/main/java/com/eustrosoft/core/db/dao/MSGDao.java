@@ -52,7 +52,7 @@ public final class MSGDao extends BasicDAO {
 
     public ResultSet getChats(List<MSGChannelStatus> statuses) throws SQLException {
         Connection connection = getPoolConnection().get();
-        String condition = MSGChannelStatus.toSQLWhere(STATUS, statuses);
+        String condition = MSGChannelStatus.toSQLWhere(String.format("%s.%s", "msg", STATUS), statuses);
         StringBuilder queryBuilder = new StringBuilder(
                 "select ts.zoid, ts.zver, msg.zrid, msg.zsid, msg.zlvl, msg.zpid, msg.subject, msg.status, msg.obj_id " +
                         "from msg.v_cchannel as msg " +
@@ -73,7 +73,7 @@ public final class MSGDao extends BasicDAO {
 
     public ResultSet getChatsVersions(List<MSGChannelStatus> statuses) throws SQLException {
         Connection connection = getPoolConnection().get();
-        String condition = MSGChannelStatus.toSQLWhere("msg." + STATUS, statuses);
+        String condition = MSGChannelStatus.toSQLWhere(String.format("%s.%s", "msg", STATUS), statuses);
         StringBuilder queryBuilder = new StringBuilder(
                 "select ts.zoid, ts.zver, msg.status from msg.v_cchannel as msg left join " +
                         "tis.v_zobject as ts on msg.zoid = ts.zoid where ts.ztype = 'MSG.C'"
