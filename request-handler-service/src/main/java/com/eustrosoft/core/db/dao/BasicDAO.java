@@ -81,7 +81,11 @@ public class BasicDAO {
 
     @SneakyThrows
     public ExecStatus createObjectInScope(String type, String scopeZoid) {
-        return createObjectInScope(type, Long.valueOf(scopeZoid));
+        Long scopeProc = null;
+        if (scopeZoid != null && !scopeZoid.equals("null")) {
+            scopeProc = Long.parseLong(scopeZoid);
+        }
+        return createObjectInScope(type, scopeProc);
     }
 
     @SneakyThrows
@@ -91,7 +95,15 @@ public class BasicDAO {
 
     @SneakyThrows
     public ExecStatus createObjectInScope(String type, String scopeZoid, String slvl) {
-        return createObjectInScope(type, Long.valueOf(scopeZoid), Short.valueOf(slvl));
+        Short slvlProc = null;
+        if (slvl != null && !slvl.equals("null")) {
+            slvlProc = Short.parseShort(slvl);
+        }
+        Long scopeProc = null;
+        if (scopeZoid != null && !scopeZoid.equals("null")) {
+            scopeProc = Long.parseLong(scopeZoid);
+        }
+        return createObjectInScope(type, scopeProc, slvlProc);
     }
 
     @SneakyThrows
