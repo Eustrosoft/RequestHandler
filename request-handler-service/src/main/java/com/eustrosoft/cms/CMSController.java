@@ -29,7 +29,7 @@ import java.util.List;
 
 import static com.eustrosoft.core.constants.Constants.ERR_SERVER;
 import static com.eustrosoft.core.constants.Constants.ERR_UNEXPECTED;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.constants.Constants.REQUEST_VIEW;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
 import static com.eustrosoft.core.tools.HttpTools.getExceptionResponse;
 import static com.eustrosoft.core.tools.HttpTools.getUnsupportedException;
@@ -73,7 +73,8 @@ public class CMSController extends HttpServlet {
                     printError(
                             resp,
                             getExceptionResponse(
-                                    "You did not provide path", "cms", "view", ERR_UNEXPECTED
+                                    "You did not provide path", SUBSYSTEM_CMS,
+                                    REQUEST_VIEW, ERR_UNEXPECTED
                             )
                     );
                 }
@@ -81,9 +82,10 @@ public class CMSController extends HttpServlet {
                 CMSHandler handler = new CMSHandler();
                 ResponseBlock responseBlock = handler.processRequest(
                         new CMSRequestBlock(
-                                req,
-                                resp,
-                                new QJson(String.format("{\"path\":\"%s\"}", path))
+                                req, resp,
+                                new QJson(
+                                        String.format("{\"path\":\"%s\", \"r\":\"%s\"}", path, REQUEST_VIEW)
+                                )
                         )
                 );
                 List<ResponseBlock> respBlocks = new ArrayList<>();
@@ -109,7 +111,7 @@ public class CMSController extends HttpServlet {
                     getExceptionResponse(
                             ex.getMessage(),
                             SUBSYSTEM_CMS,
-                            REQUEST_DOWNLOAD,
+                            REQUEST_VIEW,
                             ERR_SERVER
                     )
             );
