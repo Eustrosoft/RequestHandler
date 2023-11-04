@@ -77,6 +77,7 @@ public final class Constants {
     public static final Short ERR_SERVER = 500;
     public static final Short ERR_OK = 0;
     public static final Short ERR_UNEXPECTED = 1;
+    public static final Short ERR_UNSUPPORTED = 2;
 
     // Messages
     public static final String MSG_UNAUTHORIZED = "Unauthorized";

@@ -23,4 +23,14 @@
         <param-name>debug</param-name>
         <param-value>true</param-value>
     </context-param>
+
+    <servlet>
+        <servlet-name>CMSDispatcher</servlet-name>
+        <servlet-class>com.eustrosoft.cms.CMSController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CMSDispatcher</servlet-name>
+        <url-pattern>/api/ftp</url-pattern>
+    </servlet-mapping>
 </web-app>
