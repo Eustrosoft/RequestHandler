@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.eustrosoft.core.constants.Constants.CHUNK_SIZE;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static com.eustrosoft.core.tools.FileUtils.getNextIterationFilePath;
 
@@ -110,7 +111,8 @@ public class HexFileHandler implements Handler {
                         requestBl.getDescription(),
                         requestBl.getSecurityLevel(),
                         requestBl.getChunkNumber(),
-                        requestBl.getChunkCount()
+                        requestBl.getChunkCount(),
+                        CHUNK_SIZE
                 )
         );
         fileResult.setFilePid(result.getFilePid());

@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPSession;
 
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,11 +40,6 @@ import static com.eustrosoft.core.tools.HttpTools.setHeadersForFileDownload;
 import static com.eustrosoft.core.tools.LoginChecker.checkLogin;
 import static com.eustrosoft.core.tools.LoginChecker.getUnauthorizedResponse;
 
-@WebServlet(
-        name = "EustrosoftRequestDispatcher",
-        description = "Dispatches request depending on it's body dispatch value",
-        urlPatterns = {"/api/dispatch", "/api/download"}
-)
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
         maxFileSize = 1024 * 1024 * 10,

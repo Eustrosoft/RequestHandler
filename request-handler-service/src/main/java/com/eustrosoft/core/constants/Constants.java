@@ -71,6 +71,7 @@ public final class Constants {
     // Other data
     public static final Integer SESSION_TIMEOUT = 100 * 60;
     public static final String UNKNOWN = "Unknown";
+    public static final Long CHUNK_SIZE = 1024L;
 
     // ERR codes
     public static final Short ERR_UNAUTHORIZED = 401;

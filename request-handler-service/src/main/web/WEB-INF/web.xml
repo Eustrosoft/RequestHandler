@@ -25,12 +25,12 @@
     </context-param>
 
     <servlet>
-        <servlet-name>CMSDispatcher</servlet-name>
-        <servlet-class>com.eustrosoft.cms.CMSController</servlet-class>
+        <servlet-name>HttpRequestDispatcher</servlet-name>
+        <servlet-class>com.eustrosoft.core.HttpRequestDispatcher</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>CMSDispatcher</servlet-name>
-        <url-pattern>/api/ftp</url-pattern>
+        <servlet-name>HttpRequestDispatcher</servlet-name>
+        <url-pattern>/api/dispatcher</url-pattern>
     </servlet-mapping>
 </web-app>

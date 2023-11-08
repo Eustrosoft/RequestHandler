@@ -159,6 +159,7 @@ public class DBDataSource implements CMSDataSource {
         String hex = params.getHex();
         Long chunk = params.getChunkNumber();
         Long chunkCount = params.getChunkCount();
+        Long chunkSize = params.getChunkSize();
 
         Long lastLvlPath = Long.parseLong(getLastLevelFromPath(new File(dest).getPath()));
         FSDao FSDao = new FSDao(poolConnection);
@@ -240,24 +241,23 @@ public class DBDataSource implements CMSDataSource {
                 }
             }
         }
-        ExecStatus fBlob = FSDao.createFBlob(
+        FSDao.createFBlob(
                 recordId,
                 recordVer,
                 filePid,
                 hex,
                 String.valueOf(chunk),
-                String.valueOf(chunkCount),
+                String.valueOf(chunkSize),
                 crc32
         );
         if (chunk == chunkCount - 1) {
-            // todo: add size
-            ExecStatus commited = FSDao.commitObject(
+            ExecStatus committed = FSDao.commitObject(
                     "FS.F",
                     Long.parseLong(recordId),
                     Long.parseLong(recordVer)
             );
-            if (!commited.isOk()) {
-                throw new Exception(commited.getCaption()); // TODO
+            if (!committed.isOk()) {
+                throw new Exception(committed.getCaption());
             }
         }
         return new HexFileResult(recordId, recordVer, filePid, params.getDestination());
