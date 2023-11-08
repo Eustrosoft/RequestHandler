@@ -6,7 +6,6 @@
 
 package com.eustrosoft.core.db.dao;
 
-import com.eustrosoft.core.db.Query;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
@@ -17,14 +16,11 @@ public final class DBStatements {
     @SneakyThrows
     public static PreparedStatement getFunctionStatement(Connection connection, String function, String... params) {
         return connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add(function)
-                        .add(String.format("(%s)", String.join(",", params)))
-                        .buildWithSemicolon()
-                        .toString()
+                String.format(
+                        "SELECT * FROM %s %s;",
+                        function,
+                        String.format("(%s)", String.join(",", params))
+                )
         );
     }
 }

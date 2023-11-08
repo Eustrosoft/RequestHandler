@@ -4,6 +4,8 @@ import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
+import com.eustrosoft.core.handlers.dic.DICHandler;
+import com.eustrosoft.core.handlers.dic.DICRequestBlock;
 import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
 import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
 import com.eustrosoft.core.handlers.file.ChunkFileHandler;
@@ -46,6 +48,7 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_HEX_FILE_UP
 import static com.eustrosoft.core.constants.Constants.REQUEST_FILE_UPLOAD;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_DIC;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_FILE;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_MSG;
@@ -129,6 +132,9 @@ public final class PostRequestProcessor {
                 case SUBSYSTEM_SAM:
                     handler = new SAMHandler();
                     break;
+                case SUBSYSTEM_DIC:
+                    handler = new DICHandler();
+                    break;
                 default:
                     handler = null;
                     break;
@@ -205,6 +211,9 @@ public final class PostRequestProcessor {
                     break;
                 case SUBSYSTEM_SAM:
                     requestBlock = new SAMRequestBlock(request, response, qJson);
+                    break;
+                case SUBSYSTEM_DIC:
+                    requestBlock = new DICRequestBlock(request, response, qJson);
                     break;
                 default:
                     break;

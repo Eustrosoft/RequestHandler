@@ -23,4 +23,14 @@
         <param-name>debug</param-name>
         <param-value>true</param-value>
     </context-param>
+
+    <servlet>
+        <servlet-name>HttpRequestDispatcher</servlet-name>
+        <servlet-class>com.eustrosoft.core.HttpRequestDispatcher</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HttpRequestDispatcher</servlet-name>
+        <url-pattern>/api/dispatcher</url-pattern>
+    </servlet-mapping>
 </web-app>

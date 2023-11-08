@@ -19,7 +19,10 @@ import java.util.Vector;
 
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
-import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.core.constants.DBConstants.F_NAME;
+import static com.eustrosoft.core.constants.DBConstants.NAME;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
 
 public final class FSDao extends BasicDAO {
 
@@ -159,7 +162,7 @@ public final class FSDao extends BasicDAO {
 
     @SneakyThrows
     public ExecStatus createFBlob(String zoid, String zver, String zpid,
-                                  String hex, String chunk, String allChunks, String crc32) {
+                                  String hex, String chunk, String shunkSize, String crc32) {
         Connection connection = getPoolConnection().get();
         String query = Query.builder()
                 .select()
@@ -172,7 +175,7 @@ public final class FSDao extends BasicDAO {
                         zpid,
                         hex,
                         chunk,
-                        allChunks,
+                        shunkSize,
                         Integer.parseInt(crc32.substring(3), 16)
                 ))
                 .rightBracket()

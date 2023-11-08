@@ -8,13 +8,57 @@ package com.eustrosoft.core.db.util;
 
 import com.eustrosoft.cms.CMSType;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
-import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.ID;
+import static com.eustrosoft.core.constants.DBConstants.SID;
+import static com.eustrosoft.core.constants.DBConstants.TYPE;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.constants.DBConstants.ZSID;
 
-public final class ResultSetUtils {
+public final class DBUtils {
 
-    private ResultSetUtils() {
+    private DBUtils() {
+    }
+
+    public static void setLongOrNull(PreparedStatement preparedStatement, int pos, Long num)
+            throws SQLException {
+        if (num == null) {
+            preparedStatement.setNull(pos, Types.BIGINT);
+        } else {
+            preparedStatement.setLong(pos, num);
+        }
+    }
+
+    public static void setShortOrNull(PreparedStatement preparedStatement, int pos, Short num)
+            throws SQLException {
+        if (num == null) {
+            preparedStatement.setNull(pos, Types.SMALLINT);
+        } else {
+            preparedStatement.setShort(pos, num);
+        }
+    }
+
+    public static void setIntOrNull(PreparedStatement preparedStatement, int pos, Integer num)
+            throws SQLException {
+        if (num == null) {
+            preparedStatement.setNull(pos, Types.INTEGER);
+        } else {
+            preparedStatement.setInt(pos, num);
+        }
+    }
+
+    public static void setStringOrNull(PreparedStatement preparedStatement, int pos, String str)
+            throws SQLException {
+        if (str == null || str.isEmpty()) {
+            preparedStatement.setNull(pos, Types.VARCHAR);
+        } else {
+            preparedStatement.setString(pos, str);
+        }
     }
 
     public static String getStrValueOrEmpty(ResultSet resultSet, String colName) {

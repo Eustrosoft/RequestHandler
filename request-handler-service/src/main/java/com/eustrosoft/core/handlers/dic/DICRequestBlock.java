@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.handlers.sam;
+package com.eustrosoft.core.handlers.dic;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
@@ -14,15 +14,15 @@ import lombok.Setter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_DIC;
 
 @Getter
 @Setter
-public class SAMRequestBlock extends BasicRequest {
+public class DICRequestBlock extends BasicRequest {
     private String id;
-    private String type;
+    private String dic;
 
-    public SAMRequestBlock(HttpServletRequest request,
+    public DICRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
         super(request, response, qJson);
@@ -31,7 +31,7 @@ public class SAMRequestBlock extends BasicRequest {
 
     @Override
     public String getS() {
-        return SUBSYSTEM_SAM;
+        return SUBSYSTEM_DIC;
     }
 
     @Override
@@ -48,6 +48,6 @@ public class SAMRequestBlock extends BasicRequest {
         if (qJson == null) {
             throw new NullPointerException("QJson was null");
         }
-        setType(qJson.getItemString("type"));
+        setDic(qJson.getItemString("dic"));
     }
 }

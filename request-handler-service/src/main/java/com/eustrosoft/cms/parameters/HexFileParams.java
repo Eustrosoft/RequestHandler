@@ -6,7 +6,11 @@
 
 package com.eustrosoft.cms.parameters;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -24,4 +28,5 @@ public class HexFileParams {
     private Integer securityLevel;
     private Long chunkNumber;
     private Long chunkCount;
+    private Long chunkSize;
 }

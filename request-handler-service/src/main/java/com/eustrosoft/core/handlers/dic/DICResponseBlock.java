@@ -4,10 +4,11 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.handlers.sam;
+package com.eustrosoft.core.handlers.dic;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 import com.eustrosoft.core.handlers.responses.ResponseLang;
+import com.eustrosoft.core.model.DIC;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
@@ -17,22 +18,22 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_DIC;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public final class SAMResponseBlock extends BasicResponse {
+public final class DICResponseBlock extends BasicResponse {
     private String errMsg = "";
     private Short errCode = 0;
     private String responseType;
-    private String data;
-    private List<Long> zsid;
+    private List<DIC> values;
+    private List<String> dics;
 
     @Override
     public String getS() {
-        return SUBSYSTEM_SAM;
+        return SUBSYSTEM_DIC;
     }
 
     @Override
@@ -66,11 +67,11 @@ public final class SAMResponseBlock extends BasicResponse {
     @Override
     public JsonObject toJsonObject() throws Exception {
         JsonObject object = super.toJsonObject();
-        if (getData() != null && !getData().isEmpty()) {
-            object.addProperty("data", getData());
+        if (dics != null && !dics.isEmpty()) {
+            object.add("dics", new Gson().toJsonTree(dics));
         }
-        if (zsid != null) {
-            object.add("zsid", new Gson().toJsonTree(zsid));
+        if (values != null && !values.isEmpty()) {
+            object.add("values", new Gson().toJsonTree(values));
         }
         return object;
     }

@@ -14,6 +14,8 @@ import lombok.Setter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.eustrosoft.core.constants.Constants.UNKNOWN;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,12 +39,20 @@ public class User extends DBObject {
 
     @Override
     public <T extends DBObject> void fillFromResultSet(ResultSet resultSet) throws SQLException {
-        resultSet.next();
-        super.fillFromResultSet(resultSet);
-        setFullName(resultSet.getString("full_name"));
-        setUsername(resultSet.getString("login"));
-        setDbUser(resultSet.getString("db_user"));
-        setId(resultSet.getLong("id"));
-        resultSet.close();
+        try {
+            resultSet.next();
+            super.fillFromResultSet(resultSet);
+            setId(resultSet.getLong("id"));
+            setFullName(resultSet.getString("full_name"));
+            setUsername(resultSet.getString("login"));
+            setDbUser(resultSet.getString("db_user"));
+        } catch (Exception ex) {
+            setId(-1L);
+            setFullName(UNKNOWN);
+            setUsername(UNKNOWN);
+            setDbUser(UNKNOWN);
+        } finally {
+            resultSet.close();
+        }
     }
 }

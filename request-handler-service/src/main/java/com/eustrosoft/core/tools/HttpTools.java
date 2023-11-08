@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.Arrays;
 
+import static com.eustrosoft.core.constants.Constants.ERR_UNSUPPORTED;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -57,6 +58,10 @@ public final class HttpTools {
         writer.println(new Gson().toJson(exceptionBlock));
         writer.flush();
         writer.close();
+    }
+
+    public static JsonObject getUnsupportedException() {
+        return getExceptionResponse("Unsupported", "", "", ERR_UNSUPPORTED);
     }
 
     public static JsonObject getExceptionResponse(

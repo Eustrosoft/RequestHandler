@@ -24,6 +24,10 @@ public class DBConstants {
     public final static String SEPARATOR = "/";
 
     public final static String NAME = "name";
+    public final static String VALUE = "value";
+    public final static String DIC = "dic";
+    public final static String CODE = "code";
+    public final static String DESCR = "descr";
     public final static String SUBJECT = "subject";
     public final static String STATUS = "status";
     public final static String OBJ_ID = "obj_id";

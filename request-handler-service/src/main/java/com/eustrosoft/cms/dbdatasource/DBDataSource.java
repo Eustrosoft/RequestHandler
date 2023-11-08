@@ -48,11 +48,11 @@ import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
 import static com.eustrosoft.core.constants.DBConstants.ZSID;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getFid;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getStrValueOrEmpty;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getType;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getZoid;
-import static com.eustrosoft.core.db.util.ResultSetUtils.getZsid;
+import static com.eustrosoft.core.db.util.DBUtils.getFid;
+import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
+import static com.eustrosoft.core.db.util.DBUtils.getType;
+import static com.eustrosoft.core.db.util.DBUtils.getZoid;
+import static com.eustrosoft.core.db.util.DBUtils.getZsid;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -159,6 +159,7 @@ public class DBDataSource implements CMSDataSource {
         String hex = params.getHex();
         Long chunk = params.getChunkNumber();
         Long chunkCount = params.getChunkCount();
+        Long chunkSize = params.getChunkSize();
 
         Long lastLvlPath = Long.parseLong(getLastLevelFromPath(new File(dest).getPath()));
         FSDao FSDao = new FSDao(poolConnection);
@@ -240,24 +241,23 @@ public class DBDataSource implements CMSDataSource {
                 }
             }
         }
-        ExecStatus fBlob = FSDao.createFBlob(
+        FSDao.createFBlob(
                 recordId,
                 recordVer,
                 filePid,
                 hex,
                 String.valueOf(chunk),
-                String.valueOf(chunkCount),
+                String.valueOf(chunkSize),
                 crc32
         );
         if (chunk == chunkCount - 1) {
-            // todo: add size
-            ExecStatus commited = FSDao.commitObject(
+            ExecStatus committed = FSDao.commitObject(
                     "FS.F",
                     Long.parseLong(recordId),
                     Long.parseLong(recordVer)
             );
-            if (!commited.isOk()) {
-                throw new Exception(commited.getCaption()); // TODO
+            if (!committed.isOk()) {
+                throw new Exception(committed.getCaption());
             }
         }
         return new HexFileResult(recordId, recordVer, filePid, params.getDestination());
@@ -447,17 +447,17 @@ public class DBDataSource implements CMSDataSource {
         String parentPath = file.getParent();
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
 
-        FSDao FSDao = new FSDao(poolConnection);
-        ExecStatus open = FSDao.openObject("FS.F", parentZoid);
+        FSDao fsDao = new FSDao(poolConnection);
+        ExecStatus open = fsDao.openObject("FS.F", parentZoid);
         if (!open.isOk()) {
             throw new Exception(open.getCaption());
         }
-        ResultSet directoryByNameAndId = FSDao.getDirectoryByNameAndId(parentZoid, dirName);
+        ResultSet directoryByNameAndId = fsDao.getDirectoryByNameAndId(parentZoid, dirName);
         ExecStatus commit = null;
         try {
             directoryByNameAndId.next();
             long zrid = directoryByNameAndId.getLong(ZRID);
-            ExecStatus delete = FSDao.deleteFDir(
+            ExecStatus delete = fsDao.deleteFDir(
                     String.valueOf(open.getZoid()),
                     String.valueOf(zrid),
                     String.valueOf(open.getZver())
@@ -469,11 +469,11 @@ public class DBDataSource implements CMSDataSource {
             throw new Exception(ex.getMessage());
         } finally {
             // todo: rollback
-            commit = FSDao.commitObject("FS.F", parentZoid, open.getZver());
+            commit = fsDao.commitObject("FS.F", parentZoid, open.getZver());
             directoryByNameAndId.close();
         }
         if (commit == null) {
-            commit = FSDao.commitObject("FS.F", parentZoid, open.getZver());
+            commit = fsDao.commitObject("FS.F", parentZoid, open.getZver());
         }
         if (!commit.isOk()) {
             throw new Exception(open.getCaption());

@@ -9,6 +9,7 @@ package com.eustrosoft.core.handlers.msg;
 import com.eustrosoft.core.db.ExecStatus;
 import com.eustrosoft.core.db.dao.MSGDao;
 import com.eustrosoft.core.db.dao.SamDAO;
+import com.eustrosoft.core.db.util.DBUtils;
 import com.eustrosoft.core.dto.UserDTO;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
@@ -17,7 +18,6 @@ import com.eustrosoft.core.model.MSGChannel;
 import com.eustrosoft.core.model.MSGMessage;
 import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
-import com.eustrosoft.core.model.user.User;
 import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.tools.DateTimeZone;
 import org.eustrosoft.qdbp.QDBPConnection;
@@ -28,9 +28,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.eustrosoft.core.constants.Constants.ERR_OK;
 import static com.eustrosoft.core.constants.Constants.MSG_OK;
@@ -39,16 +37,13 @@ import static com.eustrosoft.core.constants.Constants.REQUEST_CHAT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CHATS;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_CH;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_MSG;
 import static com.eustrosoft.core.constants.Constants.REQUEST_EDIT;
 import static com.eustrosoft.core.constants.Constants.REQUEST_SEND;
-import static com.eustrosoft.core.constants.DBConstants.CONTENT;
-import static com.eustrosoft.core.constants.DBConstants.MSG_ID;
-import static com.eustrosoft.core.constants.DBConstants.TYPE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_UPDATE;
 import static com.eustrosoft.core.constants.DBConstants.ZDATE;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
-import static com.eustrosoft.core.constants.DBConstants.ZRID;
 import static com.eustrosoft.core.constants.DBConstants.ZUID;
-import static com.eustrosoft.core.constants.DBConstants.ZVER;
 
 public final class MSGHandler implements Handler {
     private QDBPConnection poolConnection;
@@ -68,18 +63,21 @@ public final class MSGHandler implements Handler {
         msgResponseBlock.setErrMsg(MSG_OK);
         String requestType = msgRequestBlock.getR();
         msgResponseBlock.setResponseType(requestType);
-        // TODO
         switch (requestType) {
             case REQUEST_CHATS:
-                List<MSGChannel> chats = getChats();
-                msgResponseBlock.setChats(chats);
+                List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
+                msgResponseBlock.setChats(getChats(statuses));
+                break;
+            case REQUEST_UPDATE:
+                List<String> ststa = params == null ? Collections.emptyList() : params.getStatuses();
+                msgResponseBlock.setChats(getChatsVersions(ststa));
                 break;
             case REQUEST_CHAT:
                 List<MSGMessage> chatMessages = getChatMessages(params.getZoid());
                 msgResponseBlock.setMessages(chatMessages);
                 break;
             case REQUEST_CREATE:
-                createChat(params.getZoid(), params.getSlvl(), params.getSubject(), params.getContent());
+                createChat(params.getZoid(), params.getSlvl(), params.getZsid(), params.getSubject(), params.getContent());
                 break;
             case REQUEST_SEND:
                 String message = createMessage(params);
@@ -94,8 +92,12 @@ public final class MSGHandler implements Handler {
                         params.getReference(), MSGMessageType.of(params.getType())
                 );
                 break;
+            case REQUEST_DELETE_MSG:
             case REQUEST_DELETE:
                 deleteMessage(params.getZoid(), params.getZrid());
+                break;
+            case REQUEST_DELETE_CH:
+                deleteChannel(params.getZoid(), params.getZver());
                 break;
             case REQUEST_CHANGE:
                 changeChannelStatus(
@@ -111,10 +113,10 @@ public final class MSGHandler implements Handler {
         return msgResponseBlock;
     }
 
-    public List<MSGChannel> getChats() throws SQLException {
+    public List<MSGChannel> getChats(List<String> statuses) throws SQLException {
         MSGDao functions = new MSGDao(poolConnection);
         List<MSGChannel> channels = new ArrayList<>();
-        ResultSet chatsResultSet = functions.getChats();
+        ResultSet chatsResultSet = functions.getChats(MSGChannelStatus.of(statuses));
         if (chatsResultSet != null) {
             channels = processResultSetToMSGChannels(chatsResultSet);
             chatsResultSet.close();
@@ -122,7 +124,18 @@ public final class MSGHandler implements Handler {
         return channels;
     }
 
-    public List<MSGMessage> getChatMessages(Long chatId) throws SQLException {
+    public List<MSGChannel> getChatsVersions(List<String> statuses) throws SQLException {
+        MSGDao functions = new MSGDao(poolConnection);
+        List<MSGChannel> channels = new ArrayList<>();
+        ResultSet chatsResultSet = functions.getChatsVersions(MSGChannelStatus.of(statuses));
+        if (chatsResultSet != null) {
+            channels = processResultSetToMSGChannels(chatsResultSet);
+            chatsResultSet.close();
+        }
+        return channels;
+    }
+
+    public List<MSGMessage> getChatMessages(Long chatId) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         List<MSGMessage> messages = new ArrayList<>();
         ResultSet chatsResultSet = functions.getMessages(chatId);
@@ -133,12 +146,15 @@ public final class MSGHandler implements Handler {
         return messages;
     }
 
-    public String createChat(Long objId, Integer slvl, String subject, String content) throws Exception {
+    public String createChat(Long objId, Short slvl, Long sid, String subject, String content) throws Exception {
         if (subject == null || subject.trim().isEmpty()) {
             throw new IllegalArgumentException("Subject can not be null or empty");
         }
         MSGDao functions = new MSGDao(poolConnection);
-        ExecStatus chat = functions.createChat(new MSGChannel(subject, objId, MSGChannelStatus.N), slvl);
+        MSGChannel newChannel = new MSGChannel(subject, objId, MSGChannelStatus.N);
+        newChannel.setZlvl(slvl);
+        newChannel.setZsid(sid);
+        ExecStatus chat = functions.createChat(newChannel);
         if (content != null && !content.trim().isEmpty()) {
             functions.createMessage(
                     chat.getZoid(),
@@ -152,7 +168,7 @@ public final class MSGHandler implements Handler {
         return chat.getZoid().toString();
     }
 
-    public String createMessage(MsgParams params) throws SQLException {
+    public String createMessage(MsgParams params) throws Exception {
         if (params.getContent() == null || params.getContent().isEmpty()) {
             throw new IllegalArgumentException("Message content can not be null or empty");
         }
@@ -176,6 +192,11 @@ public final class MSGHandler implements Handler {
         functions.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
     }
 
+    private void deleteChannel(Long zoid, Long zver) throws Exception {
+        MSGDao functions = new MSGDao(poolConnection);
+        functions.deleteChannel(zoid, zver);
+    }
+
     public void deleteMessage(Long chatId, Long messageId) throws Exception {
         MSGDao functions = new MSGDao(poolConnection);
         functions.deleteMessage(chatId, messageId);
@@ -186,41 +207,26 @@ public final class MSGHandler implements Handler {
         functions.updateChannel(new MSGChannel(zoid, null, zrid, content, docId, status));
     }
 
-    private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) {
+    private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) throws Exception {
         List<MSGMessage> objects = new ArrayList<>();
-        Map<Long, User> userMapping = new HashMap<>();
         SamDAO samDAO = new SamDAO(poolConnection);
-        try {
-            while (resultSet.next()) {
-                try {
-                    Long zoid = resultSet.getLong(ZOID);
-                    Long zver = resultSet.getLong(ZVER);
-                    Long zrid = resultSet.getLong(ZRID);
-                    String content = resultSet.getString(CONTENT);
-                    Long answerId = resultSet.getLong(MSG_ID);
-                    String messageType = resultSet.getString(TYPE);
-                    Long userId = resultSet.getLong(ZUID);
-                    Timestamp created = resultSet.getTimestamp(ZDATE); // todo
-                    User user = null;
-                    if (!userMapping.containsKey(userId)) {
-                        user = new User();
-                        user.fillFromResultSet(samDAO.getUserResultSetById(userId));
-                        userMapping.put(userId, user);
-                    } else {
-                        user = userMapping.get(userId);
-                    }
-                    MSGMessage msgChannel = new MSGMessage(
-                            zoid, zver, zrid, new DateTimeZone(created),
-                            content, answerId, MSGMessageType.of(messageType)
-                    );
-                    msgChannel.setUser(UserDTO.fromUser(user));
-                    objects.add(msgChannel);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+        while (resultSet.next()) {
+            MSGMessage msgMessage = new MSGMessage();
+            msgMessage.fillFromResultSet(resultSet);
+            Timestamp created = resultSet.getTimestamp(ZDATE);
+            if (created != null) {
+                msgMessage.setCreated(new DateTimeZone(created).toString());
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            Long userId = DBUtils.getLongValueOrEmpty(resultSet, ZUID);
+            msgMessage.setUser(
+                    UserDTO.fromUser(
+                            samDAO.getUserById(userId)
+                    )
+            );
+            objects.add(msgMessage);
+        }
+        if (resultSet != null) {
+            resultSet.close();
         }
         return objects;
     }
@@ -239,13 +245,5 @@ public final class MSGHandler implements Handler {
         resultSet.close();
         Collections.reverse(objects);
         return objects;
-    }
-
-    private Long getLongOrNull(String str) {
-        try {
-            return Long.parseLong(str);
-        } catch (Exception ex) {
-            return null;
-        }
     }
 }
