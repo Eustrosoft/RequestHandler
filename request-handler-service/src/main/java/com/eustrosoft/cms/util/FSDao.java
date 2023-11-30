@@ -19,10 +19,7 @@ import java.util.Vector;
 
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
-import static com.eustrosoft.core.constants.DBConstants.FILE_ID;
-import static com.eustrosoft.core.constants.DBConstants.F_NAME;
-import static com.eustrosoft.core.constants.DBConstants.NAME;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public final class FSDao extends BasicDAO {
 
@@ -270,6 +267,7 @@ public final class FSDao extends BasicDAO {
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
+                resultSet.next();
                 return new FFile(resultSet);
             } finally {
                 preparedStatement.close();
@@ -295,6 +293,7 @@ public final class FSDao extends BasicDAO {
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
+                resultSet.next();
                 return new FDir(resultSet);
             } finally {
                 preparedStatement.close();
