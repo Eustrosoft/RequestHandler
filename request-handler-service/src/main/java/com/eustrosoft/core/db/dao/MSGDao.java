@@ -14,11 +14,7 @@ import com.eustrosoft.core.model.ranges.MSGChannelStatus;
 import com.eustrosoft.core.model.ranges.MSGPartyRole;
 import org.eustrosoft.qdbp.QDBPConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 
 import static com.eustrosoft.core.constants.DBConstants.STATUS;
