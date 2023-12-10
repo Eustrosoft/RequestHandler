@@ -20,6 +20,7 @@ import java.util.Vector;
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
 import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
 
 public final class FSDao extends BasicDAO {
 
@@ -190,21 +191,12 @@ public final class FSDao extends BasicDAO {
     }
 
     @SneakyThrows
-    public ExecStatus deleteFDir(String zoid, String zrid, String zver) {
+    public ExecStatus deleteFDir(Long zoid, Long zrid, Long zver) {
         Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("FS.delete_FDir")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s",
-                                zoid, zver, zrid
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
-        );
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT FS.delete_FDir(?, ?, ?)");
+        setLongOrNull(preparedStatement, 1, zoid);
+        setLongOrNull(preparedStatement, 2, zver);
+        setLongOrNull(preparedStatement, 3, zrid);
         ExecStatus status = new ExecStatus();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -293,7 +285,7 @@ public final class FSDao extends BasicDAO {
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
-                resultSet.next();
+                boolean next = resultSet.next();
                 return new FDir(resultSet);
             } finally {
                 preparedStatement.close();

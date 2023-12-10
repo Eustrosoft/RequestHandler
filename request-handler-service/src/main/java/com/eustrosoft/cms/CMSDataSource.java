@@ -53,7 +53,7 @@ public interface CMSDataSource {
         }
     }
 
-    String createDirectory(String path) throws Exception;
+    String createDirectory(String path, String description, Integer securityLevel) throws Exception;
 
     String getFullPath(String source) throws Exception;
 

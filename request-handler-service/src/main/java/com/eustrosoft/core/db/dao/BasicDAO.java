@@ -15,9 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
-import static com.eustrosoft.core.db.util.DBUtils.setShortOrNull;
-import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.*;
 
 public class BasicDAO {
     @Getter
@@ -127,6 +125,19 @@ public class BasicDAO {
         setStringOrNull(preparedStatement, 1, type);
         setLongOrNull(preparedStatement, 2, objectZoid);
         setLongOrNull(preparedStatement, 3, objectVer);
+        return execute(preparedStatement);
+    }
+
+    @SneakyThrows
+    public ExecStatus setSLvl(String type, Long objectZoid, Long objectVer, Short securityLevel) {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT TIS.set_slevel(?, ?, ?, ?)"
+        );
+        setStringOrNull(preparedStatement, 1, type);
+        setLongOrNull(preparedStatement, 2, objectZoid);
+        setLongOrNull(preparedStatement, 3, objectVer);
+        setShortOrNull(preparedStatement, 4, securityLevel);
         return execute(preparedStatement);
     }
 

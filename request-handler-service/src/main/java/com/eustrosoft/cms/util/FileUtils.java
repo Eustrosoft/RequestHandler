@@ -75,6 +75,18 @@ public final class FileUtils {
         }
     }
 
+    public static String getParentPath(String path) throws Exception {
+        int lastSlash = path.lastIndexOf(SEPARATOR);
+        if (lastSlash == -1) {
+            throw new Exception("Illegal path.");
+        } else {
+            if (path.endsWith(SEPARATOR)) {
+                path = path.substring(0, path.length() - 1);
+            }
+            return path.substring(0, path.lastIndexOf(SEPARATOR));
+        }
+    }
+
     public static String getWhereForLvlAndName(String[] partNames, int lvl) {
         StringBuilder builder = new StringBuilder();
         builder.append(" ");

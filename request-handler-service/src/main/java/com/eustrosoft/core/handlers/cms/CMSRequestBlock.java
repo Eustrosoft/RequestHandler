@@ -23,12 +23,30 @@ public class CMSRequestBlock extends BasicRequest {
     private String to;
     private String ticket;
     private String contentType;
+    private String description;
+    private Integer securityLevel;
 
     public CMSRequestBlock(HttpServletRequest request,
                            HttpServletResponse response,
                            QJson qJson) {
         super(request, response, qJson);
         parseQJson(qJson);
+    }
+
+    public Integer getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(Integer securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTicket() {
@@ -115,5 +133,11 @@ public class CMSRequestBlock extends BasicRequest {
         setPath(qJson.getItemString("path"));
         setTicket(qJson.getItemString("ticket"));
         setContentType(qJson.getItemString("contentType"));
+        setDescription(qJson.getItemString("description"));
+        try {
+            setSecurityLevel(qJson.getItemLong("securityLevel").intValue());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

@@ -11,7 +11,6 @@ import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.cms.dbdatasource.ranges.FileType;
 import com.eustrosoft.cms.dto.CMSGeneralObject;
 import com.eustrosoft.cms.dto.CMSObject;
-import com.eustrosoft.cms.exception.CMSException;
 import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.cms.parameters.HexFileParams;
@@ -19,40 +18,22 @@ import com.eustrosoft.cms.parameters.HexFileResult;
 import com.eustrosoft.cms.util.DBStatements;
 import com.eustrosoft.cms.util.FSDao;
 import com.eustrosoft.core.db.ExecStatus;
+import com.eustrosoft.core.model.FDir;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.eustrosoft.cms.util.DBStatements.getSelectForPath;
 import static com.eustrosoft.cms.util.DBStatements.getViewStatementForPath;
-import static com.eustrosoft.cms.util.FileUtils.getFirstLevelFromPath;
-import static com.eustrosoft.cms.util.FileUtils.getLastLevelFromPath;
-import static com.eustrosoft.cms.util.FileUtils.getPathLvl;
-import static com.eustrosoft.cms.util.FileUtils.getPathParts;
-import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.core.constants.DBConstants.F_NAME;
-import static com.eustrosoft.core.constants.DBConstants.ID;
-import static com.eustrosoft.core.constants.DBConstants.NAME;
-import static com.eustrosoft.core.constants.DBConstants.SEPARATOR;
-import static com.eustrosoft.core.constants.DBConstants.ZLVL;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
-import static com.eustrosoft.core.constants.DBConstants.ZRID;
-import static com.eustrosoft.core.constants.DBConstants.ZSID;
-import static com.eustrosoft.core.db.util.DBUtils.getFid;
-import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
-import static com.eustrosoft.core.db.util.DBUtils.getType;
-import static com.eustrosoft.core.db.util.DBUtils.getZoid;
-import static com.eustrosoft.core.db.util.DBUtils.getZsid;
+import static com.eustrosoft.cms.util.FileUtils.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.db.util.DBUtils.*;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -162,8 +143,8 @@ public class DBDataSource implements CMSDataSource {
         Long chunkSize = params.getChunkSize();
 
         Long lastLvlPath = Long.parseLong(getLastLevelFromPath(new File(dest).getPath()));
-        FSDao FSDao = new FSDao(poolConnection);
-        ResultSet selectObject = FSDao.selectObject(lastLvlPath);
+        FSDao fsDao = new FSDao(poolConnection);
+        ResultSet selectObject = fsDao.selectObject(lastLvlPath);
         Long zoid = null;
         String zlvl = null;
         String zsid = null;
@@ -186,12 +167,12 @@ public class DBDataSource implements CMSDataSource {
         }
         if (chunk == 0) {
             String fileName = params.getRecordId();
-            ExecStatus opened = FSDao.openObject("FS.F", zoid);
+            ExecStatus opened = fsDao.openObject("FS.F", zoid);
             try {
                 if (!opened.isOk()) {
                     throw new Exception(opened.getCaption());
                 }
-                ExecStatus objectInScope = FSDao.createObjectInScope(
+                ExecStatus objectInScope = fsDao.createObjectInScope(
                         "FS.F",
                         zsid,
                         String.valueOf(params.getSecurityLevel())
@@ -201,7 +182,7 @@ public class DBDataSource implements CMSDataSource {
                 }
                 recordId = objectInScope.getZoid().toString();
                 recordVer = objectInScope.getZver().toString();
-                ExecStatus fDir = FSDao.createFDir(
+                ExecStatus fDir = fsDao.createFDir(
                         opened.getZoid(),
                         opened.getZver(),
                         zoid,
@@ -210,17 +191,17 @@ public class DBDataSource implements CMSDataSource {
                         params.getDescription()
                 );
                 if (!fDir.isOk()) {
-                    throw new Exception(fDir.getCaption()); // TODO
+                    throw new Exception(fDir.getCaption());
                 }
-                ExecStatus commitFDir = FSDao.commitObject(
+                ExecStatus commitFDir = fsDao.commitObject(
                         "FS.F",
                         opened.getZoid(),
                         opened.getZver()
                 );
                 if (!commitFDir.isOk()) {
-                    throw new Exception(commitFDir.getCaption()); // TODO
+                    throw new Exception(commitFDir.getCaption());
                 }
-                ExecStatus fFile = FSDao.createFFile(
+                ExecStatus fFile = fsDao.createFFile(
                         objectInScope.getZoid().toString(),
                         objectInScope.getZver().toString(),
                         null,
@@ -230,18 +211,18 @@ public class DBDataSource implements CMSDataSource {
                         params.getDescription()
                 );
                 if (!fFile.isOk()) {
-                    throw new Exception(fFile.getCaption()); // TODO
+                    throw new Exception(fFile.getCaption());
                 }
                 filePid = fFile.getZoid().toString();
             } finally {
                 try {
-                    FSDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
+                    fsDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        FSDao.createFBlob(
+        fsDao.createFBlob(
                 recordId,
                 recordVer,
                 filePid,
@@ -251,7 +232,7 @@ public class DBDataSource implements CMSDataSource {
                 crc32
         );
         if (chunk == chunkCount - 1) {
-            ExecStatus committed = FSDao.commitObject(
+            ExecStatus committed = fsDao.commitObject(
                     "FS.F",
                     Long.parseLong(recordId),
                     Long.parseLong(recordVer)
@@ -264,8 +245,8 @@ public class DBDataSource implements CMSDataSource {
     }
 
     @Override
-    public String createDirectory(String path) throws Exception {
-        String parentPath = getFullPath(new File(path).getParent());
+    public String createDirectory(String path, String description, Integer securityLevel) throws Exception {
+        String parentPath = getFullPath(getParentPath(path));
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
         String scopeZoid = getFirstLevelFromPath(parentPath);
         FSDao FSDao = new FSDao(poolConnection);
@@ -273,17 +254,18 @@ public class DBDataSource implements CMSDataSource {
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
-        ExecStatus objectInScope = FSDao.createObjectInScope("FS.F", scopeZoid);
-        if (!objectInScope.isOk()) {
-            throw new Exception(objectInScope.getCaption());
-        }
+        String slvl = securityLevel == null ? null : securityLevel.toString();
+        ExecStatus objectInScope = FSDao.createObjectInScope("FS.F", scopeZoid, slvl);
+
         String dirName = path.substring(path.lastIndexOf(SEPARATOR) + 1);
         ExecStatus fFile = FSDao.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
                 null,
                 FileType.DIRECTORY,
-                dirName
+                dirName,
+                slvl,
+                description
         );
         if (!fFile.isOk()) {
             throw new Exception(fFile.getCaption()); // TODO
@@ -302,7 +284,7 @@ public class DBDataSource implements CMSDataSource {
                 fFile.getZver(),
                 objectInScope.getZoid(),
                 dirName,
-                String.format("%s directory created.", dirName)
+                description
         );
         if (!fDir.isOk()) {
             throw new Exception(fDir.getCaption()); // TODO
@@ -370,26 +352,81 @@ public class DBDataSource implements CMSDataSource {
     }
 
     @Override
-    public boolean update(String path, CMSObjectUpdateParameters data) throws CMSException {
-        return false;
+    public boolean update(String path, CMSObjectUpdateParameters data) throws Exception {
+        if (isEmpty(path) || isEmpty(data.getDescription())) {
+            return true;
+        }
+        String fullPath = getFullPath(path);
+        Long zoid = Long.parseLong(getLastLevelFromPath(fullPath));
+        FSDao fsDao = new FSDao(poolConnection);
+        FDir fDir = fsDao.getFDir(zoid, getLastLevelFromPath(path));
+        if (Objects.nonNull(data.getDescription())) {
+            fDir.setDescription(data.getDescription());
+        }
+        fsDao.updateFDir(fDir);
+        return true;
     }
 
     @Override
-    public boolean copy(String source, String direction) throws IOException, CMSException {
-        return false;
+    public boolean copy(String source, String direction) throws Exception {
+        String fullPath = getFullPath(source);
+        String lastLevelFromPath = getLastLevelFromPath(fullPath);
+        Long fileId = Long.parseLong(lastLevelFromPath);
+        String lastLevelDist = getLastLevelFromPath(direction);
+        FSDao fsDao = new FSDao(poolConnection);
+
+        String dirToMove = direction.substring(0, direction.length() - lastLevelDist.length() - 1);
+        Long dirId = Long.parseLong(getLastLevelFromPath(getFullPath(dirToMove)));
+        FDir fDir = fsDao.getFDir(fileId, lastLevelDist);
+        ExecStatus opened = fsDao.openObject("FS.F", dirId);
+        try {
+            if (!opened.isOk()) {
+                throw new Exception(opened.getCaption());
+            }
+            ExecStatus objectInScope = fsDao.createObjectInScope(
+                    "FS.F", fDir.getZsid(), fDir.getZlvl()
+            );
+
+            if (!objectInScope.isOk()) {
+                throw new Exception(objectInScope.getCaption());
+            }
+            fsDao.createFDir(
+                    opened.getZoid(),
+                    opened.getZver(),
+                    null,
+                    fDir.getFileId(),
+                    fDir.getFileName(),
+                    fDir.getDescription()
+            );
+        } finally {
+            try {
+                fsDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 
-    // todo: now works as rename
     @Override
     public boolean move(String source, String direction) throws Exception {
-        String fullPath = getFullPath(source);
-        Long fileId = Long.parseLong(getLastLevelFromPath(fullPath));
-        FSDao functions = new FSDao(poolConnection);
-        functions.renameFile(
-                fileId,
-                getLastLevelFromPath(source),
-                getLastLevelFromPath(direction)
-        );
+        String lastLevelSource = getLastLevelFromPath(source);
+        String lastLevelDist = getLastLevelFromPath(direction);
+
+        if (lastLevelSource.equals(lastLevelDist)) {
+            copy(source, direction);
+            delete(source);
+        } else {
+            String fullPath = getFullPath(source);
+            String lastLevelFromPath = getLastLevelFromPath(fullPath);
+            Long fileId = Long.parseLong(lastLevelFromPath);
+            FSDao fsDao = new FSDao(poolConnection);
+            fsDao.renameFile(
+                    fileId,
+                    lastLevelSource,
+                    lastLevelDist
+            );
+        }
         return true;
     }
 
@@ -442,9 +479,8 @@ public class DBDataSource implements CMSDataSource {
     @Override
     public boolean delete(String path) throws Exception {
         path = getFullPath(path);
-        File file = new File(path);
         String dirName = getLastLevelFromPath(path);
-        String parentPath = file.getParent();
+        String parentPath = getParentPath(path);
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
 
         FSDao fsDao = new FSDao(poolConnection);
@@ -458,9 +494,9 @@ public class DBDataSource implements CMSDataSource {
             directoryByNameAndId.next();
             long zrid = directoryByNameAndId.getLong(ZRID);
             ExecStatus delete = fsDao.deleteFDir(
-                    String.valueOf(open.getZoid()),
-                    String.valueOf(zrid),
-                    String.valueOf(open.getZver())
+                    open.getZoid(),
+                    zrid,
+                    open.getZver()
             );
             if (!delete.isOk()) {
                 throw new Exception(delete.getCaption());
@@ -519,5 +555,18 @@ public class DBDataSource implements CMSDataSource {
             ex.printStackTrace();
         }
         return objects;
+    }
+
+    @SneakyThrows
+    public void setSLvl() {
+
+    }
+
+    private boolean isEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    private boolean isEmpty(Integer val) {
+        return val == null;
     }
 }
