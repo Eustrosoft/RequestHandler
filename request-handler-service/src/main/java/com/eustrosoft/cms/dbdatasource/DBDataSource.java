@@ -353,7 +353,7 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public boolean update(String path, CMSObjectUpdateParameters data) throws Exception {
-        if (isEmpty(path) || isEmpty(data.getDescription())) {
+        if (isEmpty(path) || data.getDescription() == null) {
             return true;
         }
         String fullPath = getFullPath(path);
