@@ -40,7 +40,6 @@ public class User extends DBObject {
     @Override
     public <T extends DBObject> void fillFromResultSet(ResultSet resultSet) throws SQLException {
         try {
-            resultSet.next();
             super.fillFromResultSet(resultSet);
             setId(resultSet.getLong("id"));
             setFullName(resultSet.getString("full_name"));

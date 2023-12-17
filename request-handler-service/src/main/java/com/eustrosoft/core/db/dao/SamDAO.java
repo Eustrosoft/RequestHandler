@@ -59,10 +59,16 @@ public class SamDAO extends BasicDAO {
     @SneakyThrows
     public User getUserById(Long id) {
         User user;
+        if (id == null || id <= 0) {
+            return new User(UNKNOWN, UNKNOWN);
+        }
         if (!userCache.containsKey(id)) {
             user = new User();
             try {
-                user.fillFromResultSet(getUserResultSetById(id));
+                ResultSet userResultSetById = getUserResultSetById(id);
+                userResultSetById.next();
+                user.fillFromResultSet(userResultSetById);
+                userResultSetById.close();
                 userCache.put(id, user);
             } catch (Exception ex) {
                 user.setId(id);
