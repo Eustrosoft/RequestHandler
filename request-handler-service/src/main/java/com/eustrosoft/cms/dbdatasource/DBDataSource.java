@@ -159,7 +159,7 @@ public class DBDataSource implements CMSDataSource {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         } finally {
             if (selectObject != null) {
                 selectObject.close();
@@ -436,7 +436,7 @@ public class DBDataSource implements CMSDataSource {
             // todo: try to avoid this logic
             path = getFullPath(path);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         String zoid = getLastLevelFromPath(path);
         return new FSDao(poolConnection).getFileInputStream(zoid);
@@ -447,7 +447,7 @@ public class DBDataSource implements CMSDataSource {
         try {
             path = getFullPath(path);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         Connection connection = poolConnection.get();
         Long zoid = Long.parseLong(getLastLevelFromPath(path));
@@ -542,17 +542,17 @@ public class DBDataSource implements CMSDataSource {
                     try {
                         builder.securityLevel(Integer.valueOf(zlvl, 10));
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        // ex.printStackTrace();
                     }
                     CMSGeneralObject build = builder.build();
                     build.setZoid(id);
                     objects.add(build);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    // ex.printStackTrace();
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         return objects;
     }

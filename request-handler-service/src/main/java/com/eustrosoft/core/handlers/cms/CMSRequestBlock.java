@@ -137,7 +137,7 @@ public class CMSRequestBlock extends BasicRequest {
         try {
             setSecurityLevel(qJson.getItemLong("securityLevel").intValue());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
     }
 }

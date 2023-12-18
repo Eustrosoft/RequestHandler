@@ -68,14 +68,14 @@ public class CMSDownloader {
                     out.flush();
                     out.close();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    // ex.printStackTrace();
                 }
             }
             if (in != null) {
                 try {
                     in.close();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    // ex.printStackTrace();
                 }
             }
         }

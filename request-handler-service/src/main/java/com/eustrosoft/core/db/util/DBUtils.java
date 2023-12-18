@@ -13,12 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static com.eustrosoft.core.constants.DBConstants.ID;
-import static com.eustrosoft.core.constants.DBConstants.SID;
-import static com.eustrosoft.core.constants.DBConstants.TYPE;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
-import static com.eustrosoft.core.constants.DBConstants.ZRID;
-import static com.eustrosoft.core.constants.DBConstants.ZSID;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public final class DBUtils {
 
@@ -66,7 +61,7 @@ public final class DBUtils {
         try {
             val = resultSet.getObject(colName).toString();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         return val;
     }
@@ -76,7 +71,7 @@ public final class DBUtils {
         try {
             val = Long.parseLong(resultSet.getObject(colName).toString());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         return val;
     }
@@ -92,7 +87,7 @@ public final class DBUtils {
                 val = CMSType.FILE;
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         return val;
     }

@@ -45,7 +45,7 @@ public class FileHandler implements Handler {
             bos.flush();
             answer = fileName;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
             answer = ex.getMessage();
         }
         return new FileResponseBlock(answer);

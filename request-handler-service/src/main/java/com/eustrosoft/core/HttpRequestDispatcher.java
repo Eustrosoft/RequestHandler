@@ -30,13 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-import static com.eustrosoft.core.constants.Constants.ERR_SERVER;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.constants.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
-import static com.eustrosoft.core.tools.HttpTools.getExceptionResponse;
-import static com.eustrosoft.core.tools.HttpTools.printError;
-import static com.eustrosoft.core.tools.HttpTools.setHeadersForFileDownload;
+import static com.eustrosoft.core.constants.Constants.*;
+import static com.eustrosoft.core.tools.HttpTools.*;
 import static com.eustrosoft.core.tools.LoginChecker.checkLogin;
 import static com.eustrosoft.core.tools.LoginChecker.getUnauthorizedResponse;
 
@@ -101,7 +96,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
             printError(resp,
                     getExceptionResponse(
                             ex.getMessage(),

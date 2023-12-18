@@ -30,18 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.eustrosoft.core.constants.Constants.ERR_OK;
-import static com.eustrosoft.core.constants.Constants.MSG_OK;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CHANGE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CHAT;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CHATS;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_CH;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE_MSG;
-import static com.eustrosoft.core.constants.Constants.REQUEST_EDIT;
-import static com.eustrosoft.core.constants.Constants.REQUEST_SEND;
-import static com.eustrosoft.core.constants.Constants.REQUEST_UPDATE;
+import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.constants.DBConstants.ZDATE;
 import static com.eustrosoft.core.constants.DBConstants.ZUID;
 
@@ -239,7 +228,7 @@ public final class MSGHandler implements Handler {
                 msgChannel.fillFromResultSet(resultSet);
                 objects.add(msgChannel);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                // ex.printStackTrace();
             }
         }
         resultSet.close();
