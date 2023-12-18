@@ -112,7 +112,7 @@ public class BytesChunkFileHandler implements Handler {
         } catch (Exception e) {
             stream.close();
             channel.close();
-            e.printStackTrace();
+            // e.printStackTrace();
         } finally {
             if (null != lock) {
                 lock.release();
@@ -121,7 +121,7 @@ public class BytesChunkFileHandler implements Handler {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // e.printStackTrace();
                 }
             }
             stream.close();

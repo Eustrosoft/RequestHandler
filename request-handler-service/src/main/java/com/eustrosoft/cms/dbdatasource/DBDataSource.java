@@ -218,7 +218,7 @@ public class DBDataSource implements CMSDataSource {
                 try {
                     fsDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // e.printStackTrace();
                 }
             }
         }
@@ -402,7 +402,7 @@ public class DBDataSource implements CMSDataSource {
             try {
                 fsDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
             } catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         }
         return true;

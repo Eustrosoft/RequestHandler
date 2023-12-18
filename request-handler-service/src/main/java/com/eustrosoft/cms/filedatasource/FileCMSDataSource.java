@@ -125,7 +125,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
         } catch (Exception e) {
             stream.close();
             channel.close();
-            e.printStackTrace();
+            // e.printStackTrace();
         } finally {
             if (null != lock) {
                 lock.release();
