@@ -20,7 +20,7 @@ import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.providers.context.UsersContext;
 import com.eustrosoft.core.services.FileDownloadService;
 import com.eustrosoft.core.services.UserStorage;
-import com.eustrosoft.core.tools.ZipService;
+import com.eustrosoft.core.services.ZipService;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;

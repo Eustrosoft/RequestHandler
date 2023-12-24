@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZVER;
 import static com.eustrosoft.core.db.util.DBUtils.*;
 
 public class BasicDAO {
@@ -129,7 +131,7 @@ public class BasicDAO {
     }
 
     @SneakyThrows
-    public ExecStatus setSLvl(String type, Long objectZoid, Long objectVer, Short securityLevel) {
+    public ExecStatus setZLvl(String type, Long objectZoid, Long objectVer, Short zlvl) {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT TIS.set_slevel(?, ?, ?, ?)"
@@ -137,9 +139,30 @@ public class BasicDAO {
         setStringOrNull(preparedStatement, 1, type);
         setLongOrNull(preparedStatement, 2, objectZoid);
         setLongOrNull(preparedStatement, 3, objectVer);
-        setShortOrNull(preparedStatement, 4, securityLevel);
+        setShortOrNull(preparedStatement, 4, zlvl);
         return execute(preparedStatement);
     }
+
+    @SneakyThrows
+    public String getZType(Long zoid, Long zver) {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(
+                connection,
+                "TIS.zobject",
+                String.format("%s = %s", ZOID, zoid),
+                String.format("%s = %s", ZVER, zver)
+        );
+        String ztype = null;
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            ztype = resultSet.getString("ztype");
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return ztype;
+    }
+
 
     @SneakyThrows
     protected ExecStatus execute(PreparedStatement preparedStatement) {

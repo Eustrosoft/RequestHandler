@@ -14,12 +14,14 @@ import java.sql.PreparedStatement;
 public final class DBStatements {
 
     @SneakyThrows
-    public static PreparedStatement getFunctionStatement(Connection connection, String function, String... params) {
+    public static PreparedStatement getFunctionStatement(Connection connection, String function, String... where) {
         return connection.prepareStatement(
                 String.format(
                         "SELECT * FROM %s %s;",
                         function,
-                        String.format("(%s)", String.join(",", params))
+                        where == null || where.length == 0
+                                ? ""
+                                : String.format("where (%s)", String.join(" AND ", where))
                 )
         );
     }

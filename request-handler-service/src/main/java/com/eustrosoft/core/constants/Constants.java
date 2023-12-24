@@ -25,7 +25,9 @@ public final class Constants {
     public static final String SUBSYSTEM_MSG = "msg";
     public static final String SUBSYSTEM_SAM = "sam";
     public static final String SUBSYSTEM_DIC = "dic";
+    public static final String SUBSYSTEM_TIS = "tis";
 
+    // Ping subsystem
     public static final String REQUEST_PING = "ping";
     // Sql subsystem
     public static final String REQUEST_SQL = "sql";
@@ -45,6 +47,10 @@ public final class Constants {
     // Dic subsystem
     public static final String REQUEST_VALUES = "values";
     public static final String REQUEST_DICS = "dics";
+    // Tis sybsystem
+    public static final String REQUEST_CHANGE_ZSID = "change_zsid";
+    public static final String REQUEST_CHANGE_ZLVL = "change_zlvl";
+
 
     // TIS/SAM Subsystem
     public static final String REQUEST_USER_LOGIN = "user_login";
