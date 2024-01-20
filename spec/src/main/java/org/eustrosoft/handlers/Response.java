@@ -14,8 +14,6 @@ public interface Response {
         return 1L;
     }
 
-    ;
-
     List<ResponseBlock> getR();
 
     Long getT();
