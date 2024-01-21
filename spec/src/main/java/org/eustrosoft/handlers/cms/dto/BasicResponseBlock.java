@@ -11,7 +11,11 @@ public abstract class BasicResponseBlock<T> implements ResponseBlock<T> {
     protected String r;
     protected String m;
     protected String l;
-    protected Short e;
+    protected Long e;
+
+    public BasicResponseBlock() {
+
+    }
 
     public BasicResponseBlock(ResponseParams params) {
         this.s = params.getSubsystem();
@@ -32,7 +36,7 @@ public abstract class BasicResponseBlock<T> implements ResponseBlock<T> {
     }
 
     @Override
-    public Short getE() {
+    public Long getE() {
         return this.e;
     }
 

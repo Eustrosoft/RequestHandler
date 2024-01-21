@@ -4,10 +4,10 @@ public class ResponseParams {
     private String subsystem;
     private String request;
     private String message;
-    private Short error;
     private String lang;
+    private Long error;
 
-    public ResponseParams(String subsystem, String request, String message, Short error, String lang) {
+    public ResponseParams(String subsystem, String request, String message, Long error, String lang) {
         this.subsystem = subsystem;
         this.request = request;
         this.message = message;
@@ -39,11 +39,11 @@ public class ResponseParams {
         this.message = message;
     }
 
-    public Short getError() {
+    public Long getError() {
         return error;
     }
 
-    public void setError(Short error) {
+    public void setError(Long error) {
         this.error = error;
     }
 

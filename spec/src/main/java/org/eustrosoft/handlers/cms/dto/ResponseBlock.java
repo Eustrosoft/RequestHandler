@@ -11,7 +11,7 @@ public interface ResponseBlock<T> {
 
     String getR();
 
-    Short getE();
+    Long getE();
 
     String getM();
 

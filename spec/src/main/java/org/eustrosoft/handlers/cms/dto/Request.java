@@ -6,6 +6,8 @@
 
 package org.eustrosoft.handlers.cms.dto;
 
+import org.eustrosoft.handlers.JsonParser;
+
 import java.util.List;
 
 public interface Request {
@@ -13,5 +15,8 @@ public interface Request {
 
     Long getT();
 
-    String toJsonString();
+    default String toJsonString() throws Exception {
+        JsonParser jsonParser = new JsonParser();
+        return jsonParser.parseObject(this);
+    }
 }
