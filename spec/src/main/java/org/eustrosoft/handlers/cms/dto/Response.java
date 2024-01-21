@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package org.eustrosoft.handlers;
+package org.eustrosoft.handlers.cms.dto;
 
 import java.util.List;
 

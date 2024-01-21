@@ -1,12 +1,10 @@
 package org.eustrosoft;
 
-import org.eustrosoft.handlers.Request;
-import org.eustrosoft.handlers.Response;
-import org.eustrosoft.handlers.sam.resource.SamResource;
+import org.eustrosoft.handlers.sam.dto.data.UserDTO;
 
-public class SamResourceImpl implements SamResource {
-    @Override
-    public Response getUserId(Request request) {
+public class SamResourceImpl {
+
+    public UserDTO getUserId() {
         return null;
     }
 }

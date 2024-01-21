@@ -1,8 +1,9 @@
 package org.eustrosoft.handlers.sam.resource;
 
-import org.eustrosoft.handlers.Request;
-import org.eustrosoft.handlers.Response;
+import org.eustrosoft.handlers.cms.dto.RequestBlock;
+import org.eustrosoft.handlers.cms.dto.Response;
+import org.eustrosoft.handlers.cms.dto.Stub;
 
 public interface SamResource {
-    Response getUserId(Request request);
+    Response getUserId(RequestBlock<Stub> request);
 }

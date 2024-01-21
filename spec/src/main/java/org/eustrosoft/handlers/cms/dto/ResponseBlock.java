@@ -4,9 +4,9 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package org.eustrosoft.handlers;
+package org.eustrosoft.handlers.cms.dto;
 
-public interface ResponseBlock {
+public interface ResponseBlock<T> {
     String getS();
 
     String getR();
@@ -17,5 +17,5 @@ public interface ResponseBlock {
 
     String getL();
 
-    Object getData();
+    T getData();
 }
