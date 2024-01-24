@@ -1,7 +1,6 @@
 package org.eustrosoft.dispatcher;
 
 import org.eustrosoft.annotation.Handler;
-import org.eustrosoft.constants.Constants;
 import org.eustrosoft.exception.ExceptionBlock;
 import org.eustrosoft.handler.BasicHandler;
 import org.eustrosoft.handler.ResponseBlock;
@@ -9,6 +8,7 @@ import org.eustrosoft.handler.requests.QTisRequestObject;
 import org.eustrosoft.handler.requests.RequestObject;
 import org.eustrosoft.handler.responses.QTisResponse;
 import org.eustrosoft.handler.responses.ResponseLang;
+import org.eustrosoft.spec.Constants;
 import org.eustrosoft.util.ClassScannerUtil;
 
 import javax.servlet.http.HttpServletRequest;

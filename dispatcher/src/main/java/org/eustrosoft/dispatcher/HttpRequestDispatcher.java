@@ -6,22 +6,10 @@
 
 package org.eustrosoft.dispatcher;
 
-import lombok.SneakyThrows;
-import org.eustrosoft.cms.CMSDataSource;
-import org.eustrosoft.cms.dbdatasource.DBDataSource;
-import org.eustrosoft.cms.filedatasource.FileCMSDataSource;
-import org.eustrosoft.cms.parameters.FileDetails;
-import org.eustrosoft.cms.providers.DataSourceProvider;
-import org.eustrosoft.core.handlers.cms.CMSHandler;
-import org.eustrosoft.core.handlers.cms.CMSRequestBlock;
-import org.eustrosoft.core.handlers.responses.Response;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.providers.SessionProvider;
-import org.eustrosoft.core.services.FileDownloadService;
-import org.eustrosoft.core.tools.HttpTools;
-import org.eustrosoft.core.tools.Json;
-import org.eustrosoft.core.tools.QJson;
+import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.services.FileDownloadService;
+import org.eustrosoft.tools.HttpTools;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -31,9 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-import static org.eustrosoft.core.constants.Constants.*;
-import static org.eustrosoft.core.tools.LoginChecker.checkLogin;
-import static org.eustrosoft.core.tools.LoginChecker.getUnauthorizedResponse;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_CMS;
+import static org.eustrosoft.tools.LoginChecker.checkLogin;
+import static org.eustrosoft.tools.LoginChecker.getUnauthorizedResponse;
 
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
@@ -43,8 +31,7 @@ import static org.eustrosoft.core.tools.LoginChecker.getUnauthorizedResponse;
 public class HttpRequestDispatcher extends HttpServlet {
 
     @Override
-    @SneakyThrows
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
@@ -114,11 +101,6 @@ public class HttpRequestDispatcher extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         PostRequestProcessor requestProcessor = new PostRequestProcessor(request, response);
         QDBPSession session = new QDBPSession("123", 1L);
-//        try {
-//            session = new SessionProvider(request, response).getSession();
-//        } catch (Exception ex) {
-//            System.out.println("User without session");
-//        }
         Response resp = null;
         if (session != null) {
             synchronized (session) {

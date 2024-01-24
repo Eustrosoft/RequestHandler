@@ -1,4 +1,4 @@
-package org.eustrosoft.handlers.cms.dto;
+package org.eustrosoft.spec;
 
 public class ResponseParams {
     private String subsystem;

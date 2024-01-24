@@ -1,8 +1,8 @@
 package org.eustrosoft;
 
 import org.eustrosoft.handlers.RequestSender;
-import org.eustrosoft.handlers.cms.dto.Request;
-import org.eustrosoft.handlers.cms.dto.Response;
+import org.eustrosoft.spec.Request;
+import org.eustrosoft.spec.Response;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;

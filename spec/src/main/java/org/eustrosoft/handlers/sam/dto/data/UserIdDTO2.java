@@ -1,7 +1,7 @@
 package org.eustrosoft.handlers.sam.dto.data;
 
 import org.eustrosoft.handlers.JsonIgnore;
-import org.eustrosoft.handlers.cms.dto.Stub;
+import org.eustrosoft.spec.Stub;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

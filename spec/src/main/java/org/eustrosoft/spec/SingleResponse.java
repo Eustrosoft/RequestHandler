@@ -1,4 +1,4 @@
-package org.eustrosoft.handlers.cms.dto;
+package org.eustrosoft.spec;
 
 import org.eustrosoft.handlers.BasicDTO;
 import org.eustrosoft.handlers.JsonParser;

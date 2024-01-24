@@ -1,7 +1,7 @@
 package org.eustrosoft.handlers;
 
-import org.eustrosoft.handlers.cms.dto.Request;
-import org.eustrosoft.handlers.cms.dto.Response;
+import org.eustrosoft.spec.Request;
+import org.eustrosoft.spec.Response;
 
 import java.util.concurrent.Future;
 import java.util.function.Function;

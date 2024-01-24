@@ -1,4 +1,4 @@
-package org.eustrosoft.handlers.cms.dto;
+package org.eustrosoft.spec;
 
 import java.util.ArrayList;
 import java.util.List;

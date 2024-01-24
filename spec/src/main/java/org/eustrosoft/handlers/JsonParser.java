@@ -1,7 +1,7 @@
 package org.eustrosoft.handlers;
 
-import org.eustrosoft.handlers.cms.dto.ResponseParams;
 import org.eustrosoft.handlers.sam.dto.data.UserDTO;
+import org.eustrosoft.spec.ResponseParams;
 
 import java.io.IOException;
 import java.io.StringReader;

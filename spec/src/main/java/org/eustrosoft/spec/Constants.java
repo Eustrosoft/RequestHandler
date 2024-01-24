@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package org.eustrosoft.constants;
+package org.eustrosoft.spec;
 
 public final class Constants {
     public static final String SUBSYSTEM = "s";

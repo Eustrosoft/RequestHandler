@@ -1,7 +1,7 @@
 package org.eustrosoft.handlers;
 
-import org.eustrosoft.handlers.cms.dto.BasicResponseBlock;
-import org.eustrosoft.handlers.cms.dto.ResponseParams;
+import org.eustrosoft.spec.BasicResponseBlock;
+import org.eustrosoft.spec.ResponseParams;
 
 public class BasicDTO<T> extends BasicResponseBlock<T> {
     private T data;

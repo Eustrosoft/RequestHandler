@@ -1,31 +1,24 @@
 package org.eustrosoft.tools;
 
-import com.google.gson.JsonObject;
-import lombok.SneakyThrows;
-import org.eustrosoft.core.providers.context.DBPoolContext;
-import org.eustrosoft.qdbp.QDBPSession;
-import org.eustrosoft.qdbp.QDBPool;
-import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
+import org.eustrosoft.providers.context.DBPoolContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.eustrosoft.core.constants.Constants.ERR_UNAUTHORIZED;
-import static org.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
+import static org.eustrosoft.spec.Constants.ERR_UNAUTHORIZED;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
 
 public final class LoginChecker {
 
-    @SneakyThrows
     public static void checkLogin(HttpServletRequest request,
                                   HttpServletResponse response,
-                                  String subsystem) {
+                                  String subsystem) throws Exception {
         if (getSession(request, response) == null && !isLoginSubsystem(subsystem)) {
             HttpTools.printError(response, getUnauthorizedResponse());
             throw new Exception("Unauthorized access");
         }
     }
 
-    @SneakyThrows
     public static QDBPSession getSession(HttpServletRequest request,
                                          HttpServletResponse response) {
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);

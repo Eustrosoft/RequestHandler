@@ -6,7 +6,7 @@
 
 package org.eustrosoft.providers;
 
-import org.eustrosoft.core.providers.context.DBPoolContext;
+import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
