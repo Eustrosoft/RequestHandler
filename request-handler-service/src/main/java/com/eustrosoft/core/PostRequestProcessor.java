@@ -6,14 +6,7 @@ import com.eustrosoft.core.handlers.cms.CMSHandler;
 import com.eustrosoft.core.handlers.cms.CMSRequestBlock;
 import com.eustrosoft.core.handlers.dic.DICHandler;
 import com.eustrosoft.core.handlers.dic.DICRequestBlock;
-import com.eustrosoft.core.handlers.file.BytesChunkFileHandler;
-import com.eustrosoft.core.handlers.file.BytesChunkFileRequestBlock;
-import com.eustrosoft.core.handlers.file.ChunkFileHandler;
-import com.eustrosoft.core.handlers.file.ChunkFileRequestBlock;
-import com.eustrosoft.core.handlers.file.FileHandler;
-import com.eustrosoft.core.handlers.file.FileRequestBlock;
-import com.eustrosoft.core.handlers.file.HexFileHandler;
-import com.eustrosoft.core.handlers.file.HexFileRequestBlock;
+import com.eustrosoft.core.handlers.file.*;
 import com.eustrosoft.core.handlers.login.LoginHandler;
 import com.eustrosoft.core.handlers.login.LoginRequestBlock;
 import com.eustrosoft.core.handlers.msg.MSGHandler;
@@ -28,8 +21,6 @@ import com.eustrosoft.core.handlers.responses.Response;
 import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sam.SAMHandler;
 import com.eustrosoft.core.handlers.sam.SAMRequestBlock;
-import com.eustrosoft.core.handlers.sql.SQLHandler;
-import com.eustrosoft.core.handlers.sql.SQLRequestBlock;
 import com.eustrosoft.core.tools.QJson;
 import lombok.SneakyThrows;
 
@@ -40,22 +31,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.constants.Constants.REQUEST;
-import static com.eustrosoft.core.constants.Constants.REQUESTS;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_BINARY_FILE_UPLOAD;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_FILE_UPLOAD;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
-import static com.eustrosoft.core.constants.Constants.REQUEST_FILE_UPLOAD;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_DIC;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_FILE;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_MSG;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_PING;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
-import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SQL;
-import static com.eustrosoft.core.constants.Constants.TIMEOUT;
+import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static com.eustrosoft.core.tools.LoginChecker.checkLogin;
 
@@ -114,9 +90,9 @@ public final class PostRequestProcessor {
                 case SUBSYSTEM_LOGIN:
                     handler = new LoginHandler();
                     break;
-                case SUBSYSTEM_SQL:
-                    handler = new SQLHandler();
-                    break;
+//                case SUBSYSTEM_SQL:
+//                    handler = new SQLHandler(); disabled sql handler
+//                    break;
                 case SUBSYSTEM_FILE:
                     handler = getFileHandler(requestType);
                     break;
@@ -186,9 +162,9 @@ public final class PostRequestProcessor {
                 case SUBSYSTEM_PING:
                     requestBlock = new PingRequestBlock(request, response);
                     break;
-                case SUBSYSTEM_SQL:
-                    requestBlock = new SQLRequestBlock(request, response, qJson);
-                    break;
+//                case SUBSYSTEM_SQL:
+//                    requestBlock = new SQLRequestBlock(request, response, qJson);
+//                    break; disable sql subsystem temporary
                 case SUBSYSTEM_FILE:
                     if (requestType.equals(REQUEST_FILE_UPLOAD)) {
                         requestBlock = new FileRequestBlock(request, response, qJson);
