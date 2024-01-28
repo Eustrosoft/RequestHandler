@@ -6,8 +6,7 @@
 
 package org.eustrosoft.core.db.util;
 
-import org.eustrosoft.cms.CMSType;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.constants.DBConstants;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -75,25 +74,25 @@ public final class DBUtils {
         return val;
     }
 
-    public static CMSType getType(ResultSet resultSet, CMSType defaultValue) {
-        CMSType val = CMSType.UNKNOWN;
-        try {
-            String typeStr = resultSet.getObject(DBConstants.TYPE).toString();
-            if (typeStr.equals("R") || typeStr.equals("D")) { // todo
-                val = CMSType.DIRECTORY;
-            }
-            if (typeStr.equals("B")) { // todo
-                val = CMSType.FILE;
-            }
-        } catch (Exception ex) {
-            // ex.printStackTrace();
-        }
-        return val;
-    }
-
-    public static CMSType getType(ResultSet resultSet) {
-        return getType(resultSet, CMSType.UNKNOWN);
-    }
+//    public static CMSType getType(ResultSet resultSet, CMSType defaultValue) {
+//        CMSType val = CMSType.UNKNOWN;
+//        try {
+//            String typeStr = resultSet.getObject(DBConstants.TYPE).toString();
+//            if (typeStr.equals("R") || typeStr.equals("D")) { // todo
+//                val = CMSType.DIRECTORY;
+//            }
+//            if (typeStr.equals("B")) { // todo
+//                val = CMSType.FILE;
+//            }
+//        } catch (Exception ex) {
+//            // ex.printStackTrace();
+//        }
+//        return val;
+//    }
+//
+//    public static CMSType getType(ResultSet resultSet) {
+//        return getType(resultSet, CMSType.UNKNOWN);
+//    }
 
     public static Long getZsid(ResultSet resultSet) {
         Long zsid = getLongValueOrEmpty(resultSet, DBConstants.SID);

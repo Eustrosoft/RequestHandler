@@ -38,7 +38,8 @@ public final class ClassScannerUtil {
         return classes;
     }
 
-    private static Set<Class<?>> findClasses(File directory, String packageName, Class annotationClazz) throws ClassNotFoundException {
+    private static Set<Class<?>> findClasses(File directory, String packageName, Class annotationClazz)
+            throws ClassNotFoundException {
         Set<Class<?>> classes = new HashSet<>();
         if (!directory.exists()) {
             return classes;

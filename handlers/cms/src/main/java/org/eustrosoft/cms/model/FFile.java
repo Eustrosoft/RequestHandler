@@ -24,19 +24,14 @@
 
 package org.eustrosoft.cms.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 import org.eustrosoft.cms.dbdatasource.ranges.FileType;
-import org.eustrosoft.core.constants.DBConstants;
-import org.eustrosoft.core.model.interfaces.Updatable;
+import org.eustrosoft.constants.DBConstants;
+import org.eustrosoft.core.model.DBObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Getter
-@Setter
-public class FFile extends DBObject implements Updatable {
+public class FFile extends DBObject {
     private String fileName;
     private FileType fileType;
     private Character extStore;
@@ -73,8 +68,7 @@ public class FFile extends DBObject implements Updatable {
     }
 
     @Override
-    @SneakyThrows
-    public void fillFromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
         // TODO: constants
         setFileName(resultSet.getString(DBConstants.NAME));
@@ -85,10 +79,10 @@ public class FFile extends DBObject implements Updatable {
         setChcnt(resultSet.getLong("b_chcnt"));
         setAlgorithm(resultSet.getString("b_algo"));
         setDigest(resultSet.getString("b_digest"));
-        setBSize(resultSet.getLong("b_size"));
-        setTChcnt(resultSet.getLong("t_chcnt"));
-        setTAlgorithm(resultSet.getString("t_algo"));
-        setTDigest(resultSet.getString("t_digest"));
+        setbSize(resultSet.getLong("b_size"));
+        settChcnt(resultSet.getLong("t_chcnt"));
+        settAlgorithm(resultSet.getString("t_algo"));
+        settDigest(resultSet.getString("t_digest"));
     }
 
     public String toUpdateString() {
@@ -111,6 +105,102 @@ public class FFile extends DBObject implements Updatable {
                 tAlgorithm,
                 tDigest
         );
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
+    }
+
+    public Character getExtStore() {
+        return extStore;
+    }
+
+    public void setExtStore(Character extStore) {
+        this.extStore = extStore;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getChcnt() {
+        return chcnt;
+    }
+
+    public void setChcnt(Long chcnt) {
+        this.chcnt = chcnt;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public String getDigest() {
+        return digest;
+    }
+
+    public void setDigest(String digest) {
+        this.digest = digest;
+    }
+
+    public Long getbSize() {
+        return bSize;
+    }
+
+    public void setbSize(Long bSize) {
+        this.bSize = bSize;
+    }
+
+    public Long gettChcnt() {
+        return tChcnt;
+    }
+
+    public void settChcnt(Long tChcnt) {
+        this.tChcnt = tChcnt;
+    }
+
+    public String gettAlgorithm() {
+        return tAlgorithm;
+    }
+
+    public void settAlgorithm(String tAlgorithm) {
+        this.tAlgorithm = tAlgorithm;
+    }
+
+    public String gettDigest() {
+        return tDigest;
+    }
+
+    public void settDigest(String tDigest) {
+        this.tDigest = tDigest;
     }
 }
 

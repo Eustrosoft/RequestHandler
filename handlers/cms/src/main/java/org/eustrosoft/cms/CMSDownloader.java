@@ -158,7 +158,7 @@ public class CMSDownloader {
         }
     }
 
-    static class Query {
+    public static class Query {
         public final static String SELECT = "SELECT";
         public final static String FROM = "FROM";
         public final static String TABLE = "TABLE";
@@ -202,7 +202,7 @@ public class CMSDownloader {
             return query.toString();
         }
 
-        static class Builder {
+        public static class Builder {
             private Query query;
 
             public Builder() {
@@ -251,7 +251,7 @@ public class CMSDownloader {
                 return this;
             }
 
-            public Builder where(org.eustrosoft.core.db.Query query) {
+            public Builder where(Query query) {
                 this.query.addToQuery(
                         WHERE + SPACE + LEFT_BRACKET + query + RIGHT_BRACKET + SPACE
                 );

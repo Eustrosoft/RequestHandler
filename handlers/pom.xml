@@ -16,16 +16,21 @@
 
     <modules>
         <module>cms</module>
-        <module>msg</module>
-        <module>sql</module>
+        <!--        <module>msg</module>-->
+        <!--        <module>sql</module>-->
         <module>ping</module>
         <module>dic</module>
         <module>sam</module>
         <module>login</module>
-        <module>tis</module>
+        <!--        <module>tis</module>-->
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>org.eustrosoft</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

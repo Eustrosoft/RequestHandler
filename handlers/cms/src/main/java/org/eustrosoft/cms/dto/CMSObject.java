@@ -7,7 +7,7 @@
 package org.eustrosoft.cms.dto;
 
 import org.eustrosoft.cms.CMSType;
-import org.eustrosoft.core.model.interfaces.IDBObject;
+import org.eustrosoft.core.model.IDBObject;
 
 import java.util.List;
 

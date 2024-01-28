@@ -6,20 +6,20 @@
 
 package org.eustrosoft.msg.model;
 
-import lombok.*;
-import org.eustrosoft.core.constants.DBConstants;
-import org.eustrosoft.core.model.ranges.MSGChannelStatus;
+import org.eustrosoft.constants.DBConstants;
+import org.eustrosoft.core.model.DBObject;
+import org.eustrosoft.msg.ranges.MSGChannelStatus;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class MSGChannel extends DBObject {
     private String subject;
     private Long documentId;
     private MSGChannelStatus status;
+
+    public MSGChannel() {
+    }
 
     public MSGChannel(Long id, Long zver, Long zrid, String subject, Long docId, MSGChannelStatus msgStatus) {
         super(id, zver, zrid);
@@ -29,8 +29,7 @@ public class MSGChannel extends DBObject {
     }
 
     @Override
-    @SneakyThrows
-    public void fillFromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
         trySet(this::setSubject, resultSet, DBConstants.SUBJECT);
         trySet(this::setDocumentId, resultSet, DBConstants.OBJ_ID);
@@ -54,5 +53,25 @@ public class MSGChannel extends DBObject {
         if (this.status == null) {
             this.status = otherChannel.getStatus();
         }
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public Long getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(Long documentId) {
+        this.documentId = documentId;
+    }
+
+    public MSGChannelStatus getStatus() {
+        return status;
     }
 }

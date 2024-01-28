@@ -1,19 +1,19 @@
 package org.eustrosoft.dic.model;
 
-import lombok.*;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.constants.DBConstants;
+import org.eustrosoft.core.model.DBObject;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class DIC extends DBObject {
     private String dic;
     private String code;
     private String value;
     private String descr;
+
+    public DIC() {
+    }
 
     public DIC(Long id, Long zver, Long zrid,
                String dic, String code, String value, String descr) {
@@ -25,8 +25,7 @@ public class DIC extends DBObject {
     }
 
     @Override
-    @SneakyThrows
-    public void fillFromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
         String dic = resultSet.getString(DBConstants.DIC);
         if (dic != null && !dic.isEmpty()) {
@@ -44,5 +43,37 @@ public class DIC extends DBObject {
         if (descr != null && !descr.isEmpty()) {
             setDescr(descr.trim());
         }
+    }
+
+    public String getDic() {
+        return dic;
+    }
+
+    public void setDic(String dic) {
+        this.dic = dic;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
     }
 }

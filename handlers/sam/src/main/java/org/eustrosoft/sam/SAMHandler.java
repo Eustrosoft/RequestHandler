@@ -6,58 +6,52 @@
 
 package org.eustrosoft.sam;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.db.dao.SamDAO;
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.providers.SessionProvider;
-import org.eustrosoft.qdbp.QDBPConnection;
-import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.spec.Constants;
+import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.interfaces.ResponseBlock;
 
-import java.sql.SQLException;
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
+
+@Handler(SUBSYSTEM_SAM)
 public final class SAMHandler implements BasicHandler {
-    private QDBPConnection poolConnection;
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
+
+    public SAMHandler(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
+    }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws SQLException {
-        QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                .getSession();
-        this.poolConnection = session.getConnection();
-        SAMRequestBlock samRequestBlock = (SAMRequestBlock) requestBlock;
-        String requestType = samRequestBlock.getR();
-        SAMResponseBlock respBlock = new SAMResponseBlock();
-        respBlock.setResponseType(requestType);
+    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+        SAMService samService = new SAMService(this.request, this.response, requestBlock);
 
-        SamDAO dao = new SamDAO(poolConnection);
-        switch (requestType) {
+        switch (requestBlock.getS()) {
             case Constants.REQUEST_USER_ID:
-                respBlock.setData(dao.getUserId().toString());
-                break;
-            case Constants.REQUEST_USER_LOGIN:
-                respBlock.setData(dao.getUserLogin());
-                break;
-            case Constants.REQUEST_USER_SLVL:
-                respBlock.setData(dao.getUserSLvl().toString());
-                break;
-            case Constants.REQUEST_USER_AVAILABLE_SLVL:
-                respBlock.setData(Arrays.toString(dao.getUserAvailableSlvl()));
-                break;
-            case Constants.REQUEST_USER_LANG:
-                respBlock.setData(dao.getUserLang());
-                break;
+                return samService.getUserId();
+//            case Constants.REQUEST_USER_LOGIN:
+//                respBlock.setData(dao.getUserLogin());
+//                break;
+//            case Constants.REQUEST_USER_SLVL:
+//                respBlock.setData(dao.getUserSLvl().toString());
+//                break;
+//            case Constants.REQUEST_USER_AVAILABLE_SLVL:
+//                respBlock.setData(Arrays.toString(dao.getUserAvailableSlvl()));
+//                break;
+//            case Constants.REQUEST_USER_LANG:
+//                respBlock.setData(dao.getUserLang());
+//                break;
             case Constants.REQUEST_ZSID:
-                respBlock.setZsid(dao.getZsids(samRequestBlock.getType()));
-                break;
+                return samService.getAvailableZsid();
             default:
-                respBlock.setE(Constants.ERR_UNEXPECTED);
-                respBlock.setErrMsg(Constants.MSG_REQUEST_TYPE_NOT_SUPPORTED);
-                break;
+//                respBlock.setE(Constants.ERR_UNEXPECTED);
+//                respBlock.setErrMsg(Constants.MSG_REQUEST_TYPE_NOT_SUPPORTED);
+                return null;
         }
-        respBlock.setE(Constants.ERR_OK);
-        respBlock.setErrMsg(Constants.MSG_OK);
-        return respBlock;
     }
 }

@@ -1,12 +1,15 @@
 package org.eustrosoft.msg.ranges;
 
-import lombok.Getter;
 
 public enum MSGPartyRole {
     C("C"),
     U("U");
-    @Getter
+
     final String value;
+
+    public String getValue() {
+        return value;
+    }
 
     MSGPartyRole(String value) {
         this.value = value;

@@ -42,6 +42,5 @@ public final class SessionProvider {
             this.session.renewSession();
             qTisCookie.set(this.session.getSessionSecretCookie(), this.session.getSessionCookieMaxAge());
         }
-        //this.session.renewSession();
     }
 }

@@ -13,4 +13,19 @@
 
     <artifactId>cms</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.eustrosoft</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eustrosoft</groupId>
+            <artifactId>sam</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
 </project>

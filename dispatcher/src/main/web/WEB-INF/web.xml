@@ -23,14 +23,27 @@
         <param-name>debug</param-name>
         <param-value>true</param-value>
     </context-param>
+    <context-param>
+        <param-name>CONFIG_PATH</param-name>
+        <param-value>D:\AllProjects\Eustrosoft\requesthandler\config\handlers</param-value>
+    </context-param>
 
     <servlet>
         <servlet-name>HttpRequestDispatcher</servlet-name>
         <servlet-class>org.eustrosoft.dispatcher.HttpRequestDispatcher</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <servlet-class>org.eustrosoft.dispatcher.ConfigurationServlet</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>HttpRequestDispatcher</servlet-name>
         <url-pattern>/api/dispatch</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <url-pattern>/api/configuration</url-pattern>
     </servlet-mapping>
 </web-app>

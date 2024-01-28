@@ -1,27 +1,23 @@
 package org.eustrosoft.core.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.eustrosoft.core.constants.DBConstants;
-import org.eustrosoft.core.tools.DateTimeZone;
+import org.eustrosoft.constants.DBConstants;
+import org.eustrosoft.date.DateTimeZone;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFormat {
+public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
     private Long zoid;
     private Long zver;
     private Long zrid;
     private Long zsid;
     private Short zlvl;
     private String created;
+
+    public DBObject() {
+
+    }
 
     public DBObject(ResultSet resultSet) throws SQLException {
         fillFromResultSet(resultSet);
@@ -49,14 +45,6 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         }
     }
 
-    protected <T> void trySet(Consumer<T> function, ResultSet resultSet, String name) {
-        try {
-            function.accept((T) resultSet.getObject(name));
-        } catch (Exception ex) {
-            function.accept(null);
-        }
-    }
-
     @Override
     public <T extends DBObject> void fillFromResultSet(ResultSet resultSet) throws SQLException {
         if (resultSet == null) {
@@ -67,5 +55,66 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFo
         trySet(this::setZrid, resultSet, DBConstants.ZRID);
         trySet(this::setZlvl, resultSet, DBConstants.ZLVL);
         trySet(this::setZsid, resultSet, DBConstants.ZSID);
+    }
+
+    protected <T> void trySet(Consumer<T> function, ResultSet resultSet, String name) {
+        try {
+            function.accept((T) resultSet.getObject(name));
+        } catch (Exception ex) {
+            function.accept(null);
+        }
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    @Override
+    public Long getZoid() {
+        return zoid;
+    }
+
+    public void setZoid(Long zoid) {
+        this.zoid = zoid;
+    }
+
+    @Override
+    public Long getZver() {
+        return zver;
+    }
+
+    public void setZver(Long zver) {
+        this.zver = zver;
+    }
+
+    @Override
+    public Long getZrid() {
+        return zrid;
+    }
+
+    public void setZrid(Long zrid) {
+        this.zrid = zrid;
+    }
+
+    @Override
+    public Long getZsid() {
+        return zsid;
+    }
+
+    public void setZsid(Long zsid) {
+        this.zsid = zsid;
+    }
+
+    @Override
+    public Short getZlvl() {
+        return zlvl;
+    }
+
+    public void setZlvl(Short zlvl) {
+        this.zlvl = zlvl;
     }
 }

@@ -6,41 +6,19 @@
 
 package org.eustrosoft.dic;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.requests.BasicRequest;
-import org.eustrosoft.core.tools.QJson;
+import org.eustrosoft.json.QJson;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.request.TISRequestBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_DIC;
 
-@Getter
-@Setter
-public class DICRequestBlock extends BasicRequest {
+public class DICRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
     private String id;
     private String dic;
 
-    public DICRequestBlock(HttpServletRequest request,
-                           HttpServletResponse response,
-                           QJson qJson) {
-        super(request, response, qJson);
+    public DICRequestBlock(String request, QJson qJson) {
+        super(SUBSYSTEM_DIC, request, qJson);
         parseQJson(qJson);
-    }
-
-    @Override
-    public String getS() {
-        return Constants.SUBSYSTEM_DIC;
-    }
-
-    @Override
-    public String getR() {
-        return this.requestType;
-    }
-
-    @Override
-    public HttpServletRequest getHttpRequest() {
-        return this.request;
     }
 
     private void parseQJson(QJson qJson) {
@@ -48,5 +26,21 @@ public class DICRequestBlock extends BasicRequest {
             throw new NullPointerException("QJson was null");
         }
         setDic(qJson.getItemString("dic"));
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDic() {
+        return dic;
+    }
+
+    public void setDic(String dic) {
+        this.dic = dic;
     }
 }

@@ -6,14 +6,13 @@
 
 package org.eustrosoft.cms;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.requests.BasicRequest;
-import org.eustrosoft.core.tools.QJson;
+import org.eustrosoft.json.QJson;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.request.TISRequestBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_CMS;
 
-public class CMSRequestBlock extends BasicRequest {
+public class CMSRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
     private CMSType type;
     private String path;
     private String fileName;
@@ -24,10 +23,8 @@ public class CMSRequestBlock extends BasicRequest {
     private String description;
     private Integer securityLevel;
 
-    public CMSRequestBlock(HttpServletRequest request,
-                           HttpServletResponse response,
-                           QJson qJson) {
-        super(request, response, qJson);
+    public CMSRequestBlock(String request, QJson qJson) {
+        super(SUBSYSTEM_CMS, request, qJson);
         parseQJson(qJson);
     }
 
@@ -101,21 +98,6 @@ public class CMSRequestBlock extends BasicRequest {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
-    }
-
-    @Override
-    public String getS() {
-        return Constants.SUBSYSTEM_CMS;
-    }
-
-    @Override
-    public String getR() {
-        return this.requestType;
-    }
-
-    @Override
-    public HttpServletRequest getHttpRequest() {
-        return this.request;
     }
 
     private void parseQJson(QJson qJson) {

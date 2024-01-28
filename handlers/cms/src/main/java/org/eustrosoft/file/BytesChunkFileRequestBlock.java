@@ -6,18 +6,14 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.tools.QJson;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.json.QJson;
+import org.eustrosoft.spec.Constants;
 
 public final class BytesChunkFileRequestBlock extends ChunkFileRequestBlock {
 
-    public BytesChunkFileRequestBlock(HttpServletRequest request,
-                                      HttpServletResponse response,
+    public BytesChunkFileRequestBlock(String request,
                                       QJson qJson) {
-        super(request, response, qJson);
+        super(request, qJson);
     }
 
     @Override

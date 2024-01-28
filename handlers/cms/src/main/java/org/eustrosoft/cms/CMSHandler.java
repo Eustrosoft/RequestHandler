@@ -6,53 +6,65 @@
 
 package org.eustrosoft.cms;
 
-import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
-import org.eustrosoft.annotation.Handler;
 import org.eustrosoft.cms.dbdatasource.DBDataSource;
 import org.eustrosoft.cms.dto.CMSObject;
 import org.eustrosoft.cms.exception.CMSException;
+import org.eustrosoft.cms.filedownload.DownloadFileDetails;
+import org.eustrosoft.cms.filedownload.FileDownloadService;
+import org.eustrosoft.cms.filedownload.FileTicket;
 import org.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import org.eustrosoft.cms.providers.DataSourceProvider;
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.providers.SessionProvider;
-import org.eustrosoft.core.providers.context.UsersContext;
-import org.eustrosoft.core.services.FileDownloadService;
-import org.eustrosoft.core.services.UserStorage;
-import org.eustrosoft.core.services.ZipService;
+import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.core.RequestContextHolder;
+import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.providers.SessionProvider;
+import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
+import org.eustrosoft.sam.dao.SamDAO;
+import org.eustrosoft.services.ZipService;
+import org.eustrosoft.spec.Constants;
+import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.interfaces.ResponseBlock;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
-import static org.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_CMS;
+import static org.eustrosoft.tools.FileUtils.checkPathInjection;
 
 @Handler(SUBSYSTEM_CMS)
 public final class CMSHandler implements BasicHandler {
     private CMSDataSource cmsDataSource;
     private UserStorage userStorage;
-    private UsersContext usersContext;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+
+    public CMSHandler() {
+        RequestContextHolder.ServletAttributes attributes = RequestContextHolder.getAttributes();
+        this.response = attributes.getResponse();
+        this.request = attributes.getRequest();
+    }
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+        QDBPSession session = new SessionProvider(this.request, this.response)
                 .getSession();
         this.cmsDataSource = DataSourceProvider.getInstance(session.getConnection())
                 .getDataSource();
 
         CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
         CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
-        cmsResponseBlock.setE(0);
-        cmsResponseBlock.setErrMsg("Ok.");
-        // TODO
         String path = cmsRequestBlock.getPath();
         String from = cmsRequestBlock.getFrom();
         String to = cmsRequestBlock.getTo();
@@ -89,9 +101,7 @@ public final class CMSHandler implements BasicHandler {
                     move(from, to);
                 }
                 if (cmsDataSource instanceof DBDataSource) {
-                    CMSObjectUpdateParameters data = new CMSObjectUpdateParameters(
-                            to, cmsRequestBlock.getDescription()
-                    );
+                    CMSObjectUpdateParameters data = new CMSObjectUpdateParameters(cmsRequestBlock.getDescription());
                     this.cmsDataSource.update(to, data);
                 }
                 break;
@@ -103,7 +113,6 @@ public final class CMSHandler implements BasicHandler {
                     throw new Exception("This functionality is not implemented for database.");
                 }
                 FileTicket downloadPathDetails = getFileTicket(requestBlock);
-                cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
                 break;
             case Constants.REQUEST_RENAME:
                 rename(from, to);
@@ -112,20 +121,18 @@ public final class CMSHandler implements BasicHandler {
                 if (cmsDataSource instanceof DBDataSource) {
                     throw new Exception("This functionality is not implemented for database.");
                 }
-                download(requestBlock, cmsRequestBlock);
+                download(cmsRequestBlock);
                 break;
             default:
-                cmsResponseBlock.setE(404);
-                cmsResponseBlock.setErrMsg("Not yet implemented.");
+                cmsResponseBlock.setE(404L);
+                cmsResponseBlock.setM("Not yet implemented.");
                 break;
         }
         return cmsResponseBlock;
     }
 
-    // TODO: only for file data source
-    @SneakyThrows
-    public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) {
-        org.eustrosoft.core.tools.FileUtils.checkPathInjection(pathToDownload);
+    public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) throws Exception {
+        checkPathInjection(pathToDownload);
         File file = new File(this.cmsDataSource.getFullPath(pathToDownload));
         if (!file.exists()) {
             throw new CMSException("File is not exist.");
@@ -165,27 +172,29 @@ public final class CMSHandler implements BasicHandler {
         return path;
     }
 
-    private FileTicket getFileTicket(RequestBlock requestBlock) throws IOException {
-        String session =
-                new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                        .getCookieValue();
-        this.usersContext = UsersContext.getInstance();
-        this.userStorage = UserStorage.getInstanceForUser(usersContext.getSQLUser(session));
+    private FileTicket getFileTicket(RequestBlock requestBlock) throws Exception {
+        QDBPool dbPool = DBPoolContext.getInstance(
+                DBPoolContext.getDbPoolName(request),
+                DBPoolContext.getUrl(request),
+                DBPoolContext.getDriverClass(request)
+        );
+        QDBPSession dbps = dbPool.logon(new QTISSessionCookie(request, response).getCookieValue());
+        SamDAO samDao = new SamDAO(dbps.getConnection());
+        this.userStorage = UserStorage.getInstanceForUser(samDao.getUserById(samDao.getUserId()));
         return getDownloadPathDetails(
                 ((CMSRequestBlock) requestBlock).getPath(),
                 this.userStorage.getExistedPathOrCreate()
         );
     }
 
-    private void download(RequestBlock requestBlock, CMSRequestBlock cmsRequestBlock) throws Exception {
+    private void download(CMSRequestBlock cmsRequestBlock) throws Exception {
         FileDownloadService fds = FileDownloadService.getInstance();
         DownloadFileDetails fileInfo
                 = fds.getFileInfoAndEndConversation(cmsRequestBlock.getTicket());
-        HttpServletResponse httpResponse = requestBlock.getHttpResponse();
-        httpResponse.reset();
-        setContentType(cmsRequestBlock, httpResponse);
-        httpResponse.setCharacterEncoding("UTF-8");
-        httpResponse.setHeader(
+        response.reset();
+        setContentType(cmsRequestBlock, response);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader(
                 "Content-Disposition",
                 String.format(
                         "attachment; filename=\"%s\";;filename*=utf-8''%s",
@@ -193,10 +202,10 @@ public final class CMSHandler implements BasicHandler {
                         URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
                 )
         );
-        httpResponse.setContentLengthLong(fileInfo.getFileLength());
-        httpResponse.setBufferSize(DEFAULT_BUFFER_SIZE);
-        httpResponse.setHeader("Accept-Ranges", "bytes");
-        OutputStream os = httpResponse.getOutputStream();
+        response.setContentLengthLong(fileInfo.getFileLength());
+        response.setBufferSize(DEFAULT_BUFFER_SIZE);
+        response.setHeader("Accept-Ranges", "bytes");
+        OutputStream os = response.getOutputStream();
         // todo: create getFileStream realization
         this.cmsDataSource.uploadToStream(fileInfo.getInputStream(), os);
         // todo: make file deletion

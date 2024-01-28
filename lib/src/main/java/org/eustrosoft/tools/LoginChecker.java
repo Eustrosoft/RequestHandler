@@ -1,6 +1,9 @@
 package org.eustrosoft.tools;
 
 import org.eustrosoft.providers.context.DBPoolContext;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
+import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +38,7 @@ public final class LoginChecker {
         return SUBSYSTEM_LOGIN.equalsIgnoreCase(subsystem);
     }
 
-    public static JsonObject getUnauthorizedResponse() {
+    public static String getUnauthorizedResponse() {
         return HttpTools.getExceptionResponse("Unauthorized", "login", "login", ERR_UNAUTHORIZED);
     }
 }

@@ -1,21 +1,17 @@
 package org.eustrosoft.cms.util;
 
-import lombok.SneakyThrows;
+import org.eustrosoft.cms.CMSDownloader.Query;
 import org.eustrosoft.cms.dbdatasource.ranges.FileType;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.cms.model.FDir;
+import org.eustrosoft.cms.model.FFile;
+import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.ExecStatus;
-import org.eustrosoft.core.db.Query;
 import org.eustrosoft.core.db.dao.BasicDAO;
-import org.eustrosoft.core.model.FDir;
-import org.eustrosoft.core.model.FFile;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.InputStream;
 import java.io.SequenceInputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Vector;
 
 import static org.eustrosoft.cms.util.DBStatements.getBlobDetails;
@@ -28,8 +24,7 @@ public final class FSDao extends BasicDAO {
         super(poolConnection);
     }
 
-    @SneakyThrows
-    public Long getFileLength(Long zoid) {
+    public Long getFileLength(Long zoid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement blobLengthPS = getBlobLength(connection, zoid);
         try {
@@ -44,8 +39,7 @@ public final class FSDao extends BasicDAO {
         return -1L;
     }
 
-    @SneakyThrows
-    public InputStream getFileInputStream(String zoid) {
+    public InputStream getFileInputStream(String zoid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement blobDetailsPS = getBlobDetails(connection, zoid);
         try {
@@ -61,9 +55,8 @@ public final class FSDao extends BasicDAO {
     }
 
 
-    @SneakyThrows
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
-                                  FileType type, String name) {
+                                  FileType type, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -93,9 +86,8 @@ public final class FSDao extends BasicDAO {
         return status;
     }
 
-    @SneakyThrows
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
-                                  FileType type, String name, String securityLevel, String description) {
+                                  FileType type, String name, String securityLevel, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -126,9 +118,8 @@ public final class FSDao extends BasicDAO {
     }
 
 
-    @SneakyThrows
     public ExecStatus createFDir(Long objectZoid, Long objectVer, Long parentZrid,
-                                 Long fileZoid, String name, String description) {
+                                 Long fileZoid, String name, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -158,9 +149,8 @@ public final class FSDao extends BasicDAO {
         return status;
     }
 
-    @SneakyThrows
     public ExecStatus createFBlob(String zoid, String zver, String zpid,
-                                  String hex, String chunk, String shunkSize, String crc32) {
+                                  String hex, String chunk, String shunkSize, String crc32) throws SQLException {
         Connection connection = getPoolConnection().get();
         String query = Query.builder()
                 .select()
@@ -190,8 +180,7 @@ public final class FSDao extends BasicDAO {
         return status;
     }
 
-    @SneakyThrows
-    public ExecStatus deleteFDir(Long zoid, Long zrid, Long zver) {
+    public ExecStatus deleteFDir(Long zoid, Long zrid, Long zver) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT FS.delete_FDir(?, ?, ?)");
         setLongOrNull(preparedStatement, 1, zoid);
@@ -207,8 +196,7 @@ public final class FSDao extends BasicDAO {
         return status;
     }
 
-    @SneakyThrows
-    public ResultSet getDirectoryByNameAndId(Long dirId, String dirName) {
+    public ResultSet getDirectoryByNameAndId(Long dirId, String dirName) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -226,8 +214,7 @@ public final class FSDao extends BasicDAO {
         return null; // todo
     }
 
-    @SneakyThrows
-    public void renameFile(Long zoid, String name, String targetName) {
+    public void renameFile(Long zoid, String name, String targetName) throws Exception {
         FDir fDir = getFDir(zoid, name);
         FFile fFile = getFFile(zoid, name);
         if (fDir == null) {
@@ -243,8 +230,7 @@ public final class FSDao extends BasicDAO {
         updateFFile(fFile);
     }
 
-    @SneakyThrows
-    public FFile getFFile(Long zoid, String name) {
+    public FFile getFFile(Long zoid, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -269,8 +255,7 @@ public final class FSDao extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public FDir getFDir(Long zoid, String name) {
+    public FDir getFDir(Long zoid, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 Query.builder()
@@ -295,8 +280,7 @@ public final class FSDao extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public void updateFDir(FDir fDir) {
+    public void updateFDir(FDir fDir) throws Exception {
         ExecStatus status = null;
         ExecStatus fDirOpen = null;
         try {
@@ -336,8 +320,7 @@ public final class FSDao extends BasicDAO {
         }
     }
 
-    @SneakyThrows
-    public void updateFFile(FFile fFile) {
+    public void updateFFile(FFile fFile) throws Exception {
         ExecStatus status = null;
         try {
             if (fFile == null) {

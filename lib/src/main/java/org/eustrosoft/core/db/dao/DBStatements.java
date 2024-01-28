@@ -6,15 +6,14 @@
 
 package org.eustrosoft.core.db.dao;
 
-import lombok.SneakyThrows;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public final class DBStatements {
 
-    @SneakyThrows
-    public static PreparedStatement getFunctionStatement(Connection connection, String function, String... where) {
+    public static PreparedStatement getFunctionStatement(Connection connection, String function, String... where)
+            throws SQLException {
         return connection.prepareStatement(
                 String.format(
                         "SELECT * FROM %s %s;",

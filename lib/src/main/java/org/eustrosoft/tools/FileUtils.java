@@ -7,11 +7,11 @@
 package org.eustrosoft.tools;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eustrosoft.cms.exception.CMSException;
 
 import java.io.*;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.util.zip.CRC32;
 
 public final class FileUtils {
@@ -44,13 +44,13 @@ public final class FileUtils {
         return arr;
     }
 
-    public static void checkPathInjection(String... params) throws CMSException {
+    public static void checkPathInjection(String... params) throws InvalidPathException {
         for (String param : params) {
             if (param == null || param.isEmpty()) {
-                throw new CMSException("Param was null or empty.");
+                throw new InvalidPathException("null", "Param was null or empty.");
             }
             if (param.contains("..")) {
-                throw new CMSException("Path Injection Detected.");
+                throw new InvalidPathException(param, "Path Injection Detected.");
             }
         }
     }
@@ -67,9 +67,7 @@ public final class FileUtils {
         while ((readCount = stream.read(buffer)) != -1) {
             crc32.update(buffer, 0, readCount);
         }
-        if (stream != null) {
-            stream.close();
-        }
+        stream.close();
         return String.format("%x", crc32.getValue());
     }
 
@@ -87,7 +85,7 @@ public final class FileUtils {
             int number = Integer.parseInt(
                     name.substring(left + 1, right)
             );
-            String finalName = getNumberFileName(fileName.substring(0, left - 1), left, ++number) + FilenameUtils.getExtension(fileName);
+            String finalName = getNextIndexFileName(fileName.substring(0, left - 1), left, ++number) + FilenameUtils.getExtension(fileName);
             if (new File(targetDir, finalName).exists()) {
                 return getNextIterationFilePath(dirPath, finalName);
             }
@@ -95,7 +93,7 @@ public final class FileUtils {
         } else {
             File numFile = new File(
                     targetDir,
-                    getNumberFileName(fileName, fileName.length() + 1, 1)
+                    getNextIndexFileName(fileName, fileName.length() + 1, 1)
             );
             if (numFile.exists()) {
                 return getNextIterationFilePath(targetDir.getAbsolutePath(), numFile.getName());
@@ -104,15 +102,14 @@ public final class FileUtils {
         }
     }
 
-    private static String getNumberFileName(String fileName, int leftBound, int number) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(FilenameUtils.removeExtension(fileName));
-        builder.append(" ");
-        builder.append(LEFT_BRACKET);
-        builder.append(number);
-        builder.append(RIGHT_BRACKET);
-        builder.append(".");
-        builder.append(FilenameUtils.getExtension(fileName));
-        return builder.toString();
+    private static String getNextIndexFileName(String fileName, int leftBound, int number) {
+        String builder = FilenameUtils.removeExtension(fileName) +
+                " " +
+                LEFT_BRACKET +
+                number +
+                RIGHT_BRACKET +
+                "." +
+                FilenameUtils.getExtension(fileName);
+        return builder;
     }
 }

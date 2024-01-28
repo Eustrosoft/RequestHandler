@@ -6,14 +6,25 @@
 
 package org.eustrosoft.cms.parameters;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class CMSObjectUpdateParameters {
     private String name;
     private String description;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public CMSObjectUpdateParameters(String description) {
         this.description = description;

@@ -1,11 +1,21 @@
 /**
- * Copyright (c) 2023, Yadzuka & EustroSoft.org
+ * Copyright (c) 2024, Yadzuka & EustroSoft.org
  * This file is part of RequestHandler project.
  * See the LICENSE file at the project root for licensing information.
  */
 
 package org.eustrosoft.spec;
 
-public final class ResponseLang {
-    public static final String en_US = "en-US";
+public enum ResponseLang {
+    EN_US("en-US");
+
+    private String lang;
+
+    ResponseLang(String lang) {
+        this.lang = lang;
+    }
+
+    public String getLang() {
+        return this.lang;
+    }
 }

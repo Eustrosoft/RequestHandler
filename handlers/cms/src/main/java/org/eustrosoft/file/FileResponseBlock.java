@@ -6,44 +6,12 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.responses.BasicResponse;
-import org.eustrosoft.core.handlers.responses.ResponseLang;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
-public class FileResponseBlock extends BasicResponse {
-    private String errMsg;
+public class FileResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
 
-    public FileResponseBlock(String answer) {
-        this.errMsg = answer;
+    public FileResponseBlock() {
     }
 
-    @Override
-    public String getS() {
-        return Constants.SUBSYSTEM_FILE;
-    }
-
-    @Override
-    public String getR() {
-        return Constants.REQUEST_FILE_UPLOAD;
-    }
-
-    @Override
-    public Short getE() {
-        return 0;
-    }
-
-    @Override
-    public String getM() {
-        return this.errMsg;
-    }
-
-    @Override
-    public String getL() {
-        return ResponseLang.en_US;
-    }
-
-
-    public void setM(String errMsg) {
-        this.errMsg = errMsg;
-    }
 }

@@ -11,7 +11,6 @@ import org.eustrosoft.tools.LogFormatter;
 import org.eustrosoft.tools.PropertiesConstants;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,12 +20,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebFilter(
-        urlPatterns = {"/*"},
-        filterName = "RequestLoggingFilter",
-        description = "Logging Filter"
-)
-public class RequestLoggingFilter implements Filter {
+//@WebFilter(
+//        urlPatterns = {"/*"},
+//        filterName = "RequestLoggingFilter",
+//        description = "Logging Filter"
+//)
+public class RequestLoggingFilter {
     private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class.getName());
     private static final Properties loggingProperties = new Properties();
     private static FileHandler fileHandler;

@@ -6,21 +6,15 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.core.tools.QJson;
+import org.eustrosoft.json.QJson;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.eustrosoft.core.constants.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
+import static org.eustrosoft.spec.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
 
 public final class HexFileRequestBlock extends ChunkFileRequestBlock {
     private String hexString;
 
-    public HexFileRequestBlock(HttpServletRequest request,
-                               HttpServletResponse response,
-                               QJson qJson) {
-        super(request, response, qJson);
-        parseQJson(qJson);
+    public HexFileRequestBlock(String request, QJson qJson) {
+        super(request, qJson);
     }
 
     @Override

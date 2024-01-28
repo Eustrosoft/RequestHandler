@@ -1,6 +1,5 @@
 package org.eustrosoft.msg.ranges;
 
-import lombok.Getter;
 import org.eustrosoft.cms.CMSType;
 
 public enum MSGMessageType {
@@ -8,8 +7,11 @@ public enum MSGMessageType {
     A("A"),
     L("L");
 
-    @Getter
     final String value;
+
+    public String getValue() {
+        return value;
+    }
 
     MSGMessageType(String value) {
         this.value = value;

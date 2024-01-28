@@ -6,30 +6,47 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.model.user.User;
-import org.eustrosoft.core.providers.context.UsersContext;
-import org.eustrosoft.core.services.UserStorage;
-import org.eustrosoft.core.tools.FileUtils;
+import org.eustrosoft.cms.UserStorage;
+import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.providers.context.DBPoolContext;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
+import org.eustrosoft.sam.dao.SamDAO;
+import org.eustrosoft.sam.model.User;
+import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.tools.FileUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.Base64;
 
 public class ChunkFileHandler implements BasicHandler {
+    private HttpServletRequest request;
+    private HttpServletResponse response;
     private final char SEPARATOR = '_';
 
     private UserStorage storage;
 
+    public ChunkFileHandler(HttpServletResponse response, HttpServletRequest request) {
+        this.request = request;
+        this.response = response;
+    }
+
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock)
-            throws IOException {
-        User user = UsersContext.getInstance().getSQLUser(
-                new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                        .getCookieValue()
+            throws IOException, SQLException {
+        QDBPool dbPool = DBPoolContext.getInstance(
+                DBPoolContext.getDbPoolName(request),
+                DBPoolContext.getUrl(request),
+                DBPoolContext.getDriverClass(request)
         );
+        QDBPSession dbps = dbPool.logon(new QTISSessionCookie(request, response).getCookieValue());
+        SamDAO samDao = new SamDAO(dbps.getConnection());
+        User user = samDao.getUserById(samDao.getUserId());
         this.storage = UserStorage.getInstanceForUser(user);
         String uploadPath = this.storage.getExistedPathOrCreate();
         String answer = "";
@@ -61,7 +78,7 @@ public class ChunkFileHandler implements BasicHandler {
                 answer = ex.getMessage();
             }
         }
-        return new FileResponseBlock(answer);
+        return new FileResponseBlock();
     }
 
     private boolean mergeIfAllChunksCollected(Long chunksCount) throws IOException {

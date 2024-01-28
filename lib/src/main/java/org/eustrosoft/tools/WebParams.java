@@ -14,6 +14,7 @@ public final class WebParams {
     public final static String DB_POOL_NAME = "QDBPOOL_NAME";
     public final static String DB_JDBC_CLASS = "QDBPOOL_JDBC_CLASS";
     public final static String DEBUG = "debug";
+    public final static String CONFIG_PATH = "CONFIG_PATH";
 
     public static Boolean getBoolean(HttpServletRequest request, String param) {
         String value = getString(request, param);

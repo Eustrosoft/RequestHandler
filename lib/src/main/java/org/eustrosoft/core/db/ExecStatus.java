@@ -6,18 +6,9 @@
 
 package org.eustrosoft.core.db;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public final class ExecStatus {
     private final static String F_ZOID = "ZOID";
     private final static String F_ZVER = "ZVER";
@@ -37,7 +28,6 @@ public final class ExecStatus {
     private String p1;
     private String p2;
     private String p3;
-
 
     public void fillFromResultSet(ResultSet set) throws SQLException {
         set.next();
@@ -61,6 +51,58 @@ public final class ExecStatus {
         } catch (ArrayIndexOutOfBoundsException ex) {
             System.err.println("No more properties found for query.");
         }
+    }
+
+    public void setP1(String p1) {
+        this.p1 = p1;
+    }
+
+    public void setP2(String p2) {
+        this.p2 = p2;
+    }
+
+    public void setP3(String p3) {
+        this.p3 = p3;
+    }
+
+    public Long getZoid() {
+        return zoid;
+    }
+
+    public void setZoid(Long zoid) {
+        this.zoid = zoid;
+    }
+
+    public Long getZver() {
+        return zver;
+    }
+
+    public void setZver(Long zver) {
+        this.zver = zver;
+    }
+
+    public Integer getErrnum() {
+        return errnum;
+    }
+
+    public void setErrnum(Integer errnum) {
+        this.errnum = errnum;
+    }
+
+    public String getErrcode() {
+        return errcode;
+    }
+
+    public void setErrcode(String errcode) {
+        this.errcode = errcode;
+    }
+
+    public String getErrdesc() {
+        return errdesc;
+    }
+
+    public void setErrdesc(String errdesc) {
+        this.errdesc = errdesc;
     }
 
     public boolean isOk() {

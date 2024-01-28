@@ -6,16 +6,20 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.model.user.User;
-import org.eustrosoft.core.providers.context.UsersContext;
-import org.eustrosoft.core.services.UserStorage;
-import org.eustrosoft.core.tools.FileUtils;
+import org.eustrosoft.cms.UserStorage;
+import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.providers.context.DBPoolContext;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
+import org.eustrosoft.sam.dao.SamDAO;
+import org.eustrosoft.sam.model.User;
+import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.tools.FileUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
@@ -29,17 +33,26 @@ import java.util.zip.CRC32;
 public class BytesChunkFileHandler implements BasicHandler {
     public static final int BUF_SIZE = 1 * 1024;
     private UserStorage storage;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+
+    public BytesChunkFileHandler(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
+    }
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock)
             throws Exception {
-        HttpServletRequest request = requestBlock.getHttpRequest();
         BytesChunkFileRequestBlock requestBl = (BytesChunkFileRequestBlock) requestBlock;
-        User user = UsersContext.getInstance()
-                .getSQLUser(
-                        new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                                .getCookieValue()
-                );
+        QDBPool dbPool = DBPoolContext.getInstance(
+                DBPoolContext.getDbPoolName(request),
+                DBPoolContext.getUrl(request),
+                DBPoolContext.getDriverClass(request)
+        );
+        QDBPSession dbps = dbPool.logon(new QTISSessionCookie(request, response).getCookieValue());
+        SamDAO samDao = new SamDAO(dbps.getConnection());
+        User user = samDao.getUserById(samDao.getUserId());
         this.storage = UserStorage.getInstanceForUser(user);
         String storagePath = this.storage.getBaseUploadPath();
         if (storagePath == null) {
@@ -82,7 +95,7 @@ public class BytesChunkFileHandler implements BasicHandler {
             this.storage.clearPathOfCurrentStoragePath();
             userPaths.remove(fileName);
         }
-        return new FileResponseBlock(answer);
+        return new FileResponseBlock();
     }
 
     private synchronized void saveUploadFile(InputStream input, File dst, String fileHash) throws Exception {

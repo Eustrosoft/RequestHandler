@@ -5,8 +5,8 @@
  */
 package org.eustrosoft.providers.context;
 
-import org.eustrosoft.core.tools.WebParams;
 import org.eustrosoft.qdbp.QDBPool;
+import org.eustrosoft.tools.WebParams;
 
 import javax.servlet.http.HttpServletRequest;
 

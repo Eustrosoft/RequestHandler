@@ -7,23 +7,27 @@
 package org.eustrosoft.file;
 
 import org.eustrosoft.cms.CMSDataSource;
+import org.eustrosoft.cms.UserStorage;
 import org.eustrosoft.cms.dbdatasource.DBDataSource;
 import org.eustrosoft.cms.filedatasource.FileCMSDataSource;
 import org.eustrosoft.cms.parameters.HexFileParams;
 import org.eustrosoft.cms.parameters.HexFileResult;
 import org.eustrosoft.cms.providers.DataSourceProvider;
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.model.user.User;
-import org.eustrosoft.core.providers.SessionProvider;
-import org.eustrosoft.core.providers.context.UsersContext;
-import org.eustrosoft.core.services.UserStorage;
-import org.eustrosoft.core.tools.FileUtils;
+import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.providers.SessionProvider;
+import org.eustrosoft.providers.context.DBPoolContext;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
+import org.eustrosoft.sam.dao.SamDAO;
+import org.eustrosoft.sam.model.User;
+import org.eustrosoft.spec.Constants;
+import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.tools.FileUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -31,16 +35,26 @@ import java.util.Map;
 public class HexFileHandler implements BasicHandler {
     private CMSDataSource cmsDataSource;
     private UserStorage storage;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+
+
+    public HexFileHandler(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
+    }
 
     @Override
     public synchronized ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        HttpServletRequest request = requestBlock.getHttpRequest();
         HexFileRequestBlock requestBl = (HexFileRequestBlock) requestBlock;
-        User user = UsersContext.getInstance()
-                .getSQLUser(
-                        new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                                .getCookieValue()
-                );
+        QDBPool dbPool = DBPoolContext.getInstance(
+                DBPoolContext.getDbPoolName(request),
+                DBPoolContext.getUrl(request),
+                DBPoolContext.getDriverClass(request)
+        );
+        QDBPSession dbps = dbPool.logon(new QTISSessionCookie(request, response).getCookieValue());
+        SamDAO samDao = new SamDAO(dbps.getConnection());
+        User user = samDao.getUserById(samDao.getUserId());
         this.storage = UserStorage.getInstanceForUser(user);
         String storagePath = this.storage.getBaseUploadPath();
         if (storagePath == null) {
@@ -51,10 +65,7 @@ public class HexFileHandler implements BasicHandler {
         }
         this.cmsDataSource = DataSourceProvider
                 .getInstance(
-                        new SessionProvider(
-                                request,
-                                requestBlock.getHttpResponse()
-                        ).getSession().getConnection()
+                        new SessionProvider(request, response).getSession().getConnection()
                 ).getDataSource();
 
         String answer = "";
@@ -128,6 +139,6 @@ public class HexFileHandler implements BasicHandler {
             this.storage.clearPathOfCurrentStoragePath();
             userPaths.remove(uploadPath);
         }
-        return new FileResponseBlock(answer);
+        return new FileResponseBlock();
     }
 }

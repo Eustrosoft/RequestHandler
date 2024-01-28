@@ -1,16 +1,15 @@
 package org.eustrosoft.cms.util;
 
-import lombok.SneakyThrows;
+import org.eustrosoft.cms.CMSDownloader.Query;
 import org.eustrosoft.cms.constants.Constants;
-import org.eustrosoft.core.constants.DBConstants;
-import org.eustrosoft.core.db.Query;
+import org.eustrosoft.constants.DBConstants;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class DBStatements {
-    @SneakyThrows
-    public static PreparedStatement getViewStatementForPath(Connection connection, String path) {
+    public static PreparedStatement getViewStatementForPath(Connection connection, String path) throws Exception {
         int pathLvl = FileUtils.getPathLvl(path);
         if (pathLvl == DBConstants.LVL_SCOPE) {
             return connection.prepareStatement(
@@ -114,8 +113,7 @@ public class DBStatements {
         ).buildWithSemicolon().toString();
     }
 
-    @SneakyThrows
-    public static PreparedStatement getFileDetails(Connection connection, Long zoid) {
+    public static PreparedStatement getFileDetails(Connection connection, Long zoid) throws SQLException {
         return connection.prepareStatement(
                 Query.builder()
                         .select()
@@ -128,8 +126,7 @@ public class DBStatements {
         );
     }
 
-    @SneakyThrows
-    public static PreparedStatement getBlobDetails(Connection connection, String zoid) {
+    public static PreparedStatement getBlobDetails(Connection connection, String zoid) throws SQLException {
         return connection.prepareStatement(
                 Query.builder()
                         .select()
@@ -143,8 +140,7 @@ public class DBStatements {
         );
     }
 
-    @SneakyThrows
-    public static PreparedStatement getBlobLength(Connection connection, Long zoid) {
+    public static PreparedStatement getBlobLength(Connection connection, Long zoid) throws SQLException {
         return connection.prepareStatement(
                 Query.builder()
                         .select()

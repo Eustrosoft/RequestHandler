@@ -6,22 +6,18 @@
 
 package org.eustrosoft.login;
 
-import org.eustrosoft.core.handlers.requests.BasicRequest;
-import org.eustrosoft.core.tools.QJson;
+import org.eustrosoft.json.QJson;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.request.TISRequestBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
 
-import static org.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
-
-public class LoginRequestBlock extends BasicRequest {
+public class LoginRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
     private String login;
     private String password;
 
-    public LoginRequestBlock(HttpServletRequest request,
-                             HttpServletResponse response,
-                             QJson qJson) {
-        super(request, response, qJson);
+    public LoginRequestBlock(String request, QJson qJson) {
+        super(SUBSYSTEM_LOGIN, request, qJson);
         parseQJson(qJson);
     }
 
@@ -44,16 +40,6 @@ public class LoginRequestBlock extends BasicRequest {
     @Override
     public String getS() {
         return SUBSYSTEM_LOGIN;
-    }
-
-    @Override
-    public String getR() {
-        return this.requestType;
-    }
-
-    @Override
-    public HttpServletRequest getHttpRequest() {
-        return this.request;
     }
 
     private void parseQJson(QJson qJson) {

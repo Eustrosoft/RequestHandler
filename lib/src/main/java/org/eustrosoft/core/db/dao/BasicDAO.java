@@ -6,9 +6,7 @@
 
 package org.eustrosoft.core.db.dao;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.ExecStatus;
 import org.eustrosoft.core.db.util.DBUtils;
 import org.eustrosoft.qdbp.QDBPConnection;
@@ -16,17 +14,20 @@ import org.eustrosoft.qdbp.QDBPConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class BasicDAO {
-    @Getter
     private final QDBPConnection poolConnection;
+
+    public QDBPConnection getPoolConnection() {
+        return poolConnection;
+    }
 
     public BasicDAO(QDBPConnection poolConnection) {
         this.poolConnection = poolConnection;
     }
 
-    @SneakyThrows
-    public ResultSet selectObject(Long zoid) {
+    public ResultSet selectObject(Long zoid) throws SQLException {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM TIS.V_ZObject WHERE ZOID = ?"
@@ -38,14 +39,12 @@ public class BasicDAO {
         return null; // todo
     }
 
-    @SneakyThrows
-    public ExecStatus openObject(String type, Long zoid) {
+    public ExecStatus openObject(String type, Long zoid) throws Exception {
         return openObject(type, zoid, (Long) null);
     }
 
-    @SneakyThrows
     @Deprecated
-    public ExecStatus openObject(String type, Long zoid, Long zver) {
+    public ExecStatus openObject(String type, Long zoid, Long zver) throws Exception {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT TIS.open_object(?, ?, ?)"
@@ -56,17 +55,15 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
-    @SneakyThrows
     @Deprecated
-    public ExecStatus openObject(String type, Long zoid, String zver) {
+    public ExecStatus openObject(String type, Long zoid, String zver) throws Exception {
         if (zver.equalsIgnoreCase("null")) {
             return openObject(type, zoid, (Long) null);
         }
         return openObject(type, zoid, Long.valueOf(zver));
     }
 
-    @SneakyThrows
-    public ExecStatus deleteObject(String type, Long zoid, Long zver) {
+    public ExecStatus deleteObject(String type, Long zoid, Long zver) throws Exception {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT TIS.delete_object(?, ?, ?)"
@@ -77,8 +74,7 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
-    @SneakyThrows
-    public ExecStatus createObjectInScope(String type, String scopeZoid) {
+    public ExecStatus createObjectInScope(String type, String scopeZoid) throws Exception {
         Long scopeProc = null;
         if (scopeZoid != null && !scopeZoid.equals("null")) {
             scopeProc = Long.parseLong(scopeZoid);
@@ -86,13 +82,11 @@ public class BasicDAO {
         return createObjectInScope(type, scopeProc);
     }
 
-    @SneakyThrows
-    public ExecStatus createObjectInScope(String type, Long scopeZoid) {
+    public ExecStatus createObjectInScope(String type, Long scopeZoid) throws Exception {
         return createObjectInScope(type, scopeZoid, null);
     }
 
-    @SneakyThrows
-    public ExecStatus createObjectInScope(String type, String scopeZoid, String slvl) {
+    public ExecStatus createObjectInScope(String type, String scopeZoid, String slvl) throws Exception {
         Short slvlProc = null;
         if (slvl != null && !slvl.equals("null")) {
             slvlProc = Short.parseShort(slvl);
@@ -104,8 +98,7 @@ public class BasicDAO {
         return createObjectInScope(type, scopeProc, slvlProc);
     }
 
-    @SneakyThrows
-    public ExecStatus createObjectInScope(String type, Long scopeZoid, Short slvl) {
+    public ExecStatus createObjectInScope(String type, Long scopeZoid, Short slvl) throws Exception {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT TIS.create_object(?, ?, ?)"
@@ -116,8 +109,7 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
-    @SneakyThrows
-    public ExecStatus commitObject(String type, Long objectZoid, Long objectVer) {
+    public ExecStatus commitObject(String type, Long objectZoid, Long objectVer) throws Exception {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT TIS.commit_object(?, ?, ?)"
@@ -128,8 +120,7 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
-    @SneakyThrows
-    public ExecStatus setZLvl(String type, Long objectZoid, Long objectVer, Short zlvl) {
+    public ExecStatus setZLvl(String type, Long objectZoid, Long objectVer, Short zlvl) throws Exception {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT TIS.set_slevel(?, ?, ?, ?)"
@@ -141,8 +132,7 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
-    @SneakyThrows
-    public String getZType(Long zoid, Long zver) {
+    public String getZType(Long zoid, Long zver) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(
                 connection,
@@ -162,8 +152,7 @@ public class BasicDAO {
     }
 
 
-    @SneakyThrows
-    protected ExecStatus execute(PreparedStatement preparedStatement) {
+    protected ExecStatus execute(PreparedStatement preparedStatement) throws Exception {
         if (preparedStatement == null) {
             throw new NullPointerException("Prepared Statement was null");
         }

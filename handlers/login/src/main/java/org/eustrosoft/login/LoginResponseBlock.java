@@ -6,59 +6,25 @@
 
 package org.eustrosoft.login;
 
-import com.google.gson.JsonObject;
-import org.eustrosoft.core.handlers.responses.BasicResponse;
-import org.eustrosoft.core.handlers.responses.ResponseLang;
+import org.eustrosoft.spec.ResponseLang;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
-import static org.eustrosoft.core.constants.Constants.SUBSYSTEM_CMS;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
 
-public final class LoginResponseBlock extends BasicResponse {
-    private String errMsg = "";
-    private Short errCode = 0;
-    private String responseType;
+public final class LoginResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
 
     public LoginResponseBlock() {
     }
 
-    public void setResponseType(String responseType) {
-        this.responseType = responseType;
-    }
-
     @Override
     public String getS() {
-        return SUBSYSTEM_CMS;
-    }
-
-    @Override
-    public String getR() {
-        return responseType;
-    }
-
-    @Override
-    public String getM() {
-        return this.errMsg;
+        return SUBSYSTEM_LOGIN;
     }
 
     @Override
     public String getL() {
-        return ResponseLang.en_US;
+        return ResponseLang.EN_US.getLang();
     }
 
-    @Override
-    public Short getE() {
-        return errCode;
-    }
-
-    public void setE(int code) {
-        errCode = (short) code;
-    }
-
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
-    }
-
-    @Override
-    public JsonObject toJsonObject() throws Exception {
-        return super.toJsonObject();
-    }
 }

@@ -6,24 +6,24 @@
 
 package org.eustrosoft.msg;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.constants.DBConstants;
+import org.eustrosoft.core.BasicHandler;
 import org.eustrosoft.core.db.ExecStatus;
-import org.eustrosoft.core.db.dao.MSGDao;
-import org.eustrosoft.core.db.dao.SamDAO;
 import org.eustrosoft.core.db.util.DBUtils;
-import org.eustrosoft.core.dto.UserDTO;
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.model.MSGChannel;
-import org.eustrosoft.core.model.MSGMessage;
-import org.eustrosoft.core.model.ranges.MSGChannelStatus;
-import org.eustrosoft.core.model.ranges.MSGMessageType;
-import org.eustrosoft.core.providers.SessionProvider;
-import org.eustrosoft.core.tools.DateTimeZone;
+import org.eustrosoft.date.DateTimeZone;
+import org.eustrosoft.handlers.sam.dto.UserDTO;
+import org.eustrosoft.msg.dao.MSGDao;
+import org.eustrosoft.msg.model.MSGChannel;
+import org.eustrosoft.msg.model.MSGMessage;
+import org.eustrosoft.msg.ranges.MSGChannelStatus;
+import org.eustrosoft.msg.ranges.MSGMessageType;
+import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.sam.dao.SamDAO;
+import org.eustrosoft.spec.Constants;
+import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.interfaces.ResponseBlock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

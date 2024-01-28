@@ -6,7 +6,7 @@
 
 package org.eustrosoft.exception;
 
-public class ExceptionBlock extends BasicResponse {
+public class ExceptionBlock {
     private String message;
     private Short errorCode;
     private String lang;
@@ -35,27 +35,22 @@ public class ExceptionBlock extends BasicResponse {
         this.lang = lang;
     }
 
-    @Override
     public String getS() {
         return this.subsystem;
     }
 
-    @Override
     public String getR() {
         return this.response;
     }
 
-    @Override
     public Short getE() {
         return this.errorCode;
     }
 
-    @Override
     public String getM() {
         return this.message;
     }
 
-    @Override
     public String getL() {
         return this.lang;
     }

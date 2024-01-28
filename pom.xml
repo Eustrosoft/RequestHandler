@@ -20,7 +20,6 @@
         <module>dispatcher</module>
         <module>handlers</module>
         <module>spec</module>
-        <module>mobile-client</module>
     </modules>
 
 </project>

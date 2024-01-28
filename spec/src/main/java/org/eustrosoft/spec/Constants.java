@@ -12,10 +12,6 @@ public final class Constants {
     public static final String REQUEST = "r";
     public static final String TIMEOUT = "t";
     public static final String PARAMETERS = "parameters";
-    @Deprecated
-    public static final String QTISEND = "qend";
-    @Deprecated
-    public static final String QTISVER = "qver";
 
     public static final String SUBSYSTEM_SQL = "sql";
     public static final String SUBSYSTEM_FILE = "file";
@@ -80,15 +76,16 @@ public final class Constants {
     public static final Long CHUNK_SIZE = 1024L;
 
     // ERR codes
-    public static final Short ERR_UNAUTHORIZED = 401;
-    public static final Short ERR_SERVER = 500;
-    public static final Short ERR_OK = 0;
-    public static final Short ERR_UNEXPECTED = 1;
-    public static final Short ERR_UNSUPPORTED = 2;
+    public static final Long ERR_UNAUTHORIZED = 401L;
+    public static final Long ERR_SERVER = 500L;
+    public static final Long ERR_UNEXPECTED = 1L;
+    public static final Long ERR_UNSUPPORTED = 2L;
+    public static final Long ERR_OK = 0L;
 
     // Messages
     public static final String MSG_UNAUTHORIZED = "Unauthorized";
     public static final String MSG_OK = "Ok";
+    public static final String MSG_UNEXPECTED = "Unexpected error";
     public static final String MSG_REQUEST_TYPE_NOT_SUPPORTED = "This request type is not supported";
 
     // Database Constants

@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 @WebServlet(
         name = "Alive Servlet",
         description = "Servlet for checking status of server",
-        urlPatterns = {"/alive"}
+        urlPatterns = {"/dispatcher/alive"}
 )
 public class AliveServlet extends HttpServlet {
 

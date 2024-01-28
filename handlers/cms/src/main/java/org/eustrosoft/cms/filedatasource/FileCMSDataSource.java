@@ -6,7 +6,6 @@
 
 package org.eustrosoft.cms.filedatasource;
 
-import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.eustrosoft.cms.CMSDataSource;
 import org.eustrosoft.cms.CMSType;
@@ -18,9 +17,9 @@ import org.eustrosoft.cms.parameters.FileDetails;
 import org.eustrosoft.cms.parameters.HexFileParams;
 import org.eustrosoft.cms.parameters.HexFileResult;
 import org.eustrosoft.cms.util.FileUtils;
-import org.eustrosoft.core.tools.ColorTextUtil;
-import org.eustrosoft.core.tools.DateTimeZone;
-import org.eustrosoft.core.tools.PropsContainer;
+import org.eustrosoft.date.DateTimeZone;
+import org.eustrosoft.tools.ColorTextUtil;
+import org.eustrosoft.tools.PropsContainer;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -31,13 +30,16 @@ import java.util.*;
 import java.util.zip.CRC32;
 
 import static org.eustrosoft.cms.constants.Messages.*;
-import static org.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
-import static org.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
+import static org.eustrosoft.tools.PropertiesConstants.CMS_FILE_NAME;
+import static org.eustrosoft.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
 
 public class FileCMSDataSource implements CMSDataSource, PropsContainer {
-    @Getter
     private final Properties properties = new Properties();
     private String filePath;
+
+    public Properties getProperties() {
+        return properties;
+    }
 
     public FileCMSDataSource() throws Exception {
         loadProps();

@@ -6,23 +6,23 @@
 
 package org.eustrosoft.msg.model;
 
-import lombok.*;
-import org.eustrosoft.core.constants.DBConstants;
-import org.eustrosoft.core.dto.UserDTO;
-import org.eustrosoft.core.model.ranges.MSGMessageType;
-import org.eustrosoft.core.tools.DateTimeZone;
+import org.eustrosoft.constants.DBConstants;
+import org.eustrosoft.core.model.DBObject;
+import org.eustrosoft.date.DateTimeZone;
+import org.eustrosoft.handlers.sam.dto.UserDTO;
+import org.eustrosoft.msg.ranges.MSGMessageType;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class MSGMessage extends DBObject {
     private String content;
     private Long answerId;
     private MSGMessageType type;
     private UserDTO user;
+
+    public MSGMessage() {
+    }
 
     public MSGMessage(Long id, Long zver, Long zrid, DateTimeZone created, String content, Long answerId, MSGMessageType type) {
         super(id, zver, zrid, created);
@@ -44,9 +44,7 @@ public class MSGMessage extends DBObject {
         this.type = type;
     }
 
-    @Override
-    @SneakyThrows
-    public void fillFromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
         setContent(resultSet.getString(DBConstants.CONTENT));
         setAnswerId(resultSet.getLong(DBConstants.MSG_ID));
@@ -63,5 +61,37 @@ public class MSGMessage extends DBObject {
         if (this.type == null) {
             this.type = otherMessage.getType();
         }
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Long getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(Long answerId) {
+        this.answerId = answerId;
+    }
+
+    public MSGMessageType getType() {
+        return type;
+    }
+
+    public void setType(MSGMessageType type) {
+        this.type = type;
+    }
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }

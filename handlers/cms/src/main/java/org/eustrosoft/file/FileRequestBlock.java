@@ -6,42 +6,33 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.requests.BasicRequest;
-import org.eustrosoft.core.tools.Json;
-import org.eustrosoft.core.tools.QJson;
+import org.eustrosoft.json.Json;
+import org.eustrosoft.json.QJson;
+import org.eustrosoft.spec.Constants;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.request.TISRequestBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
-public class FileRequestBlock extends BasicRequest {
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_FILE;
+
+public class FileRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
     private byte[] fileBytes;
     private String path;
     private String fileName;
     private String fileHash;
     private String fileString;
-    private QJson parameters;
     private String description;
     private Integer securityLevel;
 
-    public FileRequestBlock(HttpServletRequest request,
-                            HttpServletResponse response,
-                            QJson qJson) {
-        super(request, response, qJson);
+    public FileRequestBlock(String request, QJson qJson) {
+        super(SUBSYSTEM_FILE, request, qJson);
         parseQJson(qJson);
     }
 
-    public FileRequestBlock(HttpServletResponse response,
-                            HttpServletRequest request,
-                            byte[] fileBytes) {
-        super(request, response);
+    public FileRequestBlock(String request, QJson qJson, byte[] fileBytes) {
+        super(SUBSYSTEM_FILE, request, qJson);
         this.fileBytes = fileBytes;
-    }
-
-    public FileRequestBlock(HttpServletRequest request,
-                            HttpServletResponse response) {
-        this(response, request, new byte[0]);
     }
 
     public String getFileName() {
@@ -110,8 +101,8 @@ public class FileRequestBlock extends BasicRequest {
         return Constants.REQUEST_FILE_UPLOAD;
     }
 
-    private void setParameters(QJson qJson) {
-        this.parameters = qJson;
+    protected QJson getParameters() {
+        return this.json;
     }
 
     protected void parseQJson(QJson qJson) {
@@ -141,7 +132,7 @@ public class FileRequestBlock extends BasicRequest {
         return Base64.getDecoder().decode(str);
     }
 
-    protected QJson getParameters() {
-        return this.parameters;
+    private void setParameters(QJson qJson) {
+        this.json = qJson;
     }
 }

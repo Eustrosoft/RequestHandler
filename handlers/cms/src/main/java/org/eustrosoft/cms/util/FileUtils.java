@@ -7,7 +7,7 @@
 package org.eustrosoft.cms.util;
 
 import org.apache.commons.io.IOUtils;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.constants.DBConstants;
 
 import java.io.*;
 

@@ -6,21 +6,20 @@
 
 package org.eustrosoft.cms.dbdatasource;
 
-import lombok.SneakyThrows;
 import org.eustrosoft.cms.CMSDataSource;
 import org.eustrosoft.cms.CMSType;
 import org.eustrosoft.cms.dbdatasource.ranges.FileType;
 import org.eustrosoft.cms.dto.CMSGeneralObject;
 import org.eustrosoft.cms.dto.CMSObject;
+import org.eustrosoft.cms.model.FDir;
 import org.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import org.eustrosoft.cms.parameters.FileDetails;
 import org.eustrosoft.cms.parameters.HexFileParams;
 import org.eustrosoft.cms.parameters.HexFileResult;
 import org.eustrosoft.cms.util.DBStatements;
 import org.eustrosoft.cms.util.FSDao;
-import org.eustrosoft.core.constants.DBConstants;
+import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.ExecStatus;
-import org.eustrosoft.core.model.FDir;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.File;
@@ -33,6 +32,7 @@ import java.util.Objects;
 import static org.eustrosoft.cms.util.DBStatements.getSelectForPath;
 import static org.eustrosoft.cms.util.DBStatements.getViewStatementForPath;
 import static org.eustrosoft.cms.util.FileUtils.*;
+import static org.eustrosoft.constants.DBConstants.TYPE;
 import static org.eustrosoft.core.db.util.DBUtils.*;
 
 public class DBDataSource implements CMSDataSource {
@@ -62,14 +62,8 @@ public class DBDataSource implements CMSDataSource {
         return cmsObjects;
     }
 
-    private void fillSpaceForFiles(List<CMSObject> objects) { // todo: make a single query
-        FSDao functions = new FSDao(poolConnection);
-        for (int i = 0; i < objects.size(); i++) {
-            CMSObject cmsObject = objects.get(i);
-            if (cmsObject instanceof CMSGeneralObject) {
-                ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getZoid()));
-            }
-        }
+    public static CMSType getType(ResultSet resultSet) {
+        return getType(resultSet, CMSType.UNKNOWN);
     }
 
     @Override
@@ -517,8 +511,33 @@ public class DBDataSource implements CMSDataSource {
         return commit.isOk();
     }
 
-    @SneakyThrows
-    private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) {
+    public static CMSType getType(ResultSet resultSet, CMSType defaultValue) {
+        CMSType val = defaultValue;
+        try {
+            String typeStr = resultSet.getObject(TYPE).toString();
+            if (typeStr.equals("R") || typeStr.equals("D")) { // todo
+                val = CMSType.DIRECTORY;
+            }
+            if (typeStr.equals("B")) { // todo
+                val = CMSType.FILE;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return val;
+    }
+
+    private void fillSpaceForFiles(List<CMSObject> objects) throws SQLException { // todo: make a single query
+        FSDao functions = new FSDao(poolConnection);
+        for (int i = 0; i < objects.size(); i++) {
+            CMSObject cmsObject = objects.get(i);
+            if (cmsObject instanceof CMSGeneralObject) {
+                ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getZoid()));
+            }
+        }
+    }
+
+    private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) throws Exception {
         List<CMSObject> objects = new ArrayList<>();
         int pathLvl = getPathLvl(fullPath);
         try {
@@ -534,19 +553,18 @@ public class DBDataSource implements CMSDataSource {
                     String descr = getStrValueOrEmpty(resultSet, DBConstants.DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
                     Long id = fid.isEmpty() ? zoid : Long.parseLong(fid);
-                    CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
-                            .description(descr)
-                            .fullPath(new File(fullPath, finalName).getPath())
-                            .fileName(finalName)
-                            .type(type);
+                    CMSGeneralObject object = new CMSGeneralObject();
+                    object.setDescription(descr);
+                    object.setFullPath(new File(fullPath, finalName).getPath());
+                    object.setFileName(finalName);
+                    object.setType(type);
                     try {
-                        builder.securityLevel(Integer.valueOf(zlvl, 10));
+                        object.setSecurityLevel(Integer.valueOf(zlvl, 10));
                     } catch (Exception ex) {
                         // ex.printStackTrace();
                     }
-                    CMSGeneralObject build = builder.build();
-                    build.setZoid(id);
-                    objects.add(build);
+                    object.setZoid(id);
+                    objects.add(object);
                 } catch (Exception ex) {
                     // ex.printStackTrace();
                 }
@@ -555,11 +573,6 @@ public class DBDataSource implements CMSDataSource {
             // ex.printStackTrace();
         }
         return objects;
-    }
-
-    @SneakyThrows
-    public void setSLvl() {
-
     }
 
     private boolean isEmpty(String str) {

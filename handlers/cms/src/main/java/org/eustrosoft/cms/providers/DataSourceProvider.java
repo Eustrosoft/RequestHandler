@@ -6,14 +6,13 @@
 
 package org.eustrosoft.cms.providers;
 
-import lombok.Getter;
 import org.eustrosoft.cms.CMSDataSource;
 import org.eustrosoft.cms.Source;
 import org.eustrosoft.cms.dbdatasource.DBDataSource;
 import org.eustrosoft.cms.filedatasource.FileCMSDataSource;
-import org.eustrosoft.core.tools.ColorTextUtil;
-import org.eustrosoft.core.tools.PropsContainer;
 import org.eustrosoft.qdbp.QDBPConnection;
+import org.eustrosoft.tools.ColorTextUtil;
+import org.eustrosoft.tools.PropsContainer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,13 +20,17 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import static org.eustrosoft.cms.constants.Constants.PROPERTY_DATA_SOURCE;
-import static org.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
+import static org.eustrosoft.tools.PropertiesConstants.CMS_FILE_NAME;
 
 public final class DataSourceProvider implements PropsContainer {
     private static DataSourceProvider dataSourceProvider;
-    @Getter
     private Properties properties;
     private CMSDataSource dataSource;
+
+    @Override
+    public Properties getProperties() {
+        return properties;
+    }
 
     private DataSourceProvider(QDBPConnection connection) throws Exception {
         this.properties = new Properties();

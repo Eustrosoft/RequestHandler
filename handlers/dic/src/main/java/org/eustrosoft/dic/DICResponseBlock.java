@@ -6,54 +6,18 @@
 
 package org.eustrosoft.dic;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.responses.BasicResponse;
-import org.eustrosoft.core.handlers.responses.ResponseLang;
-import org.eustrosoft.core.model.DIC;
+import org.eustrosoft.dic.model.DIC;
+import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class DICResponseBlock extends BasicResponse {
+public final class DICResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
     private String errMsg = "";
     private Short errCode = 0;
     private String responseType;
     private List<DIC> values;
     private List<String> dics;
-
-    @Override
-    public String getS() {
-        return Constants.SUBSYSTEM_DIC;
-    }
-
-    @Override
-    public String getR() {
-        return responseType;
-    }
-
-    @Override
-    public String getM() {
-        return this.errMsg;
-    }
-
-    @Override
-    public String getL() {
-        return ResponseLang.en_US;
-    }
-
-    @Override
-    public Short getE() {
-        return errCode;
-    }
 
     public void setE(int code) {
         errCode = (short) code;
@@ -63,15 +27,39 @@ public final class DICResponseBlock extends BasicResponse {
         this.errMsg = errMsg;
     }
 
-    @Override
-    public JsonObject toJsonObject() throws Exception {
-        JsonObject object = super.toJsonObject();
-        if (dics != null && !dics.isEmpty()) {
-            object.add("dics", new Gson().toJsonTree(dics));
-        }
-        if (values != null && !values.isEmpty()) {
-            object.add("values", new Gson().toJsonTree(values));
-        }
-        return object;
+    public String getErrMsg() {
+        return errMsg;
+    }
+
+    public Short getErrCode() {
+        return errCode;
+    }
+
+    public void setErrCode(Short errCode) {
+        this.errCode = errCode;
+    }
+
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public void setResponseType(String responseType) {
+        this.responseType = responseType;
+    }
+
+    public List<DIC> getValues() {
+        return values;
+    }
+
+    public void setValues(List<DIC> values) {
+        this.values = values;
+    }
+
+    public List<String> getDics() {
+        return dics;
+    }
+
+    public void setDics(List<String> dics) {
+        this.dics = dics;
     }
 }
