@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.eustrosoft.spec.Constants.ERR_SERVER;
 import static org.eustrosoft.spec.Constants.ERR_UNSUPPORTED;
 
 public final class PostRequestProcessor {
@@ -80,11 +81,19 @@ public final class PostRequestProcessor {
             try {
                 BasicHandler handler = (BasicHandler) aClass.newInstance();
                 responseBlocks.add(handler.processRequest(block));
-            } catch (Exception ex) {
+            } catch (ClassNotFoundException e) {
                 responseBlocks.add(new ExceptionResponseBlock<ExceptionData>(
                                 new ResponseParams(
                                         block.getS(), block.getR(), "Handler is not supported",
                                         ERR_UNSUPPORTED, ResponseLang.EN_US.getLang())
+                        )
+                );
+            } catch (Exception ex) {
+                responseBlocks.add(new ExceptionResponseBlock<ExceptionData>(
+                                new ResponseParams(
+                                        block.getS(), block.getR(), ex.getMessage(),
+                                        ERR_SERVER, ResponseLang.EN_US.getLang()
+                                )
                         )
                 );
             }
