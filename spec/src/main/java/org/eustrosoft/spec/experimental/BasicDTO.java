@@ -1,4 +1,4 @@
-package org.eustrosoft.handlers;
+package org.eustrosoft.spec.experimental;
 
 import org.eustrosoft.spec.ResponseParams;
 import org.eustrosoft.spec.interfaces.JsonData;

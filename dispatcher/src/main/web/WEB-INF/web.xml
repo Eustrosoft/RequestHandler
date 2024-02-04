@@ -5,11 +5,11 @@
          version="4.0">
     <context-param>
         <param-name>dbUrl</param-name>
-        <param-value>fudo.eustrosoft.org:5432/tisexmpldb</param-value>
+        <param-value>localhost:55432/qxyzdb</param-value>
     </context-param>
     <context-param>
         <param-name>QDBPOOL_URL</param-name>
-        <param-value>jdbc:postgresql://fudo.eustrosoft.org:5432/conceptisdb</param-value>
+        <param-value>jdbc:postgresql://localhost:55432/qxyzdb</param-value>
     </context-param>
     <context-param>
         <param-name>QDBPOOL_NAME</param-name>
@@ -32,16 +32,15 @@
         <servlet-name>HttpRequestDispatcher</servlet-name>
         <servlet-class>org.eustrosoft.dispatcher.HttpRequestDispatcher</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>ConfigurationServlet</servlet-name>
-        <servlet-class>org.eustrosoft.dispatcher.ConfigurationServlet</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>HttpRequestDispatcher</servlet-name>
         <url-pattern>/api/dispatch</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <servlet-class>org.eustrosoft.dispatcher.ConfigurationServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ConfigurationServlet</servlet-name>
         <url-pattern>/api/configuration</url-pattern>

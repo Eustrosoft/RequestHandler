@@ -6,18 +6,18 @@
 
 package org.eustrosoft.dispatcher;
 
-import org.eustrosoft.dispatcher.context.HandlersConfig;
-import org.eustrosoft.dispatcher.context.HandlersContext;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.qdbp.QDBPSession;
-import org.eustrosoft.spec.interfaces.Response;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.dispatcher.context.HandlersConfig;
+import org.eustrosoft.dispatcher.context.HandlersContext;
+import org.eustrosoft.json.exception.JsonException;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.spec.interfaces.Response;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -117,7 +117,7 @@ public class HttpRequestDispatcher extends HttpServlet {
             throw new IOException("Config file was not load, try configure again");
         }
         request.setCharacterEncoding("UTF-8");
-        PostRequestProcessor requestProcessor = new PostRequestProcessor(request, response, this.handlersContext);
+        PostRequestProcessor requestProcessor = new PostRequestProcessor(this.handlersContext);
         QDBPSession session = new QDBPSession("123", 1L);
         Response resp = null;
         if (session != null) {
@@ -136,7 +136,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         }
         response.setStatus(200);
         writer.flush();
-        writer.close();
+
     }
 
     private void setResponseHeaders(HttpServletResponse response) {

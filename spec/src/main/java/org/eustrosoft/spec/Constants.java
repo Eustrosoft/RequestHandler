@@ -84,6 +84,7 @@ public final class Constants {
 
     // Messages
     public static final String MSG_UNAUTHORIZED = "Unauthorized";
+    public static final String MSG_UNKNOWN = "Unknown";
     public static final String MSG_OK = "Ok";
     public static final String MSG_UNEXPECTED = "Unexpected error";
     public static final String MSG_REQUEST_TYPE_NOT_SUPPORTED = "This request type is not supported";

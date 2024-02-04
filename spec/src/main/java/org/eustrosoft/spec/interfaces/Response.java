@@ -25,7 +25,7 @@ public interface Response extends JsonConvertible {
         return String.format(
                 "{%s, %s:[%s]}",
                 JsonUtil.AsEntry.getNumberParams(PARAM_DISPATCHER_TIMEOUT, getT()),             // Timeout param as %s:%s
-                PARAM_DISPATCHER_RESPONSES,                                                     // r - responses
+                JsonUtil.ParamUtil.getString(PARAM_DISPATCHER_RESPONSES),                       // r - responses
                 getR().stream().map(r -> {
                     String rb = "";
                     try {

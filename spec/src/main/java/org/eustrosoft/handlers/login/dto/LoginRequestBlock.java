@@ -4,15 +4,14 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package org.eustrosoft.login;
+package org.eustrosoft.handlers.login.dto;
 
 import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.interfaces.JsonData;
 import org.eustrosoft.spec.request.TISRequestBlock;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
 
-public class LoginRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
+public class LoginRequestBlock extends TISRequestBlock<T> {
     private String login;
     private String password;
 

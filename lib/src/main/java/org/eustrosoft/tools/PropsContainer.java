@@ -27,6 +27,7 @@ public interface PropsContainer {
         }
     }
 
+    // TODO: think about auto-loading (add properties map and list of attribute names)
     void loadProps() throws Exception;
 
     default Map<String, String> getLoadedProps() {

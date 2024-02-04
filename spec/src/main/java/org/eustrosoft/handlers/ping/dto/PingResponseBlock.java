@@ -7,16 +7,15 @@
 package org.eustrosoft.handlers.ping.dto;
 
 import org.eustrosoft.spec.ResponseLang;
-import org.eustrosoft.spec.interfaces.JsonData;
 import org.eustrosoft.spec.response.BasicResponseBlock;
 
+import static org.eustrosoft.spec.Constants.REQUEST_PING;
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_PING;
 
-public class PingResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
+public class PingResponseBlock extends BasicResponseBlock<PingData> {
 
-    public PingResponseBlock(String request) {
+    public PingResponseBlock() {
         super();
-        this.r = request;
     }
 
     @Override
@@ -26,7 +25,7 @@ public class PingResponseBlock<T extends JsonData> extends BasicResponseBlock<T>
 
     @Override
     public String getR() {
-        return this.r;
+        return REQUEST_PING;
     }
 
     @Override

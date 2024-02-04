@@ -3,7 +3,12 @@ package org.eustrosoft.dispatcher.context;
 import org.eustrosoft.tools.ColorTextUtil;
 import org.eustrosoft.tools.PropsContainer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,16 +70,20 @@ public class HandlersConfig implements PropsContainer {
                                 " does not exist."
                 );
             }
-            this.path = rootPath.getAbsolutePath();
-            BufferedReader reader = new BufferedReader(new FileReader(path));
-            String buffer = "";
-            while ((buffer = reader.readLine()) != null) {
-                if (buffer.startsWith("#"))
-                    continue;
-                String[] splitted = buffer.split("=");
-                allowedHandlers.put(splitted[0], splitted[1]);
-            }
-            reader.close();
+            loadHandlers(rootPath);
         }
+    }
+
+    private void loadHandlers(File rootPath) throws IOException {
+        this.path = rootPath.getAbsolutePath();
+        BufferedReader reader = new BufferedReader(new FileReader(path));
+        String buffer = "";
+        while ((buffer = reader.readLine()) != null) {
+            if (buffer.startsWith("#"))
+                continue;
+            String[] splitted = buffer.split("=");
+            allowedHandlers.put(splitted[0], splitted[1]);
+        }
+        reader.close();
     }
 }

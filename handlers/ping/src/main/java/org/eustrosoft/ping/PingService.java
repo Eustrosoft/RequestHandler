@@ -1,5 +1,8 @@
 package org.eustrosoft.ping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.core.RequestContextHolder;
 import org.eustrosoft.handlers.ping.dto.PingData;
 import org.eustrosoft.handlers.ping.dto.PingResponseBlock;
 import org.eustrosoft.providers.context.DBPoolContext;
@@ -9,30 +12,27 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import org.eustrosoft.sam.dao.SamDAO;
 import org.eustrosoft.sam.model.User;
 import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 
-import static org.eustrosoft.spec.Constants.*;
+import static org.eustrosoft.spec.Constants.ERR_OK;
+import static org.eustrosoft.spec.Constants.ERR_UNAUTHORIZED;
+import static org.eustrosoft.spec.Constants.MSG_OK;
+import static org.eustrosoft.spec.Constants.MSG_UNAUTHORIZED;
 
 public class PingService {
     private final RequestBlock requestBlock;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
 
-    public PingService(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            RequestBlock requestBlock) {
+    public PingService(RequestBlock requestBlock) {
         this.requestBlock = requestBlock;
-        this.request = request;
-        this.response = response;
+        RequestContextHolder.ServletAttributes attributes = RequestContextHolder.getAttributes();
+        this.request = attributes.getRequest();
+        this.response = attributes.getResponse();
     }
 
-    public ResponseBlock<PingData> getPing() throws SQLException {
-        PingResponseBlock<PingData> pingResponseBlock = new PingResponseBlock<>(requestBlock.getR());
+    public PingResponseBlock getPing() throws SQLException {
         QTISSessionCookie qtisSessionCookie = new QTISSessionCookie(
                 request,
                 response
@@ -43,6 +43,7 @@ public class PingService {
                 DBPoolContext.getDriverClass(request)
         );
         QDBPSession dbps = dbPool.logon(qtisSessionCookie.getCookieValue());
+        PingResponseBlock pingResponseBlock = new PingResponseBlock();
         if (dbps == null) {
             pingResponseBlock.setE(ERR_UNAUTHORIZED);
             pingResponseBlock.setM(MSG_UNAUTHORIZED);

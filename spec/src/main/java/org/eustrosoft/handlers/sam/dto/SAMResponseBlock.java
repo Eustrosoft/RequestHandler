@@ -25,15 +25,4 @@ public final class SAMResponseBlock<T extends JsonData> extends BasicResponseBlo
         this.data = data;
     }
 
-//    @Override
-//    public JsonObject toJsonObject() throws Exception {
-//        JsonObject object = super.toJsonObject();
-//        if (getData() != null && !getData().isEmpty()) {
-//            object.addProperty("data", getData());
-//        }
-//        if (zsid != null) {
-//            object.add("zsid", new Gson().toJsonTree(zsid));
-//        }
-//        return object;
-//    }
 }
