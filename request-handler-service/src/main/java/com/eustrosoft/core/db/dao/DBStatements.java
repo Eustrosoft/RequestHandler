@@ -18,7 +18,7 @@ public final class DBStatements {
         return connection.prepareStatement(
                 String.format(
                         "SELECT * FROM %s %s;",
-                        function,
+                        function.endsWith("()") ? function : String.format("%s()", function),
                         where == null || where.length == 0
                                 ? ""
                                 : String.format("where (%s)", String.join(" AND ", where))
