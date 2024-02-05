@@ -23,7 +23,7 @@ public final class WebParams {
         try {
             return Boolean.getBoolean(value);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
             return null;
         }
     }

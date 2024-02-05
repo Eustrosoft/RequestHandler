@@ -22,29 +22,15 @@ import com.eustrosoft.core.tools.PropsContainer;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.zip.CRC32;
 
-import static com.eustrosoft.cms.constants.Messages.MSG_DIR_EXISTS;
-import static com.eustrosoft.cms.constants.Messages.MSG_DIR_NOT_CREATED;
-import static com.eustrosoft.cms.constants.Messages.MSG_DIR_NOT_EXIST;
-import static com.eustrosoft.cms.constants.Messages.MSG_FILE_EXIST;
-import static com.eustrosoft.cms.constants.Messages.MSG_FILE_NOT_CREATED;
-import static com.eustrosoft.cms.constants.Messages.MSG_FILE_NOT_EXIST;
-import static com.eustrosoft.cms.constants.Messages.MSG_NULL_PARAMS;
+import static com.eustrosoft.cms.constants.Messages.*;
 import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
 
@@ -139,7 +125,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
         } catch (Exception e) {
             stream.close();
             channel.close();
-            e.printStackTrace();
+            // e.printStackTrace();
         } finally {
             if (null != lock) {
                 lock.release();
@@ -161,7 +147,7 @@ public class FileCMSDataSource implements CMSDataSource, PropsContainer {
     }
 
     @Override
-    public String createDirectory(String path) throws CMSException {
+    public String createDirectory(String path, String description, Integer securityLevel) throws CMSException {
         if (isNullOrEmpty(path)) {
             throw new CMSException(MSG_NULL_PARAMS);
         }

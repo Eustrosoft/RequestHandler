@@ -18,10 +18,7 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.eustrosoft.core.constants.Constants.ERR_OK;
-import static com.eustrosoft.core.constants.Constants.ERR_UNAUTHORIZED;
-import static com.eustrosoft.core.constants.Constants.MSG_OK;
-import static com.eustrosoft.core.constants.Constants.MSG_UNAUTHORIZED;
+import static com.eustrosoft.core.constants.Constants.*;
 
 public class PingHandler implements Handler {
     @Override
@@ -42,8 +39,7 @@ public class PingHandler implements Handler {
             pingResponseBlock.setErrCode(ERR_OK);
             pingResponseBlock.setErrMsg(MSG_OK);
             SamDAO samDAO = new SamDAO(dbps.getConnection());
-            User user = new User();
-            user.fillFromResultSet(samDAO.getUserResultSet(dbps.getLogin()));
+            User user = samDAO.getUserById(samDAO.getUserId());
             pingResponseBlock.setUsername(user.getUsername());
             pingResponseBlock.setFullName(user.getFullName());
             pingResponseBlock.setDbUser(user.getDbUser());

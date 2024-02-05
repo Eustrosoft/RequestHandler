@@ -8,14 +8,13 @@ package com.eustrosoft.core.filter;
 
 import com.eustrosoft.core.tools.ColorTextUtil;
 import com.eustrosoft.core.tools.LogFormatter;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,11 +27,6 @@ import java.util.logging.Logger;
 import static com.eustrosoft.core.tools.PropertiesConstants.LOGGING_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_LOG_FILE;
 
-@WebFilter(
-        urlPatterns = {"/*"},
-        filterName = "RequestLoggingFilter",
-        description = "Logging Filter"
-)
 public class RequestLoggingFilter implements Filter {
     private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class.getName());
     private static final Properties loggingProperties = new Properties();
@@ -47,7 +41,7 @@ public class RequestLoggingFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp,
                          FilterChain chain) throws IOException, ServletException {
         logger.log(Level.INFO,
-                String.format("Produced request from: %s. Protocol: %s. Content-Type:%s",
+                String.format("Produced request from: %s. Protocol: %s. Content-Type: %s",
                         req.getRemoteAddr(), req.getProtocol(), req.getContentType())
         );
         chain.doFilter(req, resp);

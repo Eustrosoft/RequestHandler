@@ -4,7 +4,7 @@
  * See the LICENSE file at the project root for licensing information.
  */
 
-package com.eustrosoft.core.tools;
+package com.eustrosoft.core.services;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

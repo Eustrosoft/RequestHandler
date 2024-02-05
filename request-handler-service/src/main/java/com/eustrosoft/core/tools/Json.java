@@ -35,7 +35,7 @@ public final class Json {
         try {
             value = qJson.getItemString(key);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         return value;
     }

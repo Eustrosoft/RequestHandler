@@ -11,6 +11,7 @@ import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.cms.dbdatasource.DBDataSource;
 import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.cms.exception.CMSException;
+import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
 import com.eustrosoft.cms.providers.DataSourceProvider;
 import com.eustrosoft.core.handlers.Handler;
 import com.eustrosoft.core.handlers.requests.RequestBlock;
@@ -19,30 +20,19 @@ import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.providers.context.UsersContext;
 import com.eustrosoft.core.services.FileDownloadService;
 import com.eustrosoft.core.services.UserStorage;
-import com.eustrosoft.core.tools.ZipService;
+import com.eustrosoft.core.services.ZipService;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.eustrosoft.core.constants.Constants.REQUEST_COPY;
-import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_DOWNLOAD;
-import static com.eustrosoft.core.constants.Constants.REQUEST_MOVE;
-import static com.eustrosoft.core.constants.Constants.REQUEST_RENAME;
-import static com.eustrosoft.core.constants.Constants.REQUEST_TICKET;
-import static com.eustrosoft.core.constants.Constants.REQUEST_VIEW;
+import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
@@ -85,7 +75,9 @@ public final class CMSHandler implements Handler {
                 if (CMSType.DIRECTORY.equals(cmsRequestBlock.getType())) {
                     createDirectory(
                             path,
-                            cmsRequestBlock.getFileName()
+                            cmsRequestBlock.getFileName(),
+                            cmsRequestBlock.getDescription(),
+                            cmsRequestBlock.getSecurityLevel()
                     );
                 }
                 break;
@@ -93,7 +85,15 @@ public final class CMSHandler implements Handler {
                 copyFile(from, to);
                 break;
             case REQUEST_MOVE:
-                move(from, to);
+                if (from != null && !from.isEmpty()) {
+                    move(from, to);
+                }
+                if (cmsDataSource instanceof DBDataSource) {
+                    CMSObjectUpdateParameters data = new CMSObjectUpdateParameters(
+                            to, cmsRequestBlock.getDescription()
+                    );
+                    this.cmsDataSource.update(to, data);
+                }
                 break;
             case REQUEST_DELETE:
                 delete(path);
@@ -233,19 +233,18 @@ public final class CMSHandler implements Handler {
         return this.cmsDataSource.move(from, to);
     }
 
-    private String createDirectory(String path, String name)
+    private String createDirectory(String path, String name, String description, Integer securityLevel)
             throws Exception {
-        return this.cmsDataSource.createDirectory(postProcessPath(new File(path, name).getPath()));
+        return this.cmsDataSource.createDirectory(
+                postProcessPath(new File(path, name).getPath()),
+                description,
+                securityLevel
+        );
     }
 
     private String createFile(String path, String name)
             throws Exception {
         return this.cmsDataSource.createFile(path, name);
-    }
-
-    private String createFile(String path, InputStream stream)
-            throws Exception {
-        return this.cmsDataSource.createFile(path, stream);
     }
 
     private List<CMSObject> getDirectoryObjects(String path)

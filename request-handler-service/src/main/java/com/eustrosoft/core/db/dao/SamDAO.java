@@ -9,21 +9,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.eustrosoft.core.constants.Constants.UNKNOWN;
 import static com.eustrosoft.core.constants.DBConstants.SID;
 
 public class SamDAO extends BasicDAO {
 
-    private static Map<Long, User> userCache;
     public SamDAO(QDBPConnection poolConnection) {
         super(poolConnection);
-        if (userCache == null) {
-            userCache = new HashMap<>();
-        }
     }
 
     @SneakyThrows
@@ -58,25 +52,24 @@ public class SamDAO extends BasicDAO {
 
     @SneakyThrows
     public User getUserById(Long id) {
-        User user;
-        if (!userCache.containsKey(id)) {
-            user = new User();
-            try {
-                user.fillFromResultSet(getUserResultSetById(id));
-                userCache.put(id, user);
-            } catch (Exception ex) {
-                user.setId(id);
-                if (id != null) {
-                    user.setUsername(String.format("%s_%d", UNKNOWN, id));
-                    user.setFullName(String.format("%s_%d", UNKNOWN, id));
-                } else {
-                    user.setUsername(UNKNOWN);
-                    user.setFullName(UNKNOWN);
-                }
-                userCache.put(id, user);
+        if (id == null || id <= 0) {
+            return new User(UNKNOWN, UNKNOWN);
+        }
+        User user = new User();
+        try {
+            ResultSet userResultSetById = getUserResultSetById(id);
+            userResultSetById.next();
+            user.fillFromResultSet(userResultSetById);
+            userResultSetById.close();
+        } catch (Exception ex) {
+            user.setId(id);
+            if (!id.toString().isEmpty()) {
+                user.setUsername(String.format("%s_%d", UNKNOWN, id));
+                user.setFullName(String.format("%s_%d", UNKNOWN, id));
+            } else {
+                user.setUsername(UNKNOWN);
+                user.setFullName(UNKNOWN);
             }
-        } else {
-            user = userCache.get(id);
         }
         return user;
     }

@@ -57,7 +57,7 @@ public class ChunkFileHandler implements Handler {
                     );
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                // ex.printStackTrace();
                 answer = ex.getMessage();
             }
         }

@@ -8,15 +8,8 @@ import java.sql.PreparedStatement;
 
 import static com.eustrosoft.cms.constants.Constants.ROOTS;
 import static com.eustrosoft.cms.constants.Constants.SCOPES;
-import static com.eustrosoft.cms.util.FileUtils.getPathLvl;
-import static com.eustrosoft.cms.util.FileUtils.getPathParts;
-import static com.eustrosoft.cms.util.FileUtils.getWhereForLvlAndName;
-import static com.eustrosoft.core.constants.DBConstants.LVL_OTHER;
-import static com.eustrosoft.core.constants.DBConstants.LVL_ROOT;
-import static com.eustrosoft.core.constants.DBConstants.LVL_SCOPE;
-import static com.eustrosoft.core.constants.DBConstants.SEPARATOR;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
-import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.cms.util.FileUtils.*;
+import static com.eustrosoft.core.constants.DBConstants.*;
 
 public class DBStatements {
     @SneakyThrows
@@ -26,6 +19,7 @@ public class DBStatements {
             return connection.prepareStatement(
                     Query.builder()
                             .select().all().from().add(SCOPES)
+                            .add(" ORDER BY name ASC")
                             .buildWithSemicolon()
                             .getQuery().toString()
             );
@@ -47,6 +41,7 @@ public class DBStatements {
                                             .add("'R'")
                                             .build()
                             )
+                            .add(" ORDER BY name ASC")
                             .buildWithSemicolon()
                             .getQuery().toString()
             );
@@ -79,6 +74,7 @@ public class DBStatements {
                                             .add(lastId)
                                             .build()
                             )
+                            .add(" ORDER BY FD.fname ASC")
                             .buildWithSemicolon()
                             .getQuery().toString()
             );
