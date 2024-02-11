@@ -84,6 +84,9 @@ public final class JsonUtil {
         public static String getNumberParams(String name, Number val) throws JsonException {
             checkName(name);
             String numberValue = JSON_NULL;
+            if (val == null) {
+                return String.format(JSON_FORMAT_PARAMS, getString(name), numberValue);
+            }
             String className = val.getClass().getName();
             if (className.equals(INTEGER)) {
                 numberValue = getInteger(val.intValue());
@@ -194,6 +197,9 @@ public final class JsonUtil {
         private static String getProcessedValue(Object value, Function<Object, String> process) {
             if (Objects.isNull(value)) {
                 return Constants.JSON_NULL;
+            }
+            if (value instanceof CharSequence) {
+                value = ((CharSequence) value).toString().replaceAll("\"", "'");
             }
             return process.apply(value);
         }

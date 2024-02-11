@@ -14,8 +14,8 @@ import org.eustrosoft.spec.interfaces.RequestBlock;
 import static org.eustrosoft.json.Constants.PARAM_DISPATCHER_DATA;
 
 public class BasicRequestBlock<T extends JsonParsable<T>> implements RequestBlock<T> {
-    protected final String s;
-    protected final String r;
+    protected String s;
+    protected String r;
     protected QJson json;
     protected T data;
 
@@ -35,8 +35,16 @@ public class BasicRequestBlock<T extends JsonParsable<T>> implements RequestBloc
         return r;
     }
 
+    public QJson getJson() {
+        return json;
+    }
+
     @Override
     public T getData() throws JsonException {
         return this.data.convertToObject(json);
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 }

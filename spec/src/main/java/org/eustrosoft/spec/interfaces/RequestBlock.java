@@ -6,12 +6,15 @@
 
 package org.eustrosoft.spec.interfaces;
 
+import org.eustrosoft.json.QJson;
 import org.eustrosoft.json.exception.JsonException;
 
 public interface RequestBlock<T> {
     String getS();
 
     String getR();
+
+    QJson getJson();
 
     T getData() throws JsonException;
 }

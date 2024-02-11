@@ -30,7 +30,7 @@ public class LoginDTO implements JsonParsable<LoginDTO> {
     @Override
     public LoginDTO convertToObject(QJson qJson) throws JsonException {
         setLogin(qJson.getItemString(PARAM_LOGIN));
-        setLogin(qJson.getItemString(PARAM_PASSWORD));
+        setPassword(qJson.getItemString(PARAM_PASSWORD));
         return this;
     }
 }

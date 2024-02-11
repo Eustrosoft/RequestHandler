@@ -8,11 +8,7 @@ import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
 public class LoginResponseBlock extends BasicResponseBlock<StringResponseData> {
 
     public LoginResponseBlock(String request) {
+        this.s = SUBSYSTEM_LOGIN;
         this.r = request;
-    }
-
-    @Override
-    public String getS() {
-        return SUBSYSTEM_LOGIN;
     }
 }

@@ -8,8 +8,10 @@ package org.eustrosoft.login;
 
 import org.eustrosoft.core.BasicHandler;
 import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.handlers.login.dto.LoginDTO;
 import org.eustrosoft.spec.interfaces.RequestBlock;
 import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import static org.eustrosoft.spec.Constants.REQUEST_LOGIN;
 import static org.eustrosoft.spec.Constants.REQUEST_LOGOUT;
@@ -20,12 +22,14 @@ public final class LoginHandler implements BasicHandler {
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        LoginService service = new LoginService(requestBlock);
+        LoginService service = new LoginService();
+        BasicRequestBlock rb = (BasicRequestBlock) requestBlock;
         switch (requestBlock.getR()) {
             case REQUEST_LOGIN:
-                return service.login();
+                rb.setData(new LoginDTO());
+                return service.login(rb);
             case REQUEST_LOGOUT:
-                return service.logout();
+                return service.logout(rb);
             default:
                 return null;
         }
