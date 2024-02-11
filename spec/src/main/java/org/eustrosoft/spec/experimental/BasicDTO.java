@@ -4,15 +4,15 @@ import org.eustrosoft.spec.ResponseParams;
 import org.eustrosoft.spec.interfaces.JsonData;
 import org.eustrosoft.spec.response.BasicResponseBlock;
 
-public class BasicDTO<T extends JsonData> extends BasicResponseBlock<T> {
+public class BasicDTO<T extends JsonData<T>> extends BasicResponseBlock<T> {
     private T data;
-
-    public BasicDTO(T data) {
-        this.data = data;
-    }
 
     public BasicDTO(ResponseParams params, T data) {
         super(params);
+        this.data = data;
+    }
+
+    public BasicDTO(T data) {
         this.data = data;
     }
 

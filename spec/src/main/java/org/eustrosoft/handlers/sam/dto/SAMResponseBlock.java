@@ -6,10 +6,10 @@
 
 package org.eustrosoft.handlers.sam.dto;
 
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.interfaces.JsonConvertible;
 import org.eustrosoft.spec.response.BasicResponseBlock;
 
-public final class SAMResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
+public final class SAMResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
     private T data;
 
     public SAMResponseBlock(String requestType) {

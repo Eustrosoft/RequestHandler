@@ -120,17 +120,13 @@ public class HttpRequestDispatcher extends HttpServlet {
         PostRequestProcessor requestProcessor = new PostRequestProcessor(this.handlersContext);
         QDBPSession session = new QDBPSession("123", 1L);
         Response resp = null;
-        if (session != null) {
-            synchronized (session) {
-                resp = requestProcessor.processRequest();
-            }
-        } else {
+        synchronized (session) {
             resp = requestProcessor.processRequest();
         }
         setResponseHeaders(response);
         PrintWriter writer = response.getWriter();
         try {
-            writer.print(resp.toJsonString());
+            writer.print(resp.convertToString());
         } catch (JsonException ex) {
             writer.print(getUnauthorizedResponse());
         }

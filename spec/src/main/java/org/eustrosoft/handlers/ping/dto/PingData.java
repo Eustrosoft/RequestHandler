@@ -2,9 +2,9 @@ package org.eustrosoft.handlers.ping.dto;
 
 import org.eustrosoft.json.JsonUtil;
 import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.interfaces.JsonConvertible;
 
-public class PingData implements JsonData {
+public class PingData implements JsonConvertible {
     private String username;
     private String fullName;
     private String dbUser;
@@ -18,7 +18,7 @@ public class PingData implements JsonData {
     }
 
     @Override
-    public String toJsonString() throws JsonException {
+    public String convertToString() throws JsonException {
         return JsonUtil.toJson(
                 JsonUtil.getFormatString(4),
                 JsonUtil.AsEntry.getStringParams("username", username),

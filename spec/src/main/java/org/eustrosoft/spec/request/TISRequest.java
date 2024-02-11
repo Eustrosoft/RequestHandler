@@ -41,16 +41,8 @@ public class TISRequest implements Request {
         for (int i = 0; i < requests.size(); i++) {
             QJson qJson = requests.getItemQJson(i);
             String subsystem = qJson.getItemString(SUBSYSTEM);
-            String requestType = "";
-            try {
-                requestType = qJson.getItemString(REQUEST);
-            } catch (Exception ex) {
-                System.err.println("Can not get Request type. " + ex.getMessage());
-            }
-            RequestBlock<?> requestBlock = new TISRequestBlock(subsystem, requestType, qJson);
-            if (requestBlock != null) {
-                requestBlocks.add(requestBlock);
-            }
+            String requestType = qJson.getItemString(REQUEST);
+            requestBlocks.add(new BasicRequestBlock<>(subsystem, requestType, qJson));
         }
         return requestBlocks;
     }

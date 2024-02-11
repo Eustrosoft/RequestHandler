@@ -21,7 +21,7 @@ public interface Response extends JsonConvertible {
 
     Long getT();
 
-    default String toJsonString() throws JsonException {
+    default String convertToString() throws JsonException {
         return String.format(
                 "{%s, %s:[%s]}",
                 JsonUtil.AsEntry.getNumberParams(PARAM_DISPATCHER_TIMEOUT, getT()),             // Timeout param as %s:%s

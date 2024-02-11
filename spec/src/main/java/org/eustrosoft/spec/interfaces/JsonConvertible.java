@@ -9,5 +9,5 @@ package org.eustrosoft.spec.interfaces;
 import org.eustrosoft.json.exception.JsonException;
 
 public interface JsonConvertible {
-    String toJsonString() throws JsonException;
+    String convertToString() throws JsonException;
 }

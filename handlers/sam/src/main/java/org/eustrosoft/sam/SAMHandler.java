@@ -12,24 +12,17 @@ import org.eustrosoft.spec.Constants;
 import org.eustrosoft.spec.interfaces.RequestBlock;
 import org.eustrosoft.spec.interfaces.ResponseBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
 
 @Handler(SUBSYSTEM_SAM)
 public final class SAMHandler implements BasicHandler {
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
 
-    public SAMHandler(HttpServletRequest request, HttpServletResponse response) {
-        this.request = request;
-        this.response = response;
+    public SAMHandler() {
     }
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        SAMService samService = new SAMService(this.request, this.response, requestBlock);
+        SAMService samService = new SAMService(requestBlock);
 
         switch (requestBlock.getS()) {
             case Constants.REQUEST_USER_ID:

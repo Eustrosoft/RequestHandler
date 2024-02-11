@@ -11,9 +11,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.eustrosoft.json.Constants.*;
+import static org.eustrosoft.json.Constants.JSON_DELIM;
+import static org.eustrosoft.json.Constants.JSON_FORMAT_MASSIVE;
+import static org.eustrosoft.json.Constants.JSON_FORMAT_PARAMS;
+import static org.eustrosoft.json.Constants.JSON_FORMAT_STRING;
+import static org.eustrosoft.json.Constants.JSON_NULL;
 import static org.eustrosoft.json.JsonUtil.ParamUtil.*;
-import static org.eustrosoft.reflection.Types.*;
+import static org.eustrosoft.reflection.Types.BIG_DECIMAL;
+import static org.eustrosoft.reflection.Types.DOUBLE;
+import static org.eustrosoft.reflection.Types.FLOAT;
+import static org.eustrosoft.reflection.Types.INTEGER;
+import static org.eustrosoft.reflection.Types.LONG;
+import static org.eustrosoft.reflection.Types.SHORT;
 
 public final class JsonUtil {
 
@@ -31,6 +40,10 @@ public final class JsonUtil {
 
     public static String toJson(String format, Object... params) {
         return String.format(format, params);
+    }
+
+    public static String toJsonFormatted(Object... params) {
+        return String.format(getFormatString(params.length), params);
     }
 
     /**

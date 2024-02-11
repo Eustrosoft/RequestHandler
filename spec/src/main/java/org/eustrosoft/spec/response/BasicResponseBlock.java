@@ -7,10 +7,10 @@
 package org.eustrosoft.spec.response;
 
 import org.eustrosoft.spec.ResponseParams;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.interfaces.JsonConvertible;
 import org.eustrosoft.spec.interfaces.ResponseBlock;
 
-public abstract class BasicResponseBlock<T extends JsonData> implements ResponseBlock<T> {
+public abstract class BasicResponseBlock<T extends JsonConvertible> implements ResponseBlock<T> {
     protected String s;
     protected String r;
     protected String m;

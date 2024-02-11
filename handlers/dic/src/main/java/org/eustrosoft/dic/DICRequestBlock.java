@@ -7,12 +7,12 @@
 package org.eustrosoft.dic;
 
 import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.interfaces.JsonData;
-import org.eustrosoft.spec.request.TISRequestBlock;
+import org.eustrosoft.spec.interfaces.JsonParsable;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_DIC;
 
-public class DICRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
+public class DICRequestBlock<T extends JsonParsable<T>> extends BasicRequestBlock<T> {
     private String id;
     private String dic;
 

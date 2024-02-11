@@ -9,14 +9,14 @@ package org.eustrosoft.file;
 import org.eustrosoft.json.Json;
 import org.eustrosoft.json.QJson;
 import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.JsonData;
-import org.eustrosoft.spec.request.TISRequestBlock;
+import org.eustrosoft.spec.interfaces.JsonParsable;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import java.util.Base64;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_FILE;
 
-public class FileRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
+public class FileRequestBlock<T extends JsonParsable<T>> extends BasicRequestBlock<T> {
     private byte[] fileBytes;
     private String path;
     private String fileName;

@@ -7,12 +7,12 @@
 package org.eustrosoft.cms;
 
 import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.interfaces.JsonData;
-import org.eustrosoft.spec.request.TISRequestBlock;
+import org.eustrosoft.spec.interfaces.JsonParsable;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_CMS;
 
-public class CMSRequestBlock<T extends JsonData> extends TISRequestBlock<T> {
+public class CMSRequestBlock<T extends JsonParsable<T>> extends BasicRequestBlock<T> {
     private CMSType type;
     private String path;
     private String fileName;

@@ -24,13 +24,10 @@ public final class LoginHandler implements BasicHandler {
         switch (requestBlock.getR()) {
             case REQUEST_LOGIN:
                 return service.login();
-            break;
             case REQUEST_LOGOUT:
                 return service.logout();
-            break;
             default:
                 return null;
-            break;
         }
     }
 }

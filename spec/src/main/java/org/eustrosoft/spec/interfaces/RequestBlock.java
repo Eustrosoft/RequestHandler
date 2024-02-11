@@ -6,10 +6,12 @@
 
 package org.eustrosoft.spec.interfaces;
 
-public interface RequestBlock<T> extends JsonParsable<T> {
+import org.eustrosoft.json.exception.JsonException;
+
+public interface RequestBlock<T> {
     String getS();
 
     String getR();
 
-    T getData();
+    T getData() throws JsonException;
 }

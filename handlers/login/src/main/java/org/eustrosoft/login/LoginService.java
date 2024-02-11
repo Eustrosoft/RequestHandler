@@ -1,8 +1,10 @@
 package org.eustrosoft.login;
 
 import org.eustrosoft.core.Service;
+import org.eustrosoft.handlers.login.dto.LoginDTO;
 import org.eustrosoft.handlers.login.dto.LoginRequestBlock;
 import org.eustrosoft.handlers.login.dto.LoginResponseBlock;
+import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
@@ -20,11 +22,9 @@ public class LoginService implements Service {
         this.requestBlock = requestBlock;
     }
 
-    private LoginResponseBlock login() throws SQLException {
+    public LoginResponseBlock login() throws SQLException, JsonException {
         LoginResponseBlock loginResponseBlock = new LoginResponseBlock(requestBlock.getR());
-        (LoginRequestBlock)
-                String login = requestBlock.getLogin();
-        String password = requestBlock.getPassword();
+        LoginDTO data = ((LoginRequestBlock<LoginDTO>) requestBlock).getData();
         QDBPool dbPool = DBPoolContext.getInstance(
                 DBPoolContext.getDbPoolName(getRequest()),
                 DBPoolContext.getUrl(getRequest()),
@@ -34,7 +34,7 @@ public class LoginService implements Service {
         if (dbps != null) {
             dbps.logout();
         }
-        dbps = dbPool.logon(login, password);
+        dbps = dbPool.logon(data.getLogin(), data.getPassword());
         if (dbps == null) {
             dbps = dbPool.createSession();
         }
@@ -52,7 +52,7 @@ public class LoginService implements Service {
         return loginResponseBlock;
     }
 
-    private LoginResponseBlock logout() throws SQLException {
+    public LoginResponseBlock logout() throws SQLException {
         LoginResponseBlock loginResponseBlock = new LoginResponseBlock(requestBlock.getR());
         QDBPSession dbps = new QDBPSession(DBPoolContext.getDbPoolName(getRequest()), null);
         dbps.logout();

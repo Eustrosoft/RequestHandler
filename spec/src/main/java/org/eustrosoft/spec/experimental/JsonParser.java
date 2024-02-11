@@ -34,7 +34,7 @@ public class JsonParser {
 
     public static void main(String[] args) throws Exception {
         JsonParser parser = new JsonParser();
-        BasicDTO<UserDTO> object = new BasicDTO<UserDTO>(
+        BasicDTO<UserDTO> object = new BasicDTO<>(
                 new ResponseParams("sam", "userId", "Ok.", 0L, "RU"),
                 new UserDTO(1L, "Pavel", "Pavel Seleznev", "ADMIN", null)
         );
@@ -50,7 +50,8 @@ public class JsonParser {
         assert json.equals(newJson);
     }
 
-    public <T extends JsonData> BasicDTO<T> toObject(String json, Class<T> dataType) throws InstantiationException, IllegalAccessException, IOException {
+    public <T extends JsonData<T>> BasicDTO<T> toObject(String json, Class<T> dataType)
+            throws InstantiationException, IllegalAccessException, IOException {
         Field[] classFields1 = getClassFields(BasicDTO.class);
 
         BasicDTO<T> o = new BasicDTO<>(dataType.newInstance());

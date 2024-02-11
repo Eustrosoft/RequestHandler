@@ -7,45 +7,13 @@
 package org.eustrosoft.handlers.login.dto;
 
 import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.request.TISRequestBlock;
+import org.eustrosoft.spec.interfaces.JsonParsable;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
 
-public class LoginRequestBlock extends TISRequestBlock<T> {
-    private String login;
-    private String password;
-
+public class LoginRequestBlock<T extends JsonParsable<T>> extends BasicRequestBlock<T> {
     public LoginRequestBlock(String request, QJson qJson) {
         super(SUBSYSTEM_LOGIN, request, qJson);
-        parseQJson(qJson);
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getS() {
-        return SUBSYSTEM_LOGIN;
-    }
-
-    private void parseQJson(QJson qJson) {
-        if (qJson == null) {
-            throw new NullPointerException("QJson was null");
-        }
-        setLogin(qJson.getItemString("login"));
-        setPassword(qJson.getItemString("password"));
     }
 }

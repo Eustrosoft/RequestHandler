@@ -1,10 +1,11 @@
 package org.eustrosoft.handlers.sam.dto;
 
 import org.eustrosoft.json.JsonUtil;
+import org.eustrosoft.json.QJson;
 import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.spec.interfaces.JsonData;
 
-public class UserDTO implements JsonData {
+public class UserDTO implements JsonData<UserDTO> {
     private Long id;
     private String username;
     private String fullName;
@@ -65,7 +66,7 @@ public class UserDTO implements JsonData {
     }
 
     @Override
-    public String toJsonString() throws JsonException {
+    public String convertToString() throws JsonException {
         return JsonUtil.toJson(
                 JsonUtil.getFormatString(5),
                 JsonUtil.AsEntry.getNumberParams("id", id),
@@ -74,5 +75,15 @@ public class UserDTO implements JsonData {
                 JsonUtil.AsEntry.getStringParams("role", role),
                 JsonUtil.AsEntry.getStringParams("icon", icon)
         );
+    }
+
+    @Override
+    public UserDTO convertToObject(QJson value) throws JsonException {
+        setFullName(value.getItemString("fullName"));
+        setIcon(value.getItemString("icon"));
+        setId(value.getItemLong("id"));
+        setRole(value.getItemString("role"));
+        setUsername(value.getItemString("username"));
+        return this;
     }
 }

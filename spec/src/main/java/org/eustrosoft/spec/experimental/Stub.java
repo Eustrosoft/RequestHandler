@@ -1,11 +1,11 @@
 package org.eustrosoft.spec.experimental;
 
 import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.interfaces.JsonConvertible;
 
-public class Stub implements JsonData {
+public class Stub implements JsonConvertible {
     @Override
-    public String toJsonString() throws JsonException {
+    public String convertToString() throws JsonException {
         return "";
     }
 }

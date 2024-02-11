@@ -1,9 +1,9 @@
 package org.eustrosoft.spec.response;
 
 import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.interfaces.JsonConvertible;
 
-public class ExceptionData implements JsonData {
+public class ExceptionData implements JsonConvertible {
     private String data;
 
     public ExceptionData(String data) {
@@ -11,7 +11,7 @@ public class ExceptionData implements JsonData {
     }
 
     @Override
-    public String toJsonString() throws JsonException {
+    public String convertToString() throws JsonException {
         return data;
     }
 }

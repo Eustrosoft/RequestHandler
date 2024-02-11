@@ -7,18 +7,22 @@
 package org.eustrosoft.spec.request;
 
 import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.json.exception.JsonException;
+import org.eustrosoft.spec.interfaces.JsonParsable;
 import org.eustrosoft.spec.interfaces.RequestBlock;
 
-public abstract class BasicRequestBlock<T extends JsonData> implements RequestBlock<T> {
+import static org.eustrosoft.json.Constants.PARAM_DISPATCHER_DATA;
+
+public class BasicRequestBlock<T extends JsonParsable<T>> implements RequestBlock<T> {
     protected final String s;
     protected final String r;
     protected QJson json;
+    protected T data;
 
     public BasicRequestBlock(String subsystem, String request, QJson json) {
         this.s = subsystem;
         this.r = request;
-        this.json = json;
+        this.json = json.getItemQJson(PARAM_DISPATCHER_DATA);
     }
 
     @Override
@@ -31,4 +35,8 @@ public abstract class BasicRequestBlock<T extends JsonData> implements RequestBl
         return r;
     }
 
+    @Override
+    public T getData() throws JsonException {
+        return this.data.convertToObject(json);
+    }
 }
