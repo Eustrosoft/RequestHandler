@@ -16,8 +16,8 @@
 
     <modules>
         <module>cms</module>
-        <!--        <module>msg</module>-->
-        <!--        <module>sql</module>-->
+        <module>msg</module>
+        <module>sql</module>
         <module>ping</module>
         <module>dic</module>
         <module>sam</module>

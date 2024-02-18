@@ -19,21 +19,20 @@ import static org.eustrosoft.tools.PropertiesConstants.PROPERTY_HANDLERS_PATH;
 public class HandlersConfig implements PropsContainer {
     private final Map<String, String> allowedHandlers;
     private final Properties properties;
-    private String path; // Path to config file
 
     public HandlersConfig(String path) throws IOException {
-        this.path = path;
         this.allowedHandlers = new HashMap<>();
         this.properties = new Properties();
+        setPath(path);
         loadProps();
     }
 
     public String getPath() {
-        return path;
+        return properties.getProperty(PROPERTY_HANDLERS_PATH);
     }
 
     public void setPath(String path) {
-        this.path = path;
+        properties.setProperty(PROPERTY_HANDLERS_PATH, path);
     }
 
     public Map<String, String> getAllowedHandlers() {
@@ -75,7 +74,7 @@ public class HandlersConfig implements PropsContainer {
     }
 
     private void loadHandlers(File rootPath) throws IOException {
-        this.path = rootPath.getAbsolutePath();
+        String path = rootPath.getAbsolutePath();
         BufferedReader reader = new BufferedReader(new FileReader(path));
         String buffer = "";
         while ((buffer = reader.readLine()) != null) {

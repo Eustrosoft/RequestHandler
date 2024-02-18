@@ -6,11 +6,12 @@
 
 package org.eustrosoft.spec.response;
 
+import org.eustrosoft.spec.ResponseLang;
 import org.eustrosoft.spec.ResponseParams;
 import org.eustrosoft.spec.interfaces.JsonConvertible;
 import org.eustrosoft.spec.interfaces.ResponseBlock;
 
-public abstract class BasicResponseBlock<T extends JsonConvertible> implements ResponseBlock<T> {
+public class BasicResponseBlock<T extends JsonConvertible> implements ResponseBlock<T> {
     protected String s;
     protected String r;
     protected String m;
@@ -19,7 +20,7 @@ public abstract class BasicResponseBlock<T extends JsonConvertible> implements R
     protected T data;
 
     public BasicResponseBlock() {
-
+        this.l = ResponseLang.EN_US.getLang(); // TODO
     }
 
     public BasicResponseBlock(ResponseParams params) {

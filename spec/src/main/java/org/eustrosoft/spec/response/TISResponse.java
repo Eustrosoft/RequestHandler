@@ -6,11 +6,11 @@ import org.eustrosoft.spec.interfaces.ResponseBlock;
 import java.util.List;
 
 public class TISResponse implements Response {
-    private List<ResponseBlock> responseBlocks;
+    private List<ResponseBlock<?>> responseBlocks;
     private Long timeout;
 
     @Override
-    public List<ResponseBlock> getR() {
+    public List<ResponseBlock<?>> getR() {
         return this.responseBlocks;
     }
 
@@ -19,7 +19,7 @@ public class TISResponse implements Response {
         return this.timeout;
     }
 
-    public void setResponseBlocks(List<ResponseBlock> responseBlocks) {
+    public void setResponseBlocks(List<ResponseBlock<?>> responseBlocks) {
         this.responseBlocks = responseBlocks;
     }
 

@@ -7,18 +7,16 @@
 package org.eustrosoft.msg;
 
 import org.eustrosoft.json.QJson;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_MSG;
 
-public class MSGRequestBlock extends BasicRequest {
+public class MSGRequestBlock extends BasicRequestBlock {
     private String id;
     private MsgParams params;
 
-    public MSGRequestBlock(HttpServletRequest request,
-                           HttpServletResponse response,
-                           QJson qJson) {
-        super(request, response, qJson);
+    public MSGRequestBlock(String request, QJson qJson) {
+        super(SUBSYSTEM_MSG, request, qJson);
         parseQJson(qJson);
     }
 

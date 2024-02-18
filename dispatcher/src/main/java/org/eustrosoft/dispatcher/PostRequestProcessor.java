@@ -10,9 +10,9 @@ import org.eustrosoft.json.QJson;
 import org.eustrosoft.spec.ResponseLang;
 import org.eustrosoft.spec.ResponseParams;
 import org.eustrosoft.spec.interfaces.Request;
-import org.eustrosoft.spec.interfaces.RequestBlock;
 import org.eustrosoft.spec.interfaces.Response;
 import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 import org.eustrosoft.spec.request.TISRequest;
 import org.eustrosoft.spec.response.ExceptionResponseBlock;
 import org.eustrosoft.spec.response.TISResponse;
@@ -65,10 +65,10 @@ public final class PostRequestProcessor {
 
             requestObject.fromJson(qJson);
 
-            List<ResponseBlock> responses = processRequestBlocks(requestObject);
+            List<ResponseBlock<?>> responses = processRequestBlocks(requestObject);
             response.setResponseBlocks(responses);
         } catch (Exception exception) {
-            List<ResponseBlock> blocks = response.getR();
+            List<ResponseBlock<?>> blocks = response.getR();
             if (blocks == null) {
                 response.setResponseBlocks(new ArrayList<>());
             }
@@ -80,16 +80,16 @@ public final class PostRequestProcessor {
         return response;
     }
 
-    private List<ResponseBlock> processRequestBlocks(Request requestObject) {
+    private List<ResponseBlock<?>> processRequestBlocks(Request requestObject) {
         Map<String, Class<?>> handlersMap = handlersContext.getHandlersMap();
-        List<ResponseBlock> responseBlocks = new ArrayList<>();
-        for (RequestBlock<?> block : requestObject.getR()) {
+        List<ResponseBlock<?>> responseBlocks = new ArrayList<>();
+        for (BasicRequestBlock<?> block : requestObject.getR()) {
             String subsystem = block.getS();
             Class<?> aClass = handlersMap.get(subsystem);
             try {
                 BasicHandler handler = (BasicHandler) aClass.newInstance();
                 responseBlocks.add(handler.processRequest(block));
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | NullPointerException e) {
                 responseBlocks.add(new ExceptionResponseBlock(
                                 new ResponseParams(
                                         block.getS(), block.getR(), "Handler is not supported",

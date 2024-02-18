@@ -17,9 +17,9 @@
 
     <modules>
         <module>lib</module>
-        <module>dispatcher</module>
-        <module>handlers</module>
         <module>spec</module>
+        <module>handlers</module>
+        <module>dispatcher</module>
     </modules>
 
 </project>

@@ -8,12 +8,13 @@ package org.eustrosoft.spec.interfaces;
 
 import org.eustrosoft.json.QJson;
 import org.eustrosoft.json.exception.JsonException;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import java.util.List;
 
 public interface Request {
 
-    List<RequestBlock<?>> getR();
+    List<BasicRequestBlock<?>> getR();
 
     Long getT();
 

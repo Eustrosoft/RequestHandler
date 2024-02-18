@@ -6,6 +6,8 @@
 
 package org.eustrosoft.file;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.eustrosoft.cms.CMSDataSource;
 import org.eustrosoft.cms.UserStorage;
 import org.eustrosoft.cms.dbdatasource.DBDataSource;
@@ -22,12 +24,10 @@ import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import org.eustrosoft.sam.dao.SamDAO;
 import org.eustrosoft.sam.model.User;
 import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 import org.eustrosoft.tools.FileUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class HexFileHandler implements BasicHandler {
     }
 
     @Override
-    public synchronized ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+    public synchronized BasicResponseBlock processRequest(BasicRequestBlock requestBlock) throws Exception {
         HexFileRequestBlock requestBl = (HexFileRequestBlock) requestBlock;
         QDBPool dbPool = DBPoolContext.getInstance(
                 DBPoolContext.getDbPoolName(request),

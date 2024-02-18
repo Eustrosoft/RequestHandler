@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>dispatcher</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -34,32 +34,6 @@
             <groupId>org.eustrosoft</groupId>
             <artifactId>SessionCookie</artifactId>
             <version>0.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eustrosoft</groupId>
-            <artifactId>cms</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eustrosoft</groupId>
-            <artifactId>dic</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eustrosoft</groupId>
-            <artifactId>sam</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eustrosoft</groupId>
-            <artifactId>ping</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eustrosoft</groupId>
-            <artifactId>login</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -84,32 +58,6 @@
                 <groupId>org.eustrosoft</groupId>
                 <artifactId>SessionCookie</artifactId>
                 <version>0.0.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eustrosoft</groupId>
-                <artifactId>cms</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eustrosoft</groupId>
-                <artifactId>dic</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eustrosoft</groupId>
-                <artifactId>sam</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eustrosoft</groupId>
-                <artifactId>ping</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eustrosoft</groupId>
-                <artifactId>login</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

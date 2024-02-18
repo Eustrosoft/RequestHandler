@@ -8,21 +8,27 @@ package org.eustrosoft.msg;
 
 import org.eustrosoft.msg.model.MSGChannel;
 import org.eustrosoft.msg.model.MSGMessage;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 import java.util.List;
 
-public final class MSGResponseBlock extends BasicResponse {
-    private String errMsg = "";
-    private Short errCode = 0;
-    private String responseType;
+public final class MSGResponseBlock extends BasicResponseBlock {
     private List<MSGChannel> chats;
     private List<MSGMessage> messages;
 
-    public void setE(int code) {
-        errCode = (short) code;
+    public List<MSGChannel> getChats() {
+        return chats;
     }
 
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
+    public void setChats(List<MSGChannel> chats) {
+        this.chats = chats;
+    }
+
+    public List<MSGMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<MSGMessage> messages) {
+        this.messages = messages;
     }
 }

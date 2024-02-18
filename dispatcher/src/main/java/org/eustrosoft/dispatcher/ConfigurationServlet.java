@@ -1,12 +1,12 @@
 package org.eustrosoft.dispatcher;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.eustrosoft.dispatcher.context.HandlersConfig;
 import org.eustrosoft.dispatcher.context.HandlersContext;
 import org.eustrosoft.json.QJson;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -21,7 +21,6 @@ public class ConfigurationServlet extends HttpServlet {
         if (path != null || !path.isEmpty()) {
             HandlersContext context = HandlersContext.getInstance(new HandlersConfig(path));
             context.initLazy();
-            context.getHandlersMap();
             resp.getWriter().println("Properties was reloaded successfully");
             printHandlers(resp.getWriter(), context);
             resp.getWriter().flush();

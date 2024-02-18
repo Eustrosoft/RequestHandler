@@ -8,6 +8,8 @@ package org.eustrosoft.msg;
 
 import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.core.BasicService;
+import org.eustrosoft.core.annotation.Handler;
 import org.eustrosoft.core.db.ExecStatus;
 import org.eustrosoft.core.db.util.DBUtils;
 import org.eustrosoft.date.DateTimeZone;
@@ -21,9 +23,10 @@ import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.sam.dao.SamDAO;
+import org.eustrosoft.sam.model.User;
 import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,24 +35,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class MSGHandler implements BasicHandler {
+import static org.eustrosoft.spec.Constants.ERR_OK;
+import static org.eustrosoft.spec.Constants.ERR_UNEXPECTED;
+import static org.eustrosoft.spec.Constants.MSG_UNEXPECTED;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_MSG;
+
+@Handler(SUBSYSTEM_MSG)
+public final class MSGHandler extends BasicService implements BasicHandler {
     private QDBPConnection poolConnection;
 
     public MSGHandler() {
     }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
-                .getSession();
+    public BasicResponseBlock processRequest(BasicRequestBlock requestBlock) throws Exception {
+        QDBPSession session = new SessionProvider(getRequest(), getResponse()).getSession();
         this.poolConnection = session.getConnection();
         MSGRequestBlock msgRequestBlock = (MSGRequestBlock) requestBlock;
         MsgParams params = msgRequestBlock.getParams();
         MSGResponseBlock msgResponseBlock = new MSGResponseBlock();
-        msgResponseBlock.setE(Constants.ERR_OK);
-        msgResponseBlock.setErrMsg(Constants.MSG_OK);
+        msgResponseBlock.setE(ERR_OK);
+        msgResponseBlock.setM(Constants.MSG_OK);
         String requestType = msgRequestBlock.getR();
-        msgResponseBlock.setResponseType(requestType);
+        msgResponseBlock.setR(requestType);
         switch (requestType) {
             case Constants.REQUEST_CHATS:
                 List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
@@ -69,8 +77,8 @@ public final class MSGHandler implements BasicHandler {
             case Constants.REQUEST_SEND:
                 String message = createMessage(params);
                 if (message == null) {
-                    msgResponseBlock.setErrCode((short) 1);
-                    msgResponseBlock.setErrMsg("Error while creating message");
+                    msgResponseBlock.setE(ERR_UNEXPECTED);
+                    msgResponseBlock.setM(MSG_UNEXPECTED);
                 }
                 break;
             case Constants.REQUEST_EDIT:
@@ -93,8 +101,8 @@ public final class MSGHandler implements BasicHandler {
                 );
                 break;
             default:
-                msgResponseBlock.setE(1);
-                msgResponseBlock.setErrMsg("Has no this request type");
+                msgResponseBlock.setE(ERR_UNEXPECTED);
+                msgResponseBlock.setM(MSG_UNEXPECTED);
                 break;
         }
         return msgResponseBlock;
@@ -138,7 +146,7 @@ public final class MSGHandler implements BasicHandler {
             throw new IllegalArgumentException("Subject can not be null or empty");
         }
         MSGDao functions = new MSGDao(poolConnection);
-        MSGChannel newChannel = new MSGChannel(subject, objId, MSGChannelStatus.N);
+        MSGChannel newChannel = new MSGChannel(objId, null, null, subject, objId, MSGChannelStatus.N);
         newChannel.setZlvl(slvl);
         newChannel.setZsid(sid);
         ExecStatus chat = functions.createChat(newChannel);
@@ -205,9 +213,14 @@ public final class MSGHandler implements BasicHandler {
                 msgMessage.setCreated(new DateTimeZone(created).toString());
             }
             Long userId = DBUtils.getLongValueOrEmpty(resultSet, DBConstants.ZUID);
+            User userById = samDAO.getUserById(userId);
             msgMessage.setUser(
-                    UserDTO.fromUser(
-                            samDAO.getUserById(userId)
+                    new UserDTO(
+                            userById.getId(),
+                            userById.getUsername(),
+                            userById.getFullName(),
+                            null,
+                            null
                     )
             );
             objects.add(msgMessage);

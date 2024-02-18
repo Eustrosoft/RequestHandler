@@ -194,8 +194,7 @@ public class JsonParser {
         return String.format("%s%s%s", START_ARR, String.join(COMMA, finalStrings), END_ARR);
     }
 
-    private Map<String, Object> getClassFields(Map<String, Object> objMap, Object obj)
-            throws Exception {
+    private Map<String, Object> getClassFields(Map<String, Object> objMap, Object obj) throws Exception {
         Class<?> clazz = obj.getClass();
         Field[] declaredFields = getClassFields(clazz);
         for (Field field : declaredFields) {

@@ -2,25 +2,25 @@ package org.eustrosoft.spec.experimental;
 
 import org.eustrosoft.json.QJson;
 import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.spec.interfaces.JsonParsable;
 import org.eustrosoft.spec.interfaces.Request;
-import org.eustrosoft.spec.interfaces.RequestBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SingleRequest<T extends JsonData> implements Request {
+public class SingleRequest<T extends JsonParsable<T>> implements Request {
     private Long time = 0L;
 
-    private RequestBlock<T> requestBlock;
+    private BasicRequestBlock<T> requestBlock;
 
-    public SingleRequest(RequestBlock<T> requestBlock) {
+    public SingleRequest(BasicRequestBlock<T> requestBlock) {
         this.requestBlock = requestBlock;
     }
 
     @Override
-    public List<RequestBlock<?>> getR() {
-        List<RequestBlock<?>> requestBlocks = new ArrayList<>();
+    public List<BasicRequestBlock<?>> getR() {
+        List<BasicRequestBlock<?>> requestBlocks = new ArrayList<>();
         requestBlocks.add(requestBlock);
         return requestBlocks;
     }

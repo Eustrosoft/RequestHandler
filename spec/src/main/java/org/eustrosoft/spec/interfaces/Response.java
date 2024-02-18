@@ -10,6 +10,7 @@ import org.eustrosoft.json.JsonUtil;
 import org.eustrosoft.json.exception.JsonException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.eustrosoft.json.Constants.PARAM_DISPATCHER_RESPONSES;
@@ -17,7 +18,7 @@ import static org.eustrosoft.json.Constants.PARAM_DISPATCHER_TIMEOUT;
 
 public interface Response extends JsonConvertible {
 
-    List<ResponseBlock> getR();
+    List<ResponseBlock<?>> getR();
 
     Long getT();
 
@@ -26,7 +27,7 @@ public interface Response extends JsonConvertible {
                 "{%s, %s:[%s]}",
                 JsonUtil.AsEntry.getNumberParams(PARAM_DISPATCHER_TIMEOUT, getT()),             // Timeout param as %s:%s
                 JsonUtil.ParamUtil.getString(PARAM_DISPATCHER_RESPONSES),                       // r - responses
-                getR().stream().map(r -> {
+                getR().stream().filter(Objects::nonNull).map(r -> {
                     String rb = "";
                     try {
                         rb = r.toJsonString();

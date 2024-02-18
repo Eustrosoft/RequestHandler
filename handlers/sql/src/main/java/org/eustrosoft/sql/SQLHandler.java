@@ -6,48 +6,58 @@
 
 package org.eustrosoft.sql;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.providers.SessionProvider;
-import org.eustrosoft.qdbp.QDBPSession;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.core.BasicService;
+import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.handlers.sql.dto.ResultSetAnswer;
+import org.eustrosoft.handlers.sql.dto.SqlResponseBock;
+import org.eustrosoft.providers.SessionProvider;
+import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.request.StringDTO;
+import org.eustrosoft.spec.response.BasicResponseBlock;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SQLHandler implements BasicHandler {
+import static org.eustrosoft.spec.Constants.ERR_OK;
+import static org.eustrosoft.spec.Constants.ERR_UNEXPECTED;
+import static org.eustrosoft.spec.Constants.MSG_OK;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_SQL;
+
+@Handler(SUBSYSTEM_SQL)
+public final class SQLHandler extends BasicService implements BasicHandler {
+
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        HttpServletRequest request = requestBlock.getHttpRequest();
-        HttpServletResponse httpResponse = requestBlock.getHttpResponse();
+    public BasicResponseBlock<ResultSetAnswer> processRequest(BasicRequestBlock<?> requestBlock) throws Exception {
+        HttpServletRequest request = getRequest();
+        HttpServletResponse httpResponse = getResponse();
         SessionProvider sessionProvider = new SessionProvider(request, httpResponse);
         QDBPSession session = sessionProvider.getSession();
         Connection sqlConnection = session.getSQLConnection();
 
-        SQLRequestBlock sqlRequest = (SQLRequestBlock) requestBlock;
-        String query = sqlRequest.getQuery();
+        ((BasicRequestBlock) requestBlock).setData(new StringDTO());
+        BasicRequestBlock<StringDTO> dto = (BasicRequestBlock<StringDTO>) requestBlock;
 
-        SQLResponseBlock responseBlock = new SQLResponseBlock();
+        BasicResponseBlock<ResultSetAnswer> responseBlock = new SqlResponseBock<>(requestBlock.getR());
         List<ResultSet> resultSet = new ArrayList<>();
-        List<String> queries = getQueries(query);
+        List<String> queries = getQueries(dto.getData().getQuery());
         try {
             for (String targetQuery : queries) {
                 PreparedStatement preparedStatement = sqlConnection.prepareStatement(targetQuery);
                 resultSet.add(preparedStatement.executeQuery());
-                responseBlock.setE(Constants.ERR_OK);
-                responseBlock.setErrMsg(Constants.MSG_OK);
+                responseBlock.setE(ERR_OK);
+                responseBlock.setM(MSG_OK);
             }
         } catch (Exception ex) {
-            responseBlock.setErrMsg(ex.getMessage());
-            responseBlock.setE(Constants.ERR_UNEXPECTED);
+            responseBlock.setM(ex.getMessage());
+            responseBlock.setE(ERR_UNEXPECTED);
         }
-        responseBlock.setResultSet(resultSet);
         return responseBlock;
     }
 

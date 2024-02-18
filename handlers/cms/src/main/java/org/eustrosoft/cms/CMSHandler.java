@@ -6,6 +6,8 @@
 
 package org.eustrosoft.cms;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.cms.dbdatasource.DBDataSource;
 import org.eustrosoft.cms.dto.CMSObject;
@@ -27,10 +29,9 @@ import org.eustrosoft.sam.dao.SamDAO;
 import org.eustrosoft.services.ZipService;
 import org.eustrosoft.spec.Constants;
 import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -57,7 +58,7 @@ public final class CMSHandler implements BasicHandler {
     }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+    public BasicResponseBlock processRequest(BasicRequestBlock requestBlock) throws Exception {
         QDBPSession session = new SessionProvider(this.request, this.response)
                 .getSession();
         this.cmsDataSource = DataSourceProvider.getInstance(session.getConnection())

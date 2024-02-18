@@ -1,28 +1,14 @@
-/**
- * Copyright (c) 2023, Yadzuka & EustroSoft.org
- * This file is part of RequestHandler project.
- * See the LICENSE file at the project root for licensing information.
- */
-
 package org.eustrosoft.handlers.sam.dto;
 
 import org.eustrosoft.spec.interfaces.JsonConvertible;
 import org.eustrosoft.spec.response.BasicResponseBlock;
 
-public final class SAMResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
-    private T data;
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
 
-    public SAMResponseBlock(String requestType) {
-        this.r = requestType;
+public class SAMResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
+    public SAMResponseBlock(String request) {
+        super();
+        this.s = SUBSYSTEM_SAM;
+        this.r = request;
     }
-
-    @Override
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
 }

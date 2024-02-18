@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SingleResponse implements Response {
     private Long timing;
-    private List<ResponseBlock> responseBlocks;
+    private List<ResponseBlock<?>> responseBlocks;
 
     public SingleResponse(String json) {
         JsonParser parser = new JsonParser();
@@ -16,7 +16,7 @@ public class SingleResponse implements Response {
     }
 
     @Override
-    public List<ResponseBlock> getR() {
+    public List<ResponseBlock<?>> getR() {
         return this.responseBlocks;
     }
 

@@ -6,6 +6,9 @@
 
 package org.eustrosoft.file;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import org.eustrosoft.cms.UserStorage;
 import org.eustrosoft.core.BasicHandler;
 import org.eustrosoft.providers.context.DBPoolContext;
@@ -14,13 +17,10 @@ import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import org.eustrosoft.sam.dao.SamDAO;
 import org.eustrosoft.sam.model.User;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 import org.eustrosoft.tools.FileUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public class BytesChunkFileHandler implements BasicHandler {
     }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock)
+    public BasicResponseBlock processRequest(BasicRequestBlock requestBlock)
             throws Exception {
         BytesChunkFileRequestBlock requestBl = (BytesChunkFileRequestBlock) requestBlock;
         QDBPool dbPool = DBPoolContext.getInstance(

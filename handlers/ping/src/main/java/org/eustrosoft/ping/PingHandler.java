@@ -8,8 +8,8 @@ package org.eustrosoft.ping;
 
 import org.eustrosoft.core.BasicHandler;
 import org.eustrosoft.core.annotation.Handler;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 import static org.eustrosoft.spec.Constants.REQUEST_PING;
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_PING;
@@ -22,7 +22,7 @@ public class PingHandler implements BasicHandler {
     }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+    public BasicResponseBlock<?> processRequest(BasicRequestBlock<?> requestBlock) throws Exception {
         PingService pingService = new PingService(requestBlock);
 
         switch (requestBlock.getR()) {

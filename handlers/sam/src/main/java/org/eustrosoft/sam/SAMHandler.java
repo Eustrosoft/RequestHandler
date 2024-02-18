@@ -9,8 +9,8 @@ package org.eustrosoft.sam;
 import org.eustrosoft.core.BasicHandler;
 import org.eustrosoft.core.annotation.Handler;
 import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
 
@@ -21,12 +21,12 @@ public final class SAMHandler implements BasicHandler {
     }
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        SAMService samService = new SAMService(requestBlock);
+    public BasicResponseBlock<?> processRequest(BasicRequestBlock<?> requestBlock) throws Exception {
+        SAMService samService = new SAMService();
 
-        switch (requestBlock.getS()) {
+        switch (requestBlock.getR()) {
             case Constants.REQUEST_USER_ID:
-                return samService.getUserId();
+                return samService.getUserId(requestBlock);
 //            case Constants.REQUEST_USER_LOGIN:
 //                respBlock.setData(dao.getUserLogin());
 //                break;
@@ -40,7 +40,7 @@ public final class SAMHandler implements BasicHandler {
 //                respBlock.setData(dao.getUserLang());
 //                break;
             case Constants.REQUEST_ZSID:
-                return samService.getAvailableZsid();
+                return samService.getAvailableZsid(requestBlock);
             default:
 //                respBlock.setE(Constants.ERR_UNEXPECTED);
 //                respBlock.setErrMsg(Constants.MSG_REQUEST_TYPE_NOT_SUPPORTED);

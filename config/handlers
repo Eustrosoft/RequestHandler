@@ -5,5 +5,5 @@ ping=org.eustrosoft.ping.PingHandler
 #msg=org.eustrosoft.msg.MSGHandler
 sam=org.eustrosoft.sam.SAMHandler
 #tis=org.eustrosoft.tis.TISHandler
-#sql=org.eustrosoft.sql.SQLHandler
+sql=org.eustrosoft.sql.SQLHandler
 cms=org.eustrosoft.cms.CMSHandler

@@ -1,8 +1,8 @@
 package org.eustrosoft.core;
 
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 public interface BasicHandler {
-    ResponseBlock processRequest(RequestBlock requestBlock) throws Exception;
+    BasicResponseBlock<?> processRequest(BasicRequestBlock<?> requestBlock) throws Exception;
 }

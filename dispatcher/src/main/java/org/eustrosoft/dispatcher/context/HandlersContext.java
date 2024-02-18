@@ -44,9 +44,7 @@ public final class HandlersContext {
                 Class<?> clazz = Class.forName(entry.getValue());
                 Handler[] declaredAnnotationsByType = clazz.getDeclaredAnnotationsByType(Handler.class);
                 String value = declaredAnnotationsByType[0].value();
-                if (allowedHandlers.containsKey(value)) {
-                    handlersMap.put(value, clazz);
-                }
+                handlersMap.put(value, clazz);
             }
         } catch (Exception ex) {
             ex.printStackTrace(); // err while search classes

@@ -6,6 +6,8 @@
 
 package org.eustrosoft.dic;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.eustrosoft.core.BasicHandler;
 import org.eustrosoft.core.annotation.Handler;
 import org.eustrosoft.dic.dao.DicDAO;
@@ -13,11 +15,8 @@ import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.spec.response.BasicResponseBlock;
 
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_DIC;
 
@@ -28,7 +27,7 @@ public final class DICHandler implements BasicHandler {
     private HttpServletResponse response;
 
     @Override
-    public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
+    public BasicResponseBlock processRequest(BasicRequestBlock requestBlock) throws Exception {
         QDBPSession session = new SessionProvider(request, response).getSession();
         this.poolConnection = session.getConnection();
         DICRequestBlock dicRequestBlock = (DICRequestBlock) requestBlock;
