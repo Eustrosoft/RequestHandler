@@ -52,6 +52,7 @@ public final class Constants {
     public static final String REQUEST_USER_LOGIN = "user_login";
     public static final String REQUEST_USER_ID = "user_id";
     public static final String REQUEST_USER_SLVL = "user_slvl";
+    public static final String REQUEST_USER_ZSID = "user_zsid";
     public static final String REQUEST_USER_AVAILABLE_SLVL = "user_available_slvl";
     public static final String REQUEST_USER_LANG = "user_lang";
     public static final String REQUEST_ZSID = "zsid";
@@ -88,6 +89,15 @@ public final class Constants {
     public static final String MSG_OK = "Ok";
     public static final String MSG_UNEXPECTED = "Unexpected error";
     public static final String MSG_REQUEST_TYPE_NOT_SUPPORTED = "This request type is not supported";
+
+    // Param names
+    public static final String PARAM_ID = "id";
+    public static final String PARAM_LOGIN = "login";
+    public static final String PARAM_LANG = "lang";
+    public static final String PARAM_SLVL = "slvl";
+    public static final String PARAM_ZSID = "zsid";
+    public static final String PARAM_NAMES = "names";
+    public static final String PARAM_VALUES = "values";
 
     // Database Constants
     @Deprecated

@@ -7,17 +7,17 @@ import org.eustrosoft.spec.interfaces.JsonConvertible;
 import java.util.List;
 
 public class ScopesDTO implements JsonConvertible {
-    private List<Number> zsid;
+    private List<Long> zsid;
 
-    public ScopesDTO(List<Number> zsid) {
+    public ScopesDTO(List<Long> zsid) {
         this.zsid = zsid;
     }
 
-    public List<Number> getZsid() {
+    public List<Long> getZsid() {
         return zsid;
     }
 
-    public void setZsid(List<Number> zsid) {
+    public void setZsid(List<Long> zsid) {
         this.zsid = zsid;
     }
 

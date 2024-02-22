@@ -160,13 +160,13 @@ public class SamDAO extends BasicDAO {
         return slvls;
     }
 
-    public List<Number> getZsids(String objectType) throws SQLException {
+    public List<Long> getZsids(String objectType) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM SAM.V_ScopeCurrentUserCreatea where obj_type = ?"
         );
         DBUtils.setStringOrNull(preparedStatement, 1, objectType);
-        List<Number> scopes = new ArrayList<>();
+        List<Long> scopes = new ArrayList<>();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {

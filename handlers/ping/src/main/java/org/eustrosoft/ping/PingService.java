@@ -3,7 +3,7 @@ package org.eustrosoft.ping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eustrosoft.core.RequestContextHolder;
-import org.eustrosoft.handlers.ping.dto.PingData;
+import org.eustrosoft.handlers.ping.dto.PingDto;
 import org.eustrosoft.handlers.ping.dto.PingResponseBlock;
 import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
@@ -55,7 +55,7 @@ public class PingService {
             SamDAO samDAO = new SamDAO(dbps.getConnection());
             User user = samDAO.getUserById(samDAO.getUserId());
             pingResponseBlock.setData(
-                    new PingData(user.getUsername(), user.getFullName(), user.getDbUser(), user.getId().toString())
+                    new PingDto(user.getUsername(), user.getFullName(), user.getDbUser(), user.getId().toString())
             );
         } else {
             pingResponseBlock.setE(ERR_UNAUTHORIZED);

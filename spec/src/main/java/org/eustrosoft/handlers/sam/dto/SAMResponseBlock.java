@@ -9,10 +9,13 @@ package org.eustrosoft.handlers.sam.dto;
 import org.eustrosoft.spec.interfaces.JsonConvertible;
 import org.eustrosoft.spec.response.BasicResponseBlock;
 
+import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
+
 public final class SAMResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
     private T data;
 
     public SAMResponseBlock(String requestType) {
+        this.s = SUBSYSTEM_SAM;
         this.r = requestType;
     }
 

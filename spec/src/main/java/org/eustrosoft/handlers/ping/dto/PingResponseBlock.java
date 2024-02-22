@@ -12,7 +12,7 @@ import org.eustrosoft.spec.response.BasicResponseBlock;
 import static org.eustrosoft.spec.Constants.REQUEST_PING;
 import static org.eustrosoft.spec.Constants.SUBSYSTEM_PING;
 
-public class PingResponseBlock extends BasicResponseBlock<PingData> {
+public class PingResponseBlock extends BasicResponseBlock<PingDto> {
 
     public PingResponseBlock() {
         super();

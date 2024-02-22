@@ -1,11 +1,11 @@
 package org.eustrosoft.handlers.sam.dto;
 
-public class RequestScopesDTO {
-    private String type;
+import org.eustrosoft.json.QJson;
+import org.eustrosoft.json.exception.JsonException;
+import org.eustrosoft.spec.interfaces.JsonParsable;
 
-    public RequestScopesDTO(String type) {
-        this.type = type;
-    }
+public class RequestScopesDTO implements JsonParsable<RequestScopesDTO> {
+    private String type;
 
     public String getType() {
         return type;
@@ -13,5 +13,11 @@ public class RequestScopesDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public RequestScopesDTO convertToObject(QJson value) throws JsonException {
+        setType(value.getItemString("type"));
+        return this;
     }
 }

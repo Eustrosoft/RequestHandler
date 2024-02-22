@@ -61,12 +61,17 @@ public final class JsonUtil {
             return String.format(JSON_FORMAT_PARAMS, getString(name), getDate(val));
         }
 
+        public static String getRawCollection(String name, Collection<String> val) throws JsonException {
+            checkName(name);
+            return String.format(JSON_FORMAT_PARAMS, getString(name), String.format(JSON_FORMAT_MASSIVE, String.join(", ", val)));
+        }
+
         public static String getStringCollection(String name, Collection<String> val) throws JsonException {
             checkName(name);
             return String.format(JSON_FORMAT_PARAMS, getString(name), getCollectionString(val));
         }
 
-        public static String getNumberCollection(String name, Collection<Number> val) throws JsonException {
+        public static String getNumberCollection(String name, Collection<? extends Number> val) throws JsonException {
             checkName(name);
             return String.format(JSON_FORMAT_PARAMS, getString(name), getCollectionNumber(val));
         }
@@ -146,8 +151,8 @@ public final class JsonUtil {
             return getProcessedValue(collection, ParamUtil::collectionStringValue);
         }
 
-        public static String getCollectionNumber(Collection<Number> collection) {
-            return getProcessedValue(collection, ParamUtil::collectionStringValue);
+        public static String getCollectionNumber(Collection<? extends Number> collection) {
+            return getProcessedValue(collection, ParamUtil::collectionNumberValue);
         }
 
         public static String getShort(Short value) {

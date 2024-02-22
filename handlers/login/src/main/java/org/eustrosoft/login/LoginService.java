@@ -1,7 +1,7 @@
 package org.eustrosoft.login;
 
 import org.eustrosoft.core.Service;
-import org.eustrosoft.handlers.login.dto.LoginDTO;
+import org.eustrosoft.handlers.login.dto.LoginDto;
 import org.eustrosoft.handlers.login.dto.LoginResponseBlock;
 import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.providers.context.DBPoolContext;
@@ -21,7 +21,7 @@ public class LoginService implements Service {
     public LoginService() {
     }
 
-    public LoginResponseBlock login(BasicRequestBlock<LoginDTO> dto)
+    public LoginResponseBlock login(BasicRequestBlock<LoginDto> dto)
             throws SQLException, JsonException {
         QDBPool dbPool = DBPoolContext.getInstance(
                 DBPoolContext.getDbPoolName(getRequest()),

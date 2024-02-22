@@ -4,7 +4,7 @@ import org.eustrosoft.json.QJson;
 import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.spec.interfaces.JsonParsable;
 
-public class LoginDTO implements JsonParsable<LoginDTO> {
+public class LoginDto implements JsonParsable<LoginDto> {
     public static final String PARAM_LOGIN = "login";
     public static final String PARAM_PASSWORD = "password";
 
@@ -28,7 +28,7 @@ public class LoginDTO implements JsonParsable<LoginDTO> {
     }
 
     @Override
-    public LoginDTO convertToObject(QJson qJson) throws JsonException {
+    public LoginDto convertToObject(QJson qJson) throws JsonException {
         setLogin(qJson.getItemString(PARAM_LOGIN));
         setPassword(qJson.getItemString(PARAM_PASSWORD));
         return this;

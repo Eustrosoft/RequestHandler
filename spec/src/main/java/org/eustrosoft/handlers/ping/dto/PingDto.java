@@ -4,13 +4,13 @@ import org.eustrosoft.json.JsonUtil;
 import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.spec.interfaces.JsonConvertible;
 
-public class PingData implements JsonConvertible {
+public class PingDto implements JsonConvertible {
     private String username;
     private String fullName;
     private String dbUser;
     private String userId;
 
-    public PingData(String username, String fullName, String dbUser, String userId) {
+    public PingDto(String username, String fullName, String dbUser, String userId) {
         this.username = username;
         this.fullName = fullName;
         this.dbUser = dbUser;

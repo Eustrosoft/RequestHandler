@@ -4,18 +4,20 @@ import org.eustrosoft.json.JsonUtil;
 import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.spec.interfaces.JsonConvertible;
 
-public class StringResponseData implements JsonConvertible {
-    private final String answer;
+public class SingleStringDto implements JsonConvertible {
+    private final String paramName;
+    private final String data;
 
-    public StringResponseData(String answer) {
-        this.answer = answer;
+    public SingleStringDto(String paramName, String data) {
+        this.paramName = paramName;
+        this.data = data;
     }
 
     @Override
     public String convertToString() throws JsonException {
         return JsonUtil.toJson(
                 JsonUtil.getFormatString(1),
-                JsonUtil.AsEntry.getStringParams("answer", answer)
+                JsonUtil.AsEntry.getStringParams(paramName, data)
         );
     }
 }
