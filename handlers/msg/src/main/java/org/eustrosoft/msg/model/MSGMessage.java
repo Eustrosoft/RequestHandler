@@ -7,8 +7,8 @@
 package org.eustrosoft.msg.model;
 
 import org.eustrosoft.constants.DBConstants;
-import org.eustrosoft.core.model.DBObject;
-import org.eustrosoft.date.DateTimeZone;
+import org.eustrosoft.core.date.DateTimeZone;
+import org.eustrosoft.core.db.model.DBObject;
 import org.eustrosoft.handlers.sam.dto.UserDTO;
 import org.eustrosoft.msg.ranges.MSGMessageType;
 

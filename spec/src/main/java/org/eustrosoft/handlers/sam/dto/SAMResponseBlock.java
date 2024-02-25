@@ -6,10 +6,10 @@
 
 package org.eustrosoft.handlers.sam.dto;
 
-import org.eustrosoft.spec.interfaces.JsonConvertible;
-import org.eustrosoft.spec.response.BasicResponseBlock;
+import org.eustrosoft.core.json.interfaces.JsonConvertible;
+import org.eustrosoft.core.response.basic.BasicResponseBlock;
 
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_SAM;
 
 public final class SAMResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
     private T data;

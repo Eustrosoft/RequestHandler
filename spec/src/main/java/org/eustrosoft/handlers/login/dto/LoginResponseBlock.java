@@ -1,9 +1,9 @@
 package org.eustrosoft.handlers.login.dto;
 
-import org.eustrosoft.spec.response.BasicResponseBlock;
-import org.eustrosoft.spec.response.StubDto;
+import org.eustrosoft.core.response.basic.BasicResponseBlock;
+import org.eustrosoft.core.response.basic.StubDto;
 
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_LOGIN;
 
 public class LoginResponseBlock extends BasicResponseBlock<StubDto> {
 

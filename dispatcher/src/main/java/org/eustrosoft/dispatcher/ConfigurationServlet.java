@@ -1,12 +1,12 @@
 package org.eustrosoft.dispatcher;
 
-import org.eustrosoft.dispatcher.context.HandlersConfig;
-import org.eustrosoft.dispatcher.context.HandlersContext;
-import org.eustrosoft.json.QJson;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.core.json.QJson;
+import org.eustrosoft.dispatcher.context.HandlersConfig;
+import org.eustrosoft.dispatcher.context.HandlersContext;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;

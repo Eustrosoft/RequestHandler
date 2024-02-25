@@ -6,9 +6,9 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.json.QJson;
+import org.eustrosoft.core.json.QJson;
 
-import static org.eustrosoft.spec.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
+import static org.eustrosoft.constants.Constants.REQUEST_CHUNKS_HEX_FILE_UPLOAD;
 
 public final class HexFileRequestBlock extends ChunkFileRequestBlock {
     private String hexString;

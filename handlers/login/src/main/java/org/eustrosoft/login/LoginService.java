@@ -1,21 +1,21 @@
 package org.eustrosoft.login;
 
-import org.eustrosoft.core.Service;
+import org.eustrosoft.core.interfaces.Service;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.response.ResponseLang;
 import org.eustrosoft.handlers.login.dto.LoginDto;
 import org.eustrosoft.handlers.login.dto.LoginResponseBlock;
-import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
-import org.eustrosoft.spec.ResponseLang;
-import org.eustrosoft.spec.request.BasicRequestBlock;
 import org.eustrosoft.tools.WebParams;
 
 import java.sql.SQLException;
 
-import static org.eustrosoft.spec.Constants.ERR_OK;
-import static org.eustrosoft.spec.Constants.MSG_OK;
+import static org.eustrosoft.constants.Constants.ERR_OK;
+import static org.eustrosoft.constants.Constants.MSG_OK;
 
 public class LoginService implements Service {
     public LoginService() {

@@ -6,24 +6,30 @@
 
 package org.eustrosoft.msg;
 
+import org.eustrosoft.constants.Constants;
 import org.eustrosoft.constants.DBConstants;
-import org.eustrosoft.core.BasicHandler;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.date.DateTimeZone;
 import org.eustrosoft.core.db.ExecStatus;
 import org.eustrosoft.core.db.util.DBUtils;
-import org.eustrosoft.date.DateTimeZone;
-import org.eustrosoft.handlers.sam.dto.UserDTO;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.handlers.msg.dto.MSGRequestBlock;
+import org.eustrosoft.handlers.msg.dto.MSGResponseBlock;
+import org.eustrosoft.handlers.msg.dto.MsgParams;
 import org.eustrosoft.msg.dao.MSGDao;
 import org.eustrosoft.msg.model.MSGChannel;
 import org.eustrosoft.msg.model.MSGMessage;
 import org.eustrosoft.msg.ranges.MSGChannelStatus;
 import org.eustrosoft.msg.ranges.MSGMessageType;
+import org.eustrosoft.providers.RequestContextHolder;
 import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.sam.dao.SamDAO;
-import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.sam.transform.UserDtoFromUser;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,6 +38,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.eustrosoft.constants.Constants.ERR_UNEXPECTED;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_MSG;
+
+@Handler(SUBSYSTEM_MSG)
 public final class MSGHandler implements BasicHandler {
     private QDBPConnection poolConnection;
 
@@ -40,61 +50,64 @@ public final class MSGHandler implements BasicHandler {
 
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        QDBPSession session = new SessionProvider(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
+        RequestContextHolder.ServletAttributes attributes = RequestContextHolder.getAttributes();
+        QDBPSession session = new SessionProvider(attributes.getRequest(), attributes.getResponse())
                 .getSession();
         this.poolConnection = session.getConnection();
+        BasicRequestBlock rb = (BasicRequestBlock) requestBlock;
+
+
         MSGRequestBlock msgRequestBlock = (MSGRequestBlock) requestBlock;
         MsgParams params = msgRequestBlock.getParams();
-        MSGResponseBlock msgResponseBlock = new MSGResponseBlock();
-        msgResponseBlock.setE(Constants.ERR_OK);
-        msgResponseBlock.setErrMsg(Constants.MSG_OK);
         String requestType = msgRequestBlock.getR();
-        msgResponseBlock.setResponseType(requestType);
+        MSGResponseBlock msgResponseBlock = new MSGResponseBlock(requestType);
+        msgResponseBlock.setM(Constants.MSG_OK);
+        msgResponseBlock.setE(Constants.ERR_OK);
         switch (requestType) {
             case Constants.REQUEST_CHATS:
                 List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
-                msgResponseBlock.setChats(getChats(statuses));
+                //msgResponseBlock.setChats(getChats(statuses));
                 break;
             case Constants.REQUEST_UPDATE:
                 List<String> ststa = params == null ? Collections.emptyList() : params.getStatuses();
-                msgResponseBlock.setChats(getChatsVersions(ststa));
+                //msgResponseBlock.setChats(getChatsVersions(ststa));
                 break;
             case Constants.REQUEST_CHAT:
-                List<MSGMessage> chatMessages = getChatMessages(params.getZoid());
-                msgResponseBlock.setMessages(chatMessages);
+                List<MSGMessage> chatMessages = getChatMessages(params.getZOID());
+                //msgResponseBlock.setMessages(chatMessages);
                 break;
             case Constants.REQUEST_CREATE:
-                createChat(params.getZoid(), params.getSlvl(), params.getZsid(), params.getSubject(), params.getContent());
+                createChat(params.getZOID(), params.getZLVL(), params.getZSID(), params.getSubject(), params.getContent());
                 break;
             case Constants.REQUEST_SEND:
                 String message = createMessage(params);
                 if (message == null) {
-                    msgResponseBlock.setErrCode((short) 1);
-                    msgResponseBlock.setErrMsg("Error while creating message");
+                    msgResponseBlock.setE(ERR_UNEXPECTED);
+                    msgResponseBlock.setM("Error while creating message");
                 }
                 break;
             case Constants.REQUEST_EDIT:
                 updateMessage(
-                        params.getZoid(), params.getZrid(), params.getContent(),
+                        params.getZOID(), params.getZRID(), params.getContent(),
                         params.getReference(), MSGMessageType.of(params.getType())
                 );
                 break;
             case Constants.REQUEST_DELETE_MSG:
             case Constants.REQUEST_DELETE:
-                deleteMessage(params.getZoid(), params.getZrid());
+                deleteMessage(params.getZOID(), params.getZRID());
                 break;
             case Constants.REQUEST_DELETE_CH:
-                deleteChannel(params.getZoid(), params.getZver());
+                deleteChannel(params.getZOID(), params.getZVER());
                 break;
             case Constants.REQUEST_CHANGE:
                 changeChannelStatus(
-                        params.getZoid(), params.getZrid(), params.getSubject(),
+                        params.getZOID(), params.getZRID(), params.getSubject(),
                         params.getReference(), MSGChannelStatus.of(params.getStatus())
                 );
                 break;
             default:
-                msgResponseBlock.setE(1);
-                msgResponseBlock.setErrMsg("Has no this request type");
+                msgResponseBlock.setE(ERR_UNEXPECTED);
+                msgResponseBlock.setM("Has no this request type");
                 break;
         }
         return msgResponseBlock;
@@ -138,9 +151,9 @@ public final class MSGHandler implements BasicHandler {
             throw new IllegalArgumentException("Subject can not be null or empty");
         }
         MSGDao functions = new MSGDao(poolConnection);
-        MSGChannel newChannel = new MSGChannel(subject, objId, MSGChannelStatus.N);
-        newChannel.setZlvl(slvl);
-        newChannel.setZsid(sid);
+        MSGChannel newChannel = new MSGChannel(-1L, -1L, -1L, subject, objId, MSGChannelStatus.N);
+        newChannel.setZLVL(slvl);
+        newChannel.setZSID(sid);
         ExecStatus chat = functions.createChat(newChannel);
         if (content != null && !content.trim().isEmpty()) {
             functions.createMessage(
@@ -161,7 +174,7 @@ public final class MSGHandler implements BasicHandler {
         }
         MSGDao functions = new MSGDao(poolConnection);
         ExecStatus message = functions.createMessage(
-                params.getZoid(),
+                params.getZOID(),
                 new MSGMessage(
                         params.getContent(),
                         params.getReference(),
@@ -206,7 +219,7 @@ public final class MSGHandler implements BasicHandler {
             }
             Long userId = DBUtils.getLongValueOrEmpty(resultSet, DBConstants.ZUID);
             msgMessage.setUser(
-                    UserDTO.fromUser(
+                    new UserDtoFromUser().apply(
                             samDAO.getUserById(userId)
                     )
             );

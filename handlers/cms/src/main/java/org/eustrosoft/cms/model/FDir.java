@@ -7,7 +7,7 @@
 package org.eustrosoft.cms.model;
 
 import org.eustrosoft.constants.DBConstants;
-import org.eustrosoft.core.model.DBObject;
+import org.eustrosoft.core.db.model.DBObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,9 +43,9 @@ public class FDir extends DBObject {
     public String toUpdateString() {
         return String.format(
                 "%s, %s, %s, %s, '%s','%s', '%s'",
-                getZoid(),
-                getZver(),
-                getZrid(),
+                getZOID(),
+                getZVER(),
+                getZRID(),
                 fileId,
                 fileName,
                 mimeType,

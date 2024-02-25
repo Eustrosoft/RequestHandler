@@ -1,9 +1,9 @@
 package org.eustrosoft.handlers.sam.dto;
 
-import org.eustrosoft.json.JsonUtil;
-import org.eustrosoft.json.QJson;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonData;
+import org.eustrosoft.core.json.QJson;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonData;
+import org.eustrosoft.util.JsonUtil;
 
 public class UserDTO implements JsonData<UserDTO> {
     private Long id;

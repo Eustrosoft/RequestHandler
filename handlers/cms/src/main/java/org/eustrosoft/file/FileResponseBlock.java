@@ -6,8 +6,8 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.spec.interfaces.JsonData;
-import org.eustrosoft.spec.response.BasicResponseBlock;
+import org.eustrosoft.core.json.interfaces.JsonData;
+import org.eustrosoft.core.response.basic.BasicResponseBlock;
 
 public class FileResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
 

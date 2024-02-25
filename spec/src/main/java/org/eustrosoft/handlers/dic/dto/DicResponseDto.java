@@ -1,8 +1,8 @@
 package org.eustrosoft.handlers.dic.dto;
 
-import org.eustrosoft.json.JsonUtil;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonConvertible;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonConvertible;
+import org.eustrosoft.util.JsonUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class DicResponseDto implements JsonConvertible {
     private String getValue(DicDto dto) {
         try {
             return dto.convertToString();
-        } catch (JsonException ex) {
+        } catch (Exception ex) {
             return null;
         }
     }

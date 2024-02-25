@@ -2,23 +2,23 @@ package org.eustrosoft.ping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.eustrosoft.core.RequestContextHolder;
+import org.eustrosoft.core.db.model.User;
+import org.eustrosoft.core.request.RequestBlock;
 import org.eustrosoft.handlers.ping.dto.PingDto;
 import org.eustrosoft.handlers.ping.dto.PingResponseBlock;
+import org.eustrosoft.providers.RequestContextHolder;
 import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import org.eustrosoft.sam.dao.SamDAO;
-import org.eustrosoft.sam.model.User;
-import org.eustrosoft.spec.interfaces.RequestBlock;
 
 import java.sql.SQLException;
 
-import static org.eustrosoft.spec.Constants.ERR_OK;
-import static org.eustrosoft.spec.Constants.ERR_UNAUTHORIZED;
-import static org.eustrosoft.spec.Constants.MSG_OK;
-import static org.eustrosoft.spec.Constants.MSG_UNAUTHORIZED;
+import static org.eustrosoft.constants.Constants.ERR_OK;
+import static org.eustrosoft.constants.Constants.ERR_UNAUTHORIZED;
+import static org.eustrosoft.constants.Constants.MSG_OK;
+import static org.eustrosoft.constants.Constants.MSG_UNAUTHORIZED;
 
 public class PingService {
     private final RequestBlock requestBlock;

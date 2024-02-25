@@ -6,16 +6,16 @@
 
 package org.eustrosoft.login;
 
-import org.eustrosoft.core.BasicHandler;
-import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
 import org.eustrosoft.handlers.login.dto.LoginDto;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-import org.eustrosoft.spec.request.BasicRequestBlock;
 
-import static org.eustrosoft.spec.Constants.REQUEST_LOGIN;
-import static org.eustrosoft.spec.Constants.REQUEST_LOGOUT;
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_LOGIN;
+import static org.eustrosoft.constants.Constants.REQUEST_LOGIN;
+import static org.eustrosoft.constants.Constants.REQUEST_LOGOUT;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_LOGIN;
 
 @Handler(SUBSYSTEM_LOGIN)
 public final class LoginHandler implements BasicHandler {

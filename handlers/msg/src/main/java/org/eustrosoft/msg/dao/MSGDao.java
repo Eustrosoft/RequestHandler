@@ -18,7 +18,11 @@ import org.eustrosoft.msg.ranges.MSGPartyRole;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.sam.dao.SamDAO;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 public final class MSGDao extends BasicDAO {
@@ -88,8 +92,8 @@ public final class MSGDao extends BasicDAO {
 
     public ExecStatus createChat(MSGChannel channel) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
-        Long zsid = channel.getZsid() == null ? samDAO.getUserSid() : channel.getZsid();
-        ExecStatus objectInScope = createObjectInScope("MSG.C", zsid, channel.getZlvl());
+        Long zsid = channel.getZSIC() == null ? samDAO.getUserSid() : channel.getZSIC();
+        ExecStatus objectInScope = createObjectInScope("MSG.C", zsid, channel.getZLVL());
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());
         }
@@ -213,18 +217,18 @@ public final class MSGDao extends BasicDAO {
             if (message == null) {
                 throw new Exception("CMessage is null while updating.");
             }
-            status = openObject("MSG.C", message.getZoid());
-            message.setZver(status.getZver());
+            status = openObject("MSG.C", message.getZOID());
+            message.setZVER(status.getZver());
             if (status.isOk()) {
                 Connection connection = getPoolConnection().get();
-                MSGMessage oldMessage = getMessage(message.getZoid(), message.getZrid());
+                MSGMessage oldMessage = getMessage(message.getZOID(), message.getZRID());
                 message.merge(oldMessage); // todo: make it another way
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         "SELECT MSG.update_CMsg(?, ?, ?, ?, ?, ?)"
                 );
-                DBUtils.setLongOrNull(preparedStatement, 1, message.getZoid());
-                DBUtils.setLongOrNull(preparedStatement, 2, message.getZver());
-                DBUtils.setLongOrNull(preparedStatement, 3, message.getZrid());
+                DBUtils.setLongOrNull(preparedStatement, 1, message.getZOID());
+                DBUtils.setLongOrNull(preparedStatement, 2, message.getZVER());
+                DBUtils.setLongOrNull(preparedStatement, 3, message.getZRID());
                 DBUtils.setStringOrNull(preparedStatement, 4, message.getContent());
                 DBUtils.setLongOrNull(preparedStatement, 5, message.getAnswerId());
                 DBUtils.setStringOrNull(preparedStatement, 6, message.getType().getValue());
@@ -243,20 +247,20 @@ public final class MSGDao extends BasicDAO {
             if (channel == null) {
                 throw new Exception("CChannel is null while updating.");
             }
-            status = openObject("MSG.C", channel.getZoid());
-            channel.setZver(status.getZver());
+            status = openObject("MSG.C", channel.getZOID());
+            channel.setZVER(status.getZver());
             if (!status.isOk()) {
                 throw new Exception(status.getCaption());
             }
-            MSGChannel oldChannel = getChat(channel.getZoid());
+            MSGChannel oldChannel = getChat(channel.getZOID());
             channel.merge(oldChannel);
             Connection connection = getPoolConnection().get();
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT MSG.update_CChannel(?, ?, ?, ?, ?, ?)"
             );
-            DBUtils.setLongOrNull(preparedStatement, 1, channel.getZoid());
-            DBUtils.setLongOrNull(preparedStatement, 2, channel.getZver());
-            DBUtils.setLongOrNull(preparedStatement, 3, channel.getZrid());
+            DBUtils.setLongOrNull(preparedStatement, 1, channel.getZOID());
+            DBUtils.setLongOrNull(preparedStatement, 2, channel.getZVER());
+            DBUtils.setLongOrNull(preparedStatement, 3, channel.getZRID());
             DBUtils.setStringOrNull(preparedStatement, 4, channel.getSubject());
             DBUtils.setStringOrNull(preparedStatement, 5, channel.getStatus().getValue());
             DBUtils.setLongOrNull(preparedStatement, 6, channel.getDocumentId());

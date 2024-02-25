@@ -1,8 +1,8 @@
 package org.eustrosoft.handlers.sam.dto;
 
-import org.eustrosoft.json.JsonUtil;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonConvertible;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonConvertible;
+import org.eustrosoft.util.JsonUtil;
 
 import java.util.List;
 

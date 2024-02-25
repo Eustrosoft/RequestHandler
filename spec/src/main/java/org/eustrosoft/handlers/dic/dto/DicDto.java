@@ -1,8 +1,8 @@
 package org.eustrosoft.handlers.dic.dto;
 
-import org.eustrosoft.json.JsonUtil;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonConvertible;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonConvertible;
+import org.eustrosoft.util.JsonUtil;
 
 public class DicDto implements JsonConvertible {
     private String dic;

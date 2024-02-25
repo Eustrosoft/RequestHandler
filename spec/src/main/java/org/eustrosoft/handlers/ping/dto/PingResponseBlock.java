@@ -6,11 +6,11 @@
 
 package org.eustrosoft.handlers.ping.dto;
 
-import org.eustrosoft.spec.ResponseLang;
-import org.eustrosoft.spec.response.BasicResponseBlock;
+import org.eustrosoft.core.response.ResponseLang;
+import org.eustrosoft.core.response.basic.BasicResponseBlock;
 
-import static org.eustrosoft.spec.Constants.REQUEST_PING;
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_PING;
+import static org.eustrosoft.constants.Constants.REQUEST_PING;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_PING;
 
 public class PingResponseBlock extends BasicResponseBlock<PingDto> {
 

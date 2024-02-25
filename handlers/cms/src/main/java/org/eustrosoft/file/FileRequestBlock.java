@@ -6,15 +6,15 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.json.Json;
-import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.JsonParsable;
-import org.eustrosoft.spec.request.BasicRequestBlock;
+import org.eustrosoft.constants.Constants;
+import org.eustrosoft.core.json.Json;
+import org.eustrosoft.core.json.QJson;
+import org.eustrosoft.core.json.interfaces.JsonParsable;
+import org.eustrosoft.core.request.BasicRequestBlock;
 
 import java.util.Base64;
 
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_FILE;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_FILE;
 
 public class FileRequestBlock<T extends JsonParsable<T>> extends BasicRequestBlock<T> {
     private byte[] fileBytes;

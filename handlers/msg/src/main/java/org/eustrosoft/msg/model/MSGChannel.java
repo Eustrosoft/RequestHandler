@@ -7,7 +7,7 @@
 package org.eustrosoft.msg.model;
 
 import org.eustrosoft.constants.DBConstants;
-import org.eustrosoft.core.model.DBObject;
+import org.eustrosoft.core.db.model.DBObject;
 import org.eustrosoft.msg.ranges.MSGChannelStatus;
 
 import java.sql.ResultSet;

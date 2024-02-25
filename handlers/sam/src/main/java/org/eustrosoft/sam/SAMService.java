@@ -1,22 +1,22 @@
 package org.eustrosoft.sam;
 
-import org.eustrosoft.core.Service;
+import org.eustrosoft.core.interfaces.Service;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.core.response.ResponseLang;
+import org.eustrosoft.core.response.basic.ListNumberResponseData;
+import org.eustrosoft.core.response.basic.SingleNumberDto;
+import org.eustrosoft.core.response.basic.SingleStringDto;
 import org.eustrosoft.handlers.sam.dto.RequestScopesDTO;
 import org.eustrosoft.handlers.sam.dto.SAMResponseBlock;
-import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.sam.dao.SamDAO;
-import org.eustrosoft.spec.ResponseLang;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-import org.eustrosoft.spec.request.BasicRequestBlock;
-import org.eustrosoft.spec.response.ListNumberResponseData;
-import org.eustrosoft.spec.response.SingleNumberDto;
-import org.eustrosoft.spec.response.SingleStringDto;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.eustrosoft.spec.Constants.*;
+import static org.eustrosoft.constants.Constants.*;
 
 public class SAMService implements Service {
     private final RequestBlock requestBlock;

@@ -12,17 +12,17 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.response.Response;
 import org.eustrosoft.dispatcher.context.HandlersConfig;
 import org.eustrosoft.dispatcher.context.HandlersContext;
-import org.eustrosoft.json.exception.JsonException;
 import org.eustrosoft.qdbp.QDBPSession;
-import org.eustrosoft.spec.interfaces.Response;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static org.eustrosoft.constants.PropertiesConstants.DISPATCHER_FILE_NAME;
 import static org.eustrosoft.tools.LoginChecker.getUnauthorizedResponse;
-import static org.eustrosoft.tools.PropertiesConstants.DISPATCHER_FILE_NAME;
 
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,

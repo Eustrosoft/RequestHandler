@@ -6,21 +6,21 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.cms.UserStorage;
-import org.eustrosoft.core.BasicHandler;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import org.eustrosoft.cms.dbdatasource.UserStorage;
+import org.eustrosoft.core.db.model.User;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
 import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 import org.eustrosoft.sam.dao.SamDAO;
-import org.eustrosoft.sam.model.User;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-import org.eustrosoft.tools.FileUtils;
+import org.eustrosoft.util.FileUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

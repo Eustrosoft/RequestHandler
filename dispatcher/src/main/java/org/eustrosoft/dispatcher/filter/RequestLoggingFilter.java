@@ -6,11 +6,15 @@
 
 package org.eustrosoft.dispatcher.filter;
 
-import org.eustrosoft.tools.ColorTextUtil;
-import org.eustrosoft.tools.LogFormatter;
-import org.eustrosoft.tools.PropertiesConstants;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import org.eustrosoft.constants.PropertiesConstants;
+import org.eustrosoft.logging.LogFormatter;
+import org.eustrosoft.util.ColorTextUtil;
 
-import javax.servlet.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

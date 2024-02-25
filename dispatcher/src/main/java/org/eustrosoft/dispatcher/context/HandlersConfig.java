@@ -1,7 +1,7 @@
 package org.eustrosoft.dispatcher.context;
 
-import org.eustrosoft.tools.ColorTextUtil;
-import org.eustrosoft.tools.PropsContainer;
+import org.eustrosoft.core.interfaces.PropsContainer;
+import org.eustrosoft.util.ColorTextUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.eustrosoft.tools.PropertiesConstants.DISPATCHER_FILE_NAME;
-import static org.eustrosoft.tools.PropertiesConstants.PROPERTY_HANDLERS_PATH;
+import static org.eustrosoft.constants.PropertiesConstants.DISPATCHER_FILE_NAME;
+import static org.eustrosoft.constants.PropertiesConstants.PROPERTY_HANDLERS_PATH;
 
 public class HandlersConfig implements PropsContainer {
     private final Map<String, String> allowedHandlers;

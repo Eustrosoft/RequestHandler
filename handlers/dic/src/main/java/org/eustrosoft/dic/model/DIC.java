@@ -1,7 +1,7 @@
 package org.eustrosoft.dic.model;
 
 import org.eustrosoft.constants.DBConstants;
-import org.eustrosoft.core.model.DBObject;
+import org.eustrosoft.core.db.model.DBObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

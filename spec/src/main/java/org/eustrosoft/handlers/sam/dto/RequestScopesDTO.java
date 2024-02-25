@@ -1,8 +1,8 @@
 package org.eustrosoft.handlers.sam.dto;
 
-import org.eustrosoft.json.QJson;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonParsable;
+import org.eustrosoft.core.json.QJson;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonParsable;
 
 public class RequestScopesDTO implements JsonParsable<RequestScopesDTO> {
     private String type;

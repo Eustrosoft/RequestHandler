@@ -1,8 +1,8 @@
 package org.eustrosoft.handlers.dic.dto;
 
-import org.eustrosoft.json.QJson;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.interfaces.JsonParsable;
+import org.eustrosoft.core.json.QJson;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonParsable;
 
 public class DicRequestDto implements JsonParsable<DicRequestDto> {
     public static final String PARAM_NAME = "name";

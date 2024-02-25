@@ -6,34 +6,45 @@
 
 package org.eustrosoft.cms.dbdatasource;
 
-import org.eustrosoft.cms.CMSDataSource;
 import org.eustrosoft.cms.CMSType;
 import org.eustrosoft.cms.dbdatasource.ranges.FileType;
-import org.eustrosoft.cms.dto.CMSGeneralObject;
-import org.eustrosoft.cms.dto.CMSObject;
 import org.eustrosoft.cms.model.FDir;
-import org.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
-import org.eustrosoft.cms.parameters.FileDetails;
-import org.eustrosoft.cms.parameters.HexFileParams;
-import org.eustrosoft.cms.parameters.HexFileResult;
 import org.eustrosoft.cms.util.DBStatements;
 import org.eustrosoft.cms.util.FSDao;
 import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.ExecStatus;
+import org.eustrosoft.handlers.cms.dto.CMSGeneralObject;
+import org.eustrosoft.handlers.cms.dto.CMSObject;
+import org.eustrosoft.handlers.cms.dto.CMSObjectUpdateParameters;
+import org.eustrosoft.handlers.cms.dto.FileDetails;
+import org.eustrosoft.handlers.cms.dto.HexFileParams;
+import org.eustrosoft.handlers.cms.dto.HexFileResult;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.File;
 import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static org.eustrosoft.cms.util.DBStatements.getSelectForPath;
 import static org.eustrosoft.cms.util.DBStatements.getViewStatementForPath;
-import static org.eustrosoft.cms.util.FileUtils.*;
+import static org.eustrosoft.cms.util.FileUtils.getFirstLevelFromPath;
+import static org.eustrosoft.cms.util.FileUtils.getLastLevelFromPath;
+import static org.eustrosoft.cms.util.FileUtils.getParentPath;
+import static org.eustrosoft.cms.util.FileUtils.getPathLvl;
+import static org.eustrosoft.cms.util.FileUtils.getPathParts;
 import static org.eustrosoft.constants.DBConstants.TYPE;
-import static org.eustrosoft.core.db.util.DBUtils.*;
+import static org.eustrosoft.core.db.util.DBUtils.getFid;
+import static org.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
+import static org.eustrosoft.core.db.util.DBUtils.getZoid;
+import static org.eustrosoft.core.db.util.DBUtils.getZsid;
 
 public class DBDataSource implements CMSDataSource {
     private final QDBPConnection poolConnection;
@@ -378,7 +389,7 @@ public class DBDataSource implements CMSDataSource {
                 throw new Exception(opened.getCaption());
             }
             ExecStatus objectInScope = fsDao.createObjectInScope(
-                    "FS.F", fDir.getZsid(), fDir.getZlvl()
+                    "FS.F", fDir.getZSIC(), fDir.getZLVL()
             );
 
             if (!objectInScope.isOk()) {
@@ -532,7 +543,7 @@ public class DBDataSource implements CMSDataSource {
         for (int i = 0; i < objects.size(); i++) {
             CMSObject cmsObject = objects.get(i);
             if (cmsObject instanceof CMSGeneralObject) {
-                ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getZoid()));
+                ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getZOID()));
             }
         }
     }
@@ -563,7 +574,7 @@ public class DBDataSource implements CMSDataSource {
                     } catch (Exception ex) {
                         // ex.printStackTrace();
                     }
-                    object.setZoid(id);
+                    object.setZOID(id);
                     objects.add(object);
                 } catch (Exception ex) {
                     // ex.printStackTrace();

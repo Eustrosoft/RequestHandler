@@ -15,6 +15,7 @@
     <packaging>war</packaging>
 
     <dependencies>
+        <!-- Common dependencies -->
         <dependency>
             <groupId>org.eustrosoft</groupId>
             <artifactId>spec</artifactId>
@@ -36,6 +37,7 @@
             <version>0.0.1</version>
         </dependency>
 
+        <!-- Handlers -->
         <dependency>
             <groupId>org.eustrosoft</groupId>
             <artifactId>cms</artifactId>
@@ -61,10 +63,16 @@
             <artifactId>login</artifactId>
             <version>1.1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.eustrosoft</groupId>
+            <artifactId>sql</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Common dependencies -->
             <dependency>
                 <groupId>org.eustrosoft</groupId>
                 <artifactId>spec</artifactId>
@@ -86,6 +94,7 @@
                 <version>0.0.1</version>
             </dependency>
 
+            <!-- Handlers -->
             <dependency>
                 <groupId>org.eustrosoft</groupId>
                 <artifactId>cms</artifactId>
@@ -109,6 +118,16 @@
             <dependency>
                 <groupId>org.eustrosoft</groupId>
                 <artifactId>login</artifactId>
+                <version>1.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eustrosoft</groupId>
+                <artifactId>sql</artifactId>
+                <version>1.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eustrosoft</groupId>
+                <artifactId>msg</artifactId>
                 <version>1.1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>

@@ -1,12 +1,12 @@
 package org.eustrosoft.sam.dao;
 
+import org.eustrosoft.constants.Constants;
 import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.dao.BasicDAO;
 import org.eustrosoft.core.db.dao.DBStatements;
+import org.eustrosoft.core.db.model.User;
 import org.eustrosoft.core.db.util.DBUtils;
 import org.eustrosoft.qdbp.QDBPConnection;
-import org.eustrosoft.sam.model.User;
-import org.eustrosoft.spec.Constants;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,7 +61,7 @@ public class SamDAO extends BasicDAO {
             user.fillFromResultSet(userResultSetById);
             userResultSetById.close();
         } catch (Exception ex) {
-            user.setId(id);
+            user.setZOID(id);
             if (id != null) {
                 user.setUsername(String.format("%s_%d", Constants.UNKNOWN, id));
                 user.setFullName(String.format("%s_%d", Constants.UNKNOWN, id));

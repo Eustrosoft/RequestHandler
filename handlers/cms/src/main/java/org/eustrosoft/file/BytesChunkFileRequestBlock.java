@@ -6,8 +6,8 @@
 
 package org.eustrosoft.file;
 
-import org.eustrosoft.json.QJson;
-import org.eustrosoft.spec.Constants;
+import org.eustrosoft.constants.Constants;
+import org.eustrosoft.core.json.QJson;
 
 public final class BytesChunkFileRequestBlock extends ChunkFileRequestBlock {
 

@@ -6,13 +6,13 @@
 
 package org.eustrosoft.ping;
 
-import org.eustrosoft.core.BasicHandler;
-import org.eustrosoft.core.annotation.Handler;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
 
-import static org.eustrosoft.spec.Constants.REQUEST_PING;
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_PING;
+import static org.eustrosoft.constants.Constants.REQUEST_PING;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_PING;
 
 @Handler(SUBSYSTEM_PING)
 public class PingHandler implements BasicHandler {

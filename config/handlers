@@ -2,8 +2,8 @@
 login=org.eustrosoft.login.LoginHandler
 ping=org.eustrosoft.ping.PingHandler
 dic=org.eustrosoft.dic.DicHandler
-#msg=org.eustrosoft.msg.MSGHandler
+msg=org.eustrosoft.msg.MSGHandler
 sam=org.eustrosoft.sam.SAMHandler
-#tis=org.eustrosoft.tis.TISHandler
-#sql=org.eustrosoft.sql.SQLHandler
+tis=org.eustrosoft.tis.TISHandler
+sql=org.eustrosoft.sql.SQLHandler
 cms=org.eustrosoft.cms.CMSHandler

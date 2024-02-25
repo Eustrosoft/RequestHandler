@@ -1,6 +1,5 @@
 package org.eustrosoft.cms.util;
 
-import org.eustrosoft.cms.CMSDownloader.Query;
 import org.eustrosoft.cms.dbdatasource.ranges.FileType;
 import org.eustrosoft.cms.model.FDir;
 import org.eustrosoft.cms.model.FFile;
@@ -11,7 +10,11 @@ import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.InputStream;
 import java.io.SequenceInputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 
 import static org.eustrosoft.cms.util.DBStatements.getBlobDetails;
@@ -41,7 +44,7 @@ public final class FSDao extends BasicDAO {
 
     public InputStream getFileInputStream(String zoid) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement blobDetailsPS = getBlobDetails(connection, zoid);
+        PreparedStatement blobDetailsPS = getBlobDetails(connection, Long.parseLong(zoid));
         try {
             ResultSet resultSet = blobDetailsPS.executeQuery();
             Vector<InputStream> streams = new Vector<>();
@@ -288,8 +291,8 @@ public final class FSDao extends BasicDAO {
                 throw new Exception("FDir is null while updating.");
             }
             status = openObject("FS.F", fDir.getFileId());
-            fDirOpen = openObject("FS.F", fDir.getZoid());
-            fDir.setZver(fDirOpen.getZver());
+            fDirOpen = openObject("FS.F", fDir.getZOID());
+            fDir.setZVER(fDirOpen.getZver());
             if (status.isOk() && fDirOpen.isOk()) {
                 Connection connection = getPoolConnection().get();
                 PreparedStatement preparedStatement = connection.prepareStatement(
@@ -326,8 +329,8 @@ public final class FSDao extends BasicDAO {
             if (fFile == null) {
                 throw new Exception("FFile is null while updating.");
             }
-            status = openObject("FS.F", fFile.getZoid());
-            fFile.setZver(status.getZver());
+            status = openObject("FS.F", fFile.getZOID());
+            fFile.setZVER(status.getZver());
             if (status.isOk()) {
                 Connection connection = getPoolConnection().get();
                 PreparedStatement preparedStatement = connection.prepareStatement(

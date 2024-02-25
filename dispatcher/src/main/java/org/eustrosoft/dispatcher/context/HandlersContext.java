@@ -1,6 +1,6 @@
 package org.eustrosoft.dispatcher.context;
 
-import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.core.annotations.Handler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,18 +39,19 @@ public final class HandlersContext {
     public void initLazy() {
         handlersMap = new HashMap<>();
         Map<String, String> allowedHandlers = this.handlersConfig.getAllowedHandlers();
-        try {
-            for (Map.Entry<String, String> entry : allowedHandlers.entrySet()) {
+        for (Map.Entry<String, String> entry : allowedHandlers.entrySet()) {
+            try {
                 Class<?> clazz = Class.forName(entry.getValue());
                 Handler[] declaredAnnotationsByType = clazz.getDeclaredAnnotationsByType(Handler.class);
                 String value = declaredAnnotationsByType[0].value();
                 if (allowedHandlers.containsKey(value)) {
                     handlersMap.put(value, clazz);
                 }
+            } catch (Exception ex) {
+                ex.printStackTrace(); // err while search classes
             }
-        } catch (Exception ex) {
-            ex.printStackTrace(); // err while search classes
         }
+
     }
 
     private void setHandlersConfig(HandlersConfig config) {

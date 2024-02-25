@@ -1,24 +1,24 @@
 package org.eustrosoft.dic;
 
-import org.eustrosoft.core.Service;
+import org.eustrosoft.core.interfaces.Service;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.response.ResponseLang;
+import org.eustrosoft.core.response.basic.ListStringResponseData;
 import org.eustrosoft.dic.dao.DicDAO;
 import org.eustrosoft.dic.model.DIC;
 import org.eustrosoft.dic.transform.DicToDicDtoTransform;
 import org.eustrosoft.handlers.dic.dto.DicRequestDto;
 import org.eustrosoft.handlers.dic.dto.DicResponseBlock;
 import org.eustrosoft.handlers.dic.dto.DicResponseDto;
-import org.eustrosoft.json.exception.JsonException;
-import org.eustrosoft.spec.ResponseLang;
-import org.eustrosoft.spec.request.BasicRequestBlock;
-import org.eustrosoft.spec.response.ListStringResponseData;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.eustrosoft.spec.Constants.ERR_OK;
-import static org.eustrosoft.spec.Constants.MSG_OK;
-import static org.eustrosoft.spec.Constants.PARAM_NAMES;
+import static org.eustrosoft.constants.Constants.ERR_OK;
+import static org.eustrosoft.constants.Constants.MSG_OK;
+import static org.eustrosoft.constants.Constants.PARAM_NAMES;
 
 public class DicService implements Service {
 

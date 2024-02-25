@@ -6,34 +6,44 @@
 
 package org.eustrosoft.sql;
 
-import org.eustrosoft.core.constants.Constants;
-import org.eustrosoft.core.handlers.BasicHandler;
-import org.eustrosoft.core.handlers.requests.RequestBlock;
-import org.eustrosoft.core.handlers.responses.ResponseBlock;
-import org.eustrosoft.core.providers.SessionProvider;
+import org.eustrosoft.constants.Constants;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.core.response.basic.ListStringResponseData;
+import org.eustrosoft.handlers.sql.dto.SqlDto;
+import org.eustrosoft.handlers.sql.dto.SqlResponseBlock;
+import org.eustrosoft.providers.RequestContextHolder;
+import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPSession;
+import org.eustrosoft.sql.utils.ResultSetUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.eustrosoft.constants.Constants.REQUEST_SQL;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_SQL;
+
+@Handler(SUBSYSTEM_SQL)
 public final class SQLHandler implements BasicHandler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
-        HttpServletRequest request = requestBlock.getHttpRequest();
-        HttpServletResponse httpResponse = requestBlock.getHttpResponse();
-        SessionProvider sessionProvider = new SessionProvider(request, httpResponse);
+        RequestContextHolder.ServletAttributes attributes = RequestContextHolder.getAttributes();
+        SessionProvider sessionProvider = new SessionProvider(attributes.getRequest(), attributes.getResponse());
         QDBPSession session = sessionProvider.getSession();
         Connection sqlConnection = session.getSQLConnection();
 
-        SQLRequestBlock sqlRequest = (SQLRequestBlock) requestBlock;
-        String query = sqlRequest.getQuery();
+        BasicRequestBlock<SqlDto> sqlRequest = (BasicRequestBlock<SqlDto>) requestBlock;
+        sqlRequest.setData(new SqlDto());
+        String query = sqlRequest.getData().getSql();
 
-        SQLResponseBlock responseBlock = new SQLResponseBlock();
+        SqlResponseBlock responseBlock = new SqlResponseBlock(REQUEST_SQL);
         List<ResultSet> resultSet = new ArrayList<>();
         List<String> queries = getQueries(query);
         try {
@@ -41,13 +51,15 @@ public final class SQLHandler implements BasicHandler {
                 PreparedStatement preparedStatement = sqlConnection.prepareStatement(targetQuery);
                 resultSet.add(preparedStatement.executeQuery());
                 responseBlock.setE(Constants.ERR_OK);
-                responseBlock.setErrMsg(Constants.MSG_OK);
+                responseBlock.setM(Constants.MSG_OK);
             }
+            List<String> rows = resultSet.stream().map(rs -> new ResultSetUtils().resSetToString(rs))
+                    .collect(Collectors.toList());
+            responseBlock.setData(new ListStringResponseData("sql", rows));
         } catch (Exception ex) {
-            responseBlock.setErrMsg(ex.getMessage());
+            responseBlock.setM(ex.getMessage());
             responseBlock.setE(Constants.ERR_UNEXPECTED);
         }
-        responseBlock.setResultSet(resultSet);
         return responseBlock;
     }
 

@@ -1,5 +1,0 @@
-<web-app>
-    <listener>
-        <listener-class>org.eustrosoft.core.annotation.ApplicationServletContextListener</listener-class>
-    </listener>
-</web-app>

@@ -6,42 +6,31 @@
 
 package org.eustrosoft.cms;
 
-import org.apache.commons.io.FileUtils;
-import org.eustrosoft.cms.dbdatasource.DBDataSource;
-import org.eustrosoft.cms.dto.CMSObject;
-import org.eustrosoft.cms.exception.CMSException;
-import org.eustrosoft.cms.filedownload.DownloadFileDetails;
-import org.eustrosoft.cms.filedownload.FileDownloadService;
-import org.eustrosoft.cms.filedownload.FileTicket;
-import org.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
-import org.eustrosoft.cms.providers.DataSourceProvider;
-import org.eustrosoft.core.BasicHandler;
-import org.eustrosoft.core.RequestContextHolder;
-import org.eustrosoft.core.annotation.Handler;
-import org.eustrosoft.providers.SessionProvider;
-import org.eustrosoft.providers.context.DBPoolContext;
-import org.eustrosoft.qdbp.QDBPSession;
-import org.eustrosoft.qdbp.QDBPool;
-import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
-import org.eustrosoft.sam.dao.SamDAO;
-import org.eustrosoft.services.ZipService;
-import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.cms.dbdatasource.CMSDataSource;
+import org.eustrosoft.cms.dbdatasource.DBDataSource;
+import org.eustrosoft.cms.dbdatasource.DataSourceProvider;
+import org.eustrosoft.cms.dbdatasource.UserStorage;
+import org.eustrosoft.cms.exception.CMSException;
+import org.eustrosoft.constants.Constants;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.handlers.cms.dto.CMSObject;
+import org.eustrosoft.handlers.cms.dto.CMSObjectUpdateParameters;
+import org.eustrosoft.handlers.cms.dto.CMSRequestBlock;
+import org.eustrosoft.handlers.cms.dto.CMSResponseBlock;
+import org.eustrosoft.handlers.cms.dto.CMSType;
+import org.eustrosoft.providers.RequestContextHolder;
+import org.eustrosoft.providers.SessionProvider;
+import org.eustrosoft.qdbp.QDBPSession;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.nio.file.Path;
 import java.util.List;
 
-import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_CMS;
-import static org.eustrosoft.tools.FileUtils.checkPathInjection;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_CMS;
 
 @Handler(SUBSYSTEM_CMS)
 public final class CMSHandler implements BasicHandler {
@@ -108,20 +97,8 @@ public final class CMSHandler implements BasicHandler {
             case Constants.REQUEST_DELETE:
                 delete(path);
                 break;
-            case Constants.REQUEST_TICKET:
-                if (cmsDataSource instanceof DBDataSource) {
-                    throw new Exception("This functionality is not implemented for database.");
-                }
-                FileTicket downloadPathDetails = getFileTicket(requestBlock);
-                break;
             case Constants.REQUEST_RENAME:
                 rename(from, to);
-                break;
-            case Constants.REQUEST_DOWNLOAD:
-                if (cmsDataSource instanceof DBDataSource) {
-                    throw new Exception("This functionality is not implemented for database.");
-                }
-                download(cmsRequestBlock);
                 break;
             default:
                 cmsResponseBlock.setE(404L);
@@ -131,84 +108,11 @@ public final class CMSHandler implements BasicHandler {
         return cmsResponseBlock;
     }
 
-    public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) throws Exception {
-        checkPathInjection(pathToDownload);
-        File file = new File(this.cmsDataSource.getFullPath(pathToDownload));
-        if (!file.exists()) {
-            throw new CMSException("File is not exist.");
-        }
-        InputStream inputStream;
-        String filePath;
-        if (file.isDirectory()) {
-            File temporaryFolder = new File(userDir);
-            FileUtils.copyDirectory(file, new File(temporaryFolder.getAbsolutePath(), file.getName()));
-            String zipFileName = String.format("archive_%d.zip", System.currentTimeMillis());
-            Path path = ZipService.createZipOfDirectory(
-                    zipFileName,
-                    temporaryFolder.getAbsolutePath(),
-                    temporaryFolder.getAbsolutePath()
-            );
-            filePath = path.toString();
-            inputStream = new FileInputStream(path.toFile());
-        } else if (file.isFile()) {
-            inputStream = new FileInputStream(file);
-            filePath = file.getName();
-        } else {
-            throw new CMSException("File type is not recognized");
-        }
-        return FileDownloadService.getInstance().beginConversation(
-                new DownloadFileDetails(
-                        inputStream,
-                        filePath,
-                        file.length()
-                )
-        );
-    }
-
     private String postProcessPath(String path) {
         if (path != null) {
             path = path.replaceAll("\\\\", "/");
         }
         return path;
-    }
-
-    private FileTicket getFileTicket(RequestBlock requestBlock) throws Exception {
-        QDBPool dbPool = DBPoolContext.getInstance(
-                DBPoolContext.getDbPoolName(request),
-                DBPoolContext.getUrl(request),
-                DBPoolContext.getDriverClass(request)
-        );
-        QDBPSession dbps = dbPool.logon(new QTISSessionCookie(request, response).getCookieValue());
-        SamDAO samDao = new SamDAO(dbps.getConnection());
-        this.userStorage = UserStorage.getInstanceForUser(samDao.getUserById(samDao.getUserId()));
-        return getDownloadPathDetails(
-                ((CMSRequestBlock) requestBlock).getPath(),
-                this.userStorage.getExistedPathOrCreate()
-        );
-    }
-
-    private void download(CMSRequestBlock cmsRequestBlock) throws Exception {
-        FileDownloadService fds = FileDownloadService.getInstance();
-        DownloadFileDetails fileInfo
-                = fds.getFileInfoAndEndConversation(cmsRequestBlock.getTicket());
-        response.reset();
-        setContentType(cmsRequestBlock, response);
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader(
-                "Content-Disposition",
-                String.format(
-                        "attachment; filename=\"%s\";;filename*=utf-8''%s",
-                        fileInfo.getFileName(),
-                        URLEncoder.encode(fileInfo.getFileName(), "UTF-8")
-                )
-        );
-        response.setContentLengthLong(fileInfo.getFileLength());
-        response.setBufferSize(DEFAULT_BUFFER_SIZE);
-        response.setHeader("Accept-Ranges", "bytes");
-        OutputStream os = response.getOutputStream();
-        // todo: create getFileStream realization
-        this.cmsDataSource.uploadToStream(fileInfo.getInputStream(), os);
-        // todo: make file deletion
     }
 
     private boolean move(String from, String to)

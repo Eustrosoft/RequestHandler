@@ -6,16 +6,16 @@
 
 package org.eustrosoft.dic;
 
-import org.eustrosoft.core.BasicHandler;
-import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
 import org.eustrosoft.handlers.dic.dto.DicRequestDto;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-import org.eustrosoft.spec.request.BasicRequestBlock;
 
-import static org.eustrosoft.spec.Constants.REQUEST_DICS;
-import static org.eustrosoft.spec.Constants.REQUEST_VALUES;
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_DIC;
+import static org.eustrosoft.constants.Constants.REQUEST_DICS;
+import static org.eustrosoft.constants.Constants.REQUEST_VALUES;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_DIC;
 
 @Handler(SUBSYSTEM_DIC)
 public final class DicHandler implements BasicHandler {

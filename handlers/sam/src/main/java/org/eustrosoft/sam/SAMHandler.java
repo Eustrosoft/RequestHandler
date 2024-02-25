@@ -6,18 +6,18 @@
 
 package org.eustrosoft.sam;
 
-import org.eustrosoft.core.BasicHandler;
-import org.eustrosoft.core.annotation.Handler;
+import org.eustrosoft.constants.Constants;
+import org.eustrosoft.core.annotations.Handler;
+import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.request.RequestBlock;
+import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.core.response.basic.BasicResponseBlock;
+import org.eustrosoft.core.response.basic.StubDto;
 import org.eustrosoft.handlers.sam.dto.RequestScopesDTO;
 import org.eustrosoft.handlers.sam.dto.SAMResponseBlock;
-import org.eustrosoft.spec.Constants;
-import org.eustrosoft.spec.interfaces.RequestBlock;
-import org.eustrosoft.spec.interfaces.ResponseBlock;
-import org.eustrosoft.spec.request.BasicRequestBlock;
-import org.eustrosoft.spec.response.BasicResponseBlock;
-import org.eustrosoft.spec.response.StubDto;
 
-import static org.eustrosoft.spec.Constants.SUBSYSTEM_SAM;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_SAM;
 
 @Handler(SUBSYSTEM_SAM)
 public final class SAMHandler implements BasicHandler {

@@ -1,7 +1,6 @@
 package org.eustrosoft.cms.util;
 
-import org.eustrosoft.cms.CMSDownloader.Query;
-import org.eustrosoft.cms.constants.Constants;
+import org.eustrosoft.cms.Constants;
 import org.eustrosoft.constants.DBConstants;
 
 import java.sql.Connection;
@@ -114,42 +113,26 @@ public class DBStatements {
     }
 
     public static PreparedStatement getFileDetails(Connection connection, Long zoid) throws SQLException {
-        return connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("name, mimetype, type")
-                        .from()
-                        .add("FS.V_FFile")
-                        .where(String.format("%s = %s", DBConstants.ZOID, zoid))
-                        .buildWithSemicolon()
-                        .toString()
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT name,mimetype,type FROM FS.V_File where ZOID = ?"
         );
+        statement.setLong(1, zoid);
+        return statement;
     }
 
-    public static PreparedStatement getBlobDetails(Connection connection, String zoid) throws SQLException {
-        return connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("FS.V_FBlob")
-                        .where(String.format("%s = %s", DBConstants.ZOID, zoid))
-                        .add(String.format("order by %s %s", DBConstants.ZRID, "ASC"))
-                        .buildWithSemicolon()
-                        .toString()
+    public static PreparedStatement getBlobDetails(Connection connection, Long zoid) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM FS.V_Blob where ZOID = ? ORDER BY ZRID ASC"
         );
+        statement.setLong(1, zoid);
+        return statement;
     }
 
     public static PreparedStatement getBlobLength(Connection connection, Long zoid) throws SQLException {
-        return connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("sum(length(chunk))")
-                        .from()
-                        .add("FS.V_FBlob")
-                        .where(String.format("%s = %s", DBConstants.ZOID, zoid))
-                        .buildWithSemicolon()
-                        .toString()
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT sum(length(chunk)) FROM FS.V_Blob WHERE ZOID = ?"
         );
+        statement.setLong(1, zoid);
+        return statement;
     }
 }
