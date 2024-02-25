@@ -16,14 +16,18 @@ import org.eustrosoft.core.interfaces.BasicHandler;
 import org.eustrosoft.core.request.BasicRequestBlock;
 import org.eustrosoft.core.request.RequestBlock;
 import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.core.response.ResponseLang;
+import org.eustrosoft.core.response.basic.ListRawResponseData;
 import org.eustrosoft.handlers.msg.dto.MSGRequestBlock;
 import org.eustrosoft.handlers.msg.dto.MSGResponseBlock;
 import org.eustrosoft.handlers.msg.dto.MsgParams;
+import org.eustrosoft.handlers.msg.dto.base.MSGChannelStatus;
+import org.eustrosoft.handlers.msg.dto.base.MSGMessageType;
 import org.eustrosoft.msg.dao.MSGDao;
 import org.eustrosoft.msg.model.MSGChannel;
 import org.eustrosoft.msg.model.MSGMessage;
-import org.eustrosoft.msg.ranges.MSGChannelStatus;
-import org.eustrosoft.msg.ranges.MSGMessageType;
+import org.eustrosoft.msg.transform.MSGChannelToDto;
+import org.eustrosoft.msg.transform.MSGMessageToDto;
 import org.eustrosoft.providers.RequestContextHolder;
 import org.eustrosoft.providers.SessionProvider;
 import org.eustrosoft.qdbp.QDBPConnection;
@@ -37,6 +41,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.eustrosoft.constants.Constants.ERR_UNEXPECTED;
 import static org.eustrosoft.constants.Constants.SUBSYSTEM_MSG;
@@ -54,33 +60,76 @@ public final class MSGHandler implements BasicHandler {
         QDBPSession session = new SessionProvider(attributes.getRequest(), attributes.getResponse())
                 .getSession();
         this.poolConnection = session.getConnection();
-        BasicRequestBlock rb = (BasicRequestBlock) requestBlock;
+        BasicRequestBlock<MSGRequestBlock> rb = (BasicRequestBlock) requestBlock;
+        String requestType = rb.getR();
 
+        rb.setData(new MSGRequestBlock());
+        MSGRequestBlock data = rb.getData();
 
-        MSGRequestBlock msgRequestBlock = (MSGRequestBlock) requestBlock;
-        MsgParams params = msgRequestBlock.getParams();
-        String requestType = msgRequestBlock.getR();
         MSGResponseBlock msgResponseBlock = new MSGResponseBlock(requestType);
+
         msgResponseBlock.setM(Constants.MSG_OK);
         msgResponseBlock.setE(Constants.ERR_OK);
+        msgResponseBlock.setL(ResponseLang.EN_US.getLang());
         switch (requestType) {
             case Constants.REQUEST_CHATS:
-                List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
-                //msgResponseBlock.setChats(getChats(statuses));
+                List<String> statuses = data == null ? Collections.emptyList() : data.getStatuses();
+                msgResponseBlock.setData(
+                        new ListRawResponseData(
+                                "channels",
+                                getChats(statuses).stream()
+                                        .map(new MSGChannelToDto())
+                                        .map(ch -> {
+                                            try {
+                                                return ch.convertToString();
+                                            } catch (Exception ex) {
+                                                return null;
+                                            }
+                                        })
+                                        .filter(Objects::nonNull)
+                                        .collect(Collectors.toList()))
+                );
                 break;
             case Constants.REQUEST_UPDATE:
-                List<String> ststa = params == null ? Collections.emptyList() : params.getStatuses();
-                //msgResponseBlock.setChats(getChatsVersions(ststa));
+                List<String> ststa = data == null ? Collections.emptyList() : data.getStatuses();
+                msgResponseBlock.setData(
+                        new ListRawResponseData(
+                                "channels",
+                                getChatsVersions(ststa).stream()
+                                        .map(new MSGChannelToDto())
+                                        .map(ch -> {
+                                            try {
+                                                return ch.convertToString();
+                                            } catch (Exception ex) {
+                                                return null;
+                                            }
+                                        })
+                                        .filter(Objects::nonNull)
+                                        .collect(Collectors.toList()))
+                );
                 break;
             case Constants.REQUEST_CHAT:
-                List<MSGMessage> chatMessages = getChatMessages(params.getZOID());
-                //msgResponseBlock.setMessages(chatMessages);
+                msgResponseBlock.setData(
+                        new ListRawResponseData(
+                                "messages",
+                                getChatMessages(data.getZOID()).stream()
+                                        .map(new MSGMessageToDto())
+                                        .map(ch -> {
+                                            try {
+                                                return ch.convertToString();
+                                            } catch (Exception ex) {
+                                                return null;
+                                            }
+                                        })
+                                        .filter(Objects::nonNull)
+                                        .collect(Collectors.toList()))
+                );
                 break;
             case Constants.REQUEST_CREATE:
-                createChat(params.getZOID(), params.getZLVL(), params.getZSID(), params.getSubject(), params.getContent());
+                createChat(data.getZOID(), data.getZLVL(), data.getZSID(), data.getSubject(), data.getContent());
                 break;
             case Constants.REQUEST_SEND:
-                String message = createMessage(params);
+                String message = createMessage(data);
                 if (message == null) {
                     msgResponseBlock.setE(ERR_UNEXPECTED);
                     msgResponseBlock.setM("Error while creating message");
@@ -88,21 +137,21 @@ public final class MSGHandler implements BasicHandler {
                 break;
             case Constants.REQUEST_EDIT:
                 updateMessage(
-                        params.getZOID(), params.getZRID(), params.getContent(),
-                        params.getReference(), MSGMessageType.of(params.getType())
+                        data.getZOID(), data.getZRID(), data.getContent(),
+                        data.getReference(), MSGMessageType.A.of(data.getType())
                 );
                 break;
             case Constants.REQUEST_DELETE_MSG:
             case Constants.REQUEST_DELETE:
-                deleteMessage(params.getZOID(), params.getZRID());
+                deleteMessage(data.getZOID(), data.getZRID());
                 break;
             case Constants.REQUEST_DELETE_CH:
-                deleteChannel(params.getZOID(), params.getZVER());
+                deleteChannel(data.getZOID(), data.getZVER());
                 break;
             case Constants.REQUEST_CHANGE:
                 changeChannelStatus(
-                        params.getZOID(), params.getZRID(), params.getSubject(),
-                        params.getReference(), MSGChannelStatus.of(params.getStatus())
+                        data.getZOID(), data.getZRID(), data.getSubject(),
+                        data.getReference(), MSGChannelStatus.of(data.getStatus())
                 );
                 break;
             default:

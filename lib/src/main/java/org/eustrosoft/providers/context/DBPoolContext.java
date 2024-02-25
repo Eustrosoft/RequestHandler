@@ -5,14 +5,11 @@
  */
 package org.eustrosoft.providers.context;
 
+import javax.servlet.http.HttpServletRequest;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.tools.WebParams;
 
-import javax.servlet.http.HttpServletRequest;
-
 public final class DBPoolContext {
-    private static QDBPool pool;
-
     private DBPoolContext() {
 
     }

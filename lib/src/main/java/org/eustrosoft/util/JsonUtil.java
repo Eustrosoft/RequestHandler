@@ -7,6 +7,7 @@ import org.eustrosoft.core.json.exception.JsonNameException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public final class JsonUtil {
         return String.format(format, params);
     }
 
-    public static String toJsonFormatted(Object... params) {
+    public static String toJsonFormatted(String... params) {
         return String.format(getFormatString(params.length), params);
     }
 
@@ -53,6 +54,11 @@ public final class JsonUtil {
         }
 
         public static String getDateParams(String name, DateTimeZone val) throws JsonException {
+            checkName(name);
+            return String.format(Constants.JSON_FORMAT_PARAMS, getString(name), getDate(val));
+        }
+
+        public static String getDateParams(String name, Date val) throws JsonException {
             checkName(name);
             return String.format(Constants.JSON_FORMAT_PARAMS, getString(name), getDate(val));
         }
@@ -78,6 +84,11 @@ public final class JsonUtil {
         }
 
         public static String getRawParams(String name, String val) throws JsonException {
+            checkName(name);
+            return String.format(Constants.JSON_FORMAT_PARAMS, getString(name), val);
+        }
+
+        public static String getRawParamsArray(String name, String val) throws JsonException {
             checkName(name);
             return String.format(Constants.JSON_FORMAT_PARAMS, getString(name), val);
         }
@@ -127,20 +138,16 @@ public final class JsonUtil {
 
         }
 
-        public static <T extends Enum<?>> String getEnum(T value) {
-            return getProcessedValue(value.name(), ParamUtil::quoteValue);
-        }
-
         public static String getString(CharSequence value) {
-            return getProcessedValue(value, ParamUtil::quoteValue);
-        }
-
-        public static String getCharacter(Character value) {
             return getProcessedValue(value, ParamUtil::quoteValue);
         }
 
         public static String getDate(DateTimeZone value) {
             return getProcessedValue(value.getStringDate(), ParamUtil::quoteValue);
+        }
+
+        public static String getDate(Date value) {
+            return getProcessedValue(value, ParamUtil::quoteValue);
         }
 
         public static String getCollectionString(Collection<? extends CharSequence> collection) {

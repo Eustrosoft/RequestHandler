@@ -7,12 +7,10 @@
 package org.eustrosoft.handlers.cms.dto;
 
 import org.eustrosoft.core.json.QJson;
+import org.eustrosoft.core.json.exception.JsonException;
 import org.eustrosoft.core.json.interfaces.JsonParsable;
-import org.eustrosoft.core.request.BasicRequestBlock;
 
-import static org.eustrosoft.constants.Constants.SUBSYSTEM_CMS;
-
-public class CMSRequestBlock<T extends JsonParsable<T>> extends BasicRequestBlock<T> {
+public class CMSRequestBlock implements JsonParsable<CMSRequestBlock> {
     private CMSType type;
     private String path;
     private String fileName;
@@ -22,11 +20,6 @@ public class CMSRequestBlock<T extends JsonParsable<T>> extends BasicRequestBloc
     private String contentType;
     private String description;
     private Integer securityLevel;
-
-    public CMSRequestBlock(String request, QJson qJson) {
-        super(SUBSYSTEM_CMS, request, qJson);
-        parseQJson(qJson);
-    }
 
     public Integer getSecurityLevel() {
         return securityLevel;
@@ -119,5 +112,11 @@ public class CMSRequestBlock<T extends JsonParsable<T>> extends BasicRequestBloc
         } catch (Exception ex) {
             // ex.printStackTrace();
         }
+    }
+
+    @Override
+    public CMSRequestBlock convertToObject(QJson qJson) throws JsonException {
+        parseQJson(qJson);
+        return this;
     }
 }

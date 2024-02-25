@@ -101,7 +101,7 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
     }
 
     @Override
-    public Long getZSIC() {
+    public Long getZSID() {
         return ZSID;
     }
 

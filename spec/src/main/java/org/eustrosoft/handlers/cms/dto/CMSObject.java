@@ -7,6 +7,7 @@
 package org.eustrosoft.handlers.cms.dto;
 
 import org.eustrosoft.core.db.model.IDBObject;
+import org.eustrosoft.core.json.interfaces.JsonConvertible;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * methods that need to be implemented by
  * system objects, like file, directory and other.
  */
-public interface CMSObject extends IDBObject {
+public interface CMSObject extends IDBObject, JsonConvertible {
     String getFileName();
 
     String getFullPath();

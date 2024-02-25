@@ -10,5 +10,5 @@ import org.eustrosoft.core.json.QJson;
 import org.eustrosoft.core.json.exception.JsonException;
 
 public interface JsonParsable<T> {
-    T convertToObject(QJson value) throws JsonException;
+    T convertToObject(QJson qJson) throws JsonException;
 }

@@ -15,15 +15,16 @@ import org.eustrosoft.core.response.ResponseParams;
 import org.eustrosoft.core.response.TISResponse;
 import org.eustrosoft.core.response.basic.ExceptionResponseBlock;
 import org.eustrosoft.dispatcher.context.HandlersContext;
+import org.eustrosoft.exceptions.SessionNotExistsException;
 import org.eustrosoft.providers.RequestContextHolder;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.eustrosoft.constants.Constants.ERR_SERVER;
+import static org.eustrosoft.constants.Constants.ERR_UNAUTHORIZED;
 import static org.eustrosoft.constants.Constants.ERR_UNEXPECTED;
 import static org.eustrosoft.constants.Constants.ERR_UNSUPPORTED;
 import static org.eustrosoft.constants.Constants.MSG_UNEXPECTED;
@@ -41,10 +42,8 @@ public final class PostRequestProcessor {
         this.response = attributes.getResponse();
     }
 
-    public Response processRequest() throws IOException {
+    public Response processRequest() {
         long millis = System.currentTimeMillis();
-
-        // Req and resp
         TISResponse response = new TISResponse();
         Request requestObject = new TISRequest();
 
@@ -53,7 +52,7 @@ public final class PostRequestProcessor {
             try {
                 jsonPart = request.getPart("json");
             } catch (Exception ex) {
-                System.err.println("Failed parsing request with parts");
+                // ignore
             }
 
             QJson qJson = new QJson();
@@ -62,7 +61,6 @@ public final class PostRequestProcessor {
             } else {
                 qJson.parseJSONReader(request.getReader());
             }
-
             requestObject.fromJson(qJson);
 
             List<ResponseBlock> responses = processRequestBlocks(requestObject);
@@ -73,7 +71,12 @@ public final class PostRequestProcessor {
                 response.setResponseBlocks(new ArrayList<>());
             }
             response.getR().add(
-                    new ExceptionResponseBlock(new ResponseParams(MSG_UNKNOWN, MSG_UNKNOWN, MSG_UNEXPECTED, ERR_UNEXPECTED, ResponseLang.EN_US.getLang()))
+                    new ExceptionResponseBlock(
+                            new ResponseParams(
+                                    MSG_UNKNOWN, MSG_UNKNOWN, MSG_UNEXPECTED,
+                                    ERR_UNEXPECTED, ResponseLang.EN_US.getLang()
+                            )
+                    )
             );
         }
         response.setTimeout(System.currentTimeMillis() - millis);
@@ -89,6 +92,13 @@ public final class PostRequestProcessor {
             try {
                 BasicHandler handler = (BasicHandler) aClass.newInstance();
                 responseBlocks.add(handler.processRequest(block));
+            } catch (SessionNotExistsException sEx) {
+                responseBlocks.add(new ExceptionResponseBlock(
+                                new ResponseParams(
+                                        block.getS(), block.getR(), "User is unauthorized",
+                                        ERR_UNAUTHORIZED, ResponseLang.EN_US.getLang())
+                        )
+                );
             } catch (ClassNotFoundException e) {
                 responseBlocks.add(new ExceptionResponseBlock(
                                 new ResponseParams(
@@ -98,7 +108,7 @@ public final class PostRequestProcessor {
                 );
             } catch (Exception ex) {
                 responseBlocks.add(new ExceptionResponseBlock(
-                                new ResponseParams(
+                        new ResponseParams(
                                         block.getS(), block.getR(), ex.getMessage(),
                                         ERR_SERVER, ResponseLang.EN_US.getLang()
                                 )

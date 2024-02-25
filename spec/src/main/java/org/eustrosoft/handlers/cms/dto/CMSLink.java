@@ -7,6 +7,7 @@
 package org.eustrosoft.handlers.cms.dto;
 
 import org.eustrosoft.core.db.model.DBObject;
+import org.eustrosoft.core.json.exception.JsonException;
 
 import java.util.List;
 
@@ -40,6 +41,11 @@ public class CMSLink extends DBObject implements CMSObject {
     }
 
     public List<String> getLinks() {
+        return null;
+    }
+
+    @Override
+    public String convertToString() throws JsonException {
         return null;
     }
 }

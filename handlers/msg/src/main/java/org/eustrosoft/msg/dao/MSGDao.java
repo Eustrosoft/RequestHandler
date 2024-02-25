@@ -10,11 +10,11 @@ import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.ExecStatus;
 import org.eustrosoft.core.db.dao.BasicDAO;
 import org.eustrosoft.core.db.util.DBUtils;
+import org.eustrosoft.handlers.msg.dto.base.MSGChannelStatus;
+import org.eustrosoft.handlers.msg.dto.base.MSGPartyRole;
 import org.eustrosoft.msg.model.MSGChannel;
 import org.eustrosoft.msg.model.MSGMessage;
 import org.eustrosoft.msg.model.MSGParty;
-import org.eustrosoft.msg.ranges.MSGChannelStatus;
-import org.eustrosoft.msg.ranges.MSGPartyRole;
 import org.eustrosoft.qdbp.QDBPConnection;
 import org.eustrosoft.sam.dao.SamDAO;
 
@@ -92,7 +92,7 @@ public final class MSGDao extends BasicDAO {
 
     public ExecStatus createChat(MSGChannel channel) throws Exception {
         SamDAO samDAO = new SamDAO(getPoolConnection());
-        Long zsid = channel.getZSIC() == null ? samDAO.getUserSid() : channel.getZSIC();
+        Long zsid = channel.getZSID() == null ? samDAO.getUserSid() : channel.getZSID();
         ExecStatus objectInScope = createObjectInScope("MSG.C", zsid, channel.getZLVL());
         if (!objectInScope.isOk()) {
             throw new Exception(objectInScope.getCaption());

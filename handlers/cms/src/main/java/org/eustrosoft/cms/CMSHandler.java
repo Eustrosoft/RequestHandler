@@ -11,13 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.eustrosoft.cms.dbdatasource.CMSDataSource;
 import org.eustrosoft.cms.dbdatasource.DBDataSource;
 import org.eustrosoft.cms.dbdatasource.DataSourceProvider;
-import org.eustrosoft.cms.dbdatasource.UserStorage;
 import org.eustrosoft.cms.exception.CMSException;
 import org.eustrosoft.constants.Constants;
 import org.eustrosoft.core.annotations.Handler;
 import org.eustrosoft.core.interfaces.BasicHandler;
+import org.eustrosoft.core.request.BasicRequestBlock;
 import org.eustrosoft.core.request.RequestBlock;
 import org.eustrosoft.core.response.ResponseBlock;
+import org.eustrosoft.core.response.ResponseLang;
+import org.eustrosoft.handlers.cms.dto.CMSData;
 import org.eustrosoft.handlers.cms.dto.CMSObject;
 import org.eustrosoft.handlers.cms.dto.CMSObjectUpdateParameters;
 import org.eustrosoft.handlers.cms.dto.CMSRequestBlock;
@@ -30,12 +32,15 @@ import org.eustrosoft.qdbp.QDBPSession;
 import java.io.File;
 import java.util.List;
 
+import static org.eustrosoft.constants.Constants.ERR_OK;
+import static org.eustrosoft.constants.Constants.ERR_UNSUPPORTED;
+import static org.eustrosoft.constants.Constants.MSG_OK;
+import static org.eustrosoft.constants.Constants.MSG_UNKNOWN;
 import static org.eustrosoft.constants.Constants.SUBSYSTEM_CMS;
 
 @Handler(SUBSYSTEM_CMS)
 public final class CMSHandler implements BasicHandler {
     private CMSDataSource cmsDataSource;
-    private UserStorage userStorage;
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -52,33 +57,38 @@ public final class CMSHandler implements BasicHandler {
         this.cmsDataSource = DataSourceProvider.getInstance(session.getConnection())
                 .getDataSource();
 
-        CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
-        CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
-        String path = cmsRequestBlock.getPath();
-        String from = cmsRequestBlock.getFrom();
-        String to = cmsRequestBlock.getTo();
+        BasicRequestBlock<CMSRequestBlock> cmsRequestBlock = (BasicRequestBlock) requestBlock;
+        cmsRequestBlock.setData(new CMSRequestBlock());
+        CMSRequestBlock data = cmsRequestBlock.getData();
+        String path = data.getPath();
+        String from = data.getFrom();
+        String to = data.getTo();
         postProcessPath(path);
         postProcessPath(from);
         postProcessPath(to);
         String requestType = cmsRequestBlock.getR();
+        CMSResponseBlock<CMSData> cmsResponseBlock = new CMSResponseBlock<>(requestType);
+        cmsResponseBlock.setE(ERR_OK);
+        cmsResponseBlock.setM(MSG_OK);
+        cmsResponseBlock.setL(ResponseLang.EN_US.getLang());
         switch (requestType) {
             case Constants.REQUEST_VIEW:
                 List<CMSObject> directoryObjects = getDirectoryObjects(path);
-                cmsResponseBlock.setContent(directoryObjects);
+                cmsResponseBlock.setData(new CMSData(directoryObjects));
                 break;
             case Constants.REQUEST_CREATE:
-                if (CMSType.FILE.equals(cmsRequestBlock.getType())) {
+                if (CMSType.FILE.equals(data.getType())) {
                     createFile(
                             path,
-                            cmsRequestBlock.getFileName()
+                            data.getFileName()
                     );
                 }
-                if (CMSType.DIRECTORY.equals(cmsRequestBlock.getType())) {
+                if (CMSType.DIRECTORY.equals(data.getType())) {
                     createDirectory(
                             path,
-                            cmsRequestBlock.getFileName(),
-                            cmsRequestBlock.getDescription(),
-                            cmsRequestBlock.getSecurityLevel()
+                            data.getFileName(),
+                            data.getDescription(),
+                            data.getSecurityLevel()
                     );
                 }
                 break;
@@ -90,8 +100,8 @@ public final class CMSHandler implements BasicHandler {
                     move(from, to);
                 }
                 if (cmsDataSource instanceof DBDataSource) {
-                    CMSObjectUpdateParameters data = new CMSObjectUpdateParameters(cmsRequestBlock.getDescription());
-                    this.cmsDataSource.update(to, data);
+                    CMSObjectUpdateParameters params = new CMSObjectUpdateParameters(data.getDescription());
+                    this.cmsDataSource.update(to, params);
                 }
                 break;
             case Constants.REQUEST_DELETE:
@@ -101,8 +111,8 @@ public final class CMSHandler implements BasicHandler {
                 rename(from, to);
                 break;
             default:
-                cmsResponseBlock.setE(404L);
-                cmsResponseBlock.setM("Not yet implemented.");
+                cmsResponseBlock.setE(ERR_UNSUPPORTED);
+                cmsResponseBlock.setM(MSG_UNKNOWN);
                 break;
         }
         return cmsResponseBlock;
@@ -173,19 +183,5 @@ public final class CMSHandler implements BasicHandler {
     private boolean delete(String source)
             throws Exception {
         return this.cmsDataSource.delete(source);
-    }
-
-    private String getProcessedIdsPath(String path) throws Exception {
-        return this.cmsDataSource.getFullPath(path);
-    }
-
-    // todo: remove duplicate
-    private void setContentType(CMSRequestBlock cmsRequestBlock, HttpServletResponse httpResponse) {
-        String contentType = cmsRequestBlock.getContentType();
-        if (contentType != null && !contentType.isEmpty()) {
-            httpResponse.setContentType(contentType);
-        } else {
-            httpResponse.setContentType("application/octet-stream");
-        }
     }
 }

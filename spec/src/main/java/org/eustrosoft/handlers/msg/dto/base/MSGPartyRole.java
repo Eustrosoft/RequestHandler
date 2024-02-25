@@ -1,4 +1,4 @@
-package org.eustrosoft.msg.ranges;
+package org.eustrosoft.handlers.msg.dto.base;
 
 
 public enum MSGPartyRole {

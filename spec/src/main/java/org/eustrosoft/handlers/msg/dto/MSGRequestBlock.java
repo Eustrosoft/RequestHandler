@@ -7,16 +7,13 @@
 package org.eustrosoft.handlers.msg.dto;
 
 import org.eustrosoft.core.json.QJson;
-import org.eustrosoft.core.request.BasicRequestBlock;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.core.json.interfaces.JsonParsable;
 
-import static org.eustrosoft.constants.Constants.SUBSYSTEM_MSG;
-
-public class MSGRequestBlock extends BasicRequestBlock {
+public class MSGRequestBlock extends MsgParams implements JsonParsable<MSGRequestBlock> {
     private String id;
-    private MsgParams params;
 
-    public MSGRequestBlock(String request, QJson json) {
-        super(SUBSYSTEM_MSG, request, json);
+    public MSGRequestBlock() {
     }
 
     private void parseQJson(QJson qJson) {
@@ -26,10 +23,12 @@ public class MSGRequestBlock extends BasicRequestBlock {
         try {
             setId(qJson.getItemString("id"));
         } catch (Exception ex) {
+            // ignore
         }
         try {
-            setParams(MsgParams.fromJson(qJson.getItemQJson("params")));
+            fromJson(qJson);
         } catch (Exception ex) {
+            // ignore
         }
     }
 
@@ -41,11 +40,9 @@ public class MSGRequestBlock extends BasicRequestBlock {
         this.id = id;
     }
 
-    public MsgParams getParams() {
-        return params;
-    }
-
-    public void setParams(MsgParams params) {
-        this.params = params;
+    @Override
+    public MSGRequestBlock convertToObject(QJson qJson) throws JsonException {
+        parseQJson(qJson);
+        return this;
     }
 }

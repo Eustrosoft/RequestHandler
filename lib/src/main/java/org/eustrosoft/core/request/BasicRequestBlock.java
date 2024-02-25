@@ -40,6 +40,9 @@ public class BasicRequestBlock<T extends JsonParsable<T>> implements RequestBloc
 
     @Override
     public T getData() throws JsonException {
+        if (this.data == null) {
+            return null;
+        }
         return this.data.convertToObject(json);
     }
 

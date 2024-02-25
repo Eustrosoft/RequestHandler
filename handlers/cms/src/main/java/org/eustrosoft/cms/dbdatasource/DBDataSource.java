@@ -6,7 +6,6 @@
 
 package org.eustrosoft.cms.dbdatasource;
 
-import org.eustrosoft.cms.CMSType;
 import org.eustrosoft.cms.dbdatasource.ranges.FileType;
 import org.eustrosoft.cms.model.FDir;
 import org.eustrosoft.cms.util.DBStatements;
@@ -16,6 +15,7 @@ import org.eustrosoft.core.db.ExecStatus;
 import org.eustrosoft.handlers.cms.dto.CMSGeneralObject;
 import org.eustrosoft.handlers.cms.dto.CMSObject;
 import org.eustrosoft.handlers.cms.dto.CMSObjectUpdateParameters;
+import org.eustrosoft.handlers.cms.dto.CMSType;
 import org.eustrosoft.handlers.cms.dto.FileDetails;
 import org.eustrosoft.handlers.cms.dto.HexFileParams;
 import org.eustrosoft.handlers.cms.dto.HexFileResult;
@@ -389,7 +389,7 @@ public class DBDataSource implements CMSDataSource {
                 throw new Exception(opened.getCaption());
             }
             ExecStatus objectInScope = fsDao.createObjectInScope(
-                    "FS.F", fDir.getZSIC(), fDir.getZLVL()
+                    "FS.F", fDir.getZSID(), fDir.getZLVL()
             );
 
             if (!objectInScope.isOk()) {

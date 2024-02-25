@@ -7,7 +7,7 @@ public interface IDBObject {
 
     Long getZRID();
 
-    Long getZSIC();
+    Long getZSID();
 
     Short getZLVL();
 }

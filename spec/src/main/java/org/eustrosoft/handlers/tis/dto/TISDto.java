@@ -13,8 +13,9 @@ import org.eustrosoft.core.json.interfaces.JsonParsable;
 
 import java.util.Objects;
 
-public final class TISDto implements JsonParsable<TISDto> {
+public class TISDto implements JsonParsable<TISDto> {
     private Long ZOID;
+    private Long ZRID;
     private Long ZVER;
     private Long ZSID;
     private Short ZLVL;
@@ -25,6 +26,14 @@ public final class TISDto implements JsonParsable<TISDto> {
 
     public void setZOID(Long ZOID) {
         this.ZOID = ZOID;
+    }
+
+    public Long getZRID() {
+        return ZRID;
+    }
+
+    public void setZRID(Long ZRID) {
+        this.ZRID = ZRID;
     }
 
     public Long getZVER() {
@@ -59,6 +68,7 @@ public final class TISDto implements JsonParsable<TISDto> {
         setZLVL(qJson.getItemLong(DBConstants.ZLVL) == null ?
                 null : Objects.requireNonNull(qJson.getItemLong(DBConstants.ZLVL)).shortValue()
         );
+        setZRID(qJson.getItemLong(DBConstants.ZRID));
         return null;
     }
 }

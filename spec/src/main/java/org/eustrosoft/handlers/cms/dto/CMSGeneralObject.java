@@ -7,6 +7,8 @@
 package org.eustrosoft.handlers.cms.dto;
 
 import org.eustrosoft.core.db.model.DBObject;
+import org.eustrosoft.core.json.exception.JsonException;
+import org.eustrosoft.util.JsonUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -128,5 +130,21 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
 
     public String toJson() {
         return this.toString();
+    }
+
+    @Override
+    public String convertToString() throws JsonException {
+        return JsonUtil.toJsonFormatted(
+                JsonUtil.AsEntry.getStringParams("fileName", getFileName()),
+                JsonUtil.AsEntry.getStringParams("extension", getExtension()),
+                JsonUtil.AsEntry.getStringParams("description", getDescription()),
+                JsonUtil.AsEntry.getStringParams("fullPath", getFullPath()),
+                JsonUtil.AsEntry.getStringParams("hash", getHash()),
+                JsonUtil.AsEntry.getStringParams("created", getCreated()),
+                JsonUtil.AsEntry.getDateParams("modified", getModified()),
+                JsonUtil.AsEntry.getNumberParams("securityLevel", getSecurityLevel()),
+                JsonUtil.AsEntry.getNumberParams("space", getSpace()),
+                JsonUtil.AsEntry.getStringParams("type", getType().value)
+        );
     }
 }

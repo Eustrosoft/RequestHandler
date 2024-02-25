@@ -114,7 +114,7 @@ public class DBStatements {
 
     public static PreparedStatement getFileDetails(Connection connection, Long zoid) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-                "SELECT name,mimetype,type FROM FS.V_File where ZOID = ?"
+                "SELECT name,mimetype,type FROM FS.V_FFile where ZOID = ?"
         );
         statement.setLong(1, zoid);
         return statement;
@@ -122,7 +122,7 @@ public class DBStatements {
 
     public static PreparedStatement getBlobDetails(Connection connection, Long zoid) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-                "SELECT * FROM FS.V_Blob where ZOID = ? ORDER BY ZRID ASC"
+                "SELECT * FROM FS.V_FBlob where ZOID = ? ORDER BY ZRID ASC"
         );
         statement.setLong(1, zoid);
         return statement;
@@ -130,7 +130,7 @@ public class DBStatements {
 
     public static PreparedStatement getBlobLength(Connection connection, Long zoid) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-                "SELECT sum(length(chunk)) FROM FS.V_Blob WHERE ZOID = ?"
+                "SELECT sum(length(chunk)) FROM FS.V_FBlob WHERE ZOID = ?"
         );
         statement.setLong(1, zoid);
         return statement;

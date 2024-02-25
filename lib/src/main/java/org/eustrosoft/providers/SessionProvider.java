@@ -6,13 +6,13 @@
 
 package org.eustrosoft.providers;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.eustrosoft.exceptions.SessionNotExistsException;
 import org.eustrosoft.providers.context.DBPoolContext;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public final class SessionProvider {
     private final HttpServletRequest request;
@@ -24,9 +24,13 @@ public final class SessionProvider {
         this.response = response;
     }
 
-    public QDBPSession getSession() {
-        renewSession();
-        return this.session;
+    public QDBPSession getSession() throws SessionNotExistsException {
+        try {
+            renewSession();
+            return this.session;
+        } catch (NullPointerException ex) {
+            throw new SessionNotExistsException();
+        }
     }
 
     private void renewSession() {

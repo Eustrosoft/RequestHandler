@@ -54,14 +54,14 @@ public class LoginService implements Service {
     }
 
     public LoginResponseBlock logout(BasicRequestBlock<?> dto) throws SQLException {
-        LoginResponseBlock loginResponseBlock = new LoginResponseBlock(dto.getR());
+        LoginResponseBlock logout = new LoginResponseBlock(dto.getR());
         QDBPSession dbps = new QDBPSession(DBPoolContext.getDbPoolName(getRequest()), null);
         dbps.logout();
         QTISSessionCookie qTisCookie = new QTISSessionCookie(getRequest(), getResponse());
         qTisCookie.deleteCookie();
-        loginResponseBlock.setE(ERR_OK);
-        loginResponseBlock.setM(MSG_OK);
-        loginResponseBlock.setL(ResponseLang.EN_US.getLang());
-        return loginResponseBlock;
+        logout.setE(ERR_OK);
+        logout.setM(MSG_OK);
+        logout.setL(ResponseLang.EN_US.getLang());
+        return logout;
     }
 }

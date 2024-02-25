@@ -21,22 +21,20 @@ public class MsgParams {
     private String type;
     private List<String> statuses;
 
-    public static MsgParams fromJson(QJson qJson) {
-        MsgParams params = new MsgParams();
-        params.setZOID(qJson.getItemLong(DBConstants.ZOID));
-        params.setZRID(qJson.getItemLong(DBConstants.ZRID));
-        params.setZVER(qJson.getItemLong(DBConstants.ZVER));
-        params.setZSID(qJson.getItemLong(DBConstants.ZSID));
-        params.setStatus(qJson.getItemString("status"));
-        params.setSubject(qJson.getItemString("subject"));
-        params.setContent(qJson.getItemString("content"));
-        params.setType(qJson.getItemString("type"));
-        params.setStatuses(getStatuses(qJson.getItemQJson("statuses")));
-        params.setReference(qJson.getItemLong("reference"));
-        params.setZLVL(qJson.getItemLong(DBConstants.ZLVL) == null ?
+    public void fromJson(QJson qJson) {
+        setZOID(qJson.getItemLong(DBConstants.ZOID));
+        setZRID(qJson.getItemLong(DBConstants.ZRID));
+        setZVER(qJson.getItemLong(DBConstants.ZVER));
+        setZSID(qJson.getItemLong(DBConstants.ZSID));
+        setStatus(qJson.getItemString("status"));
+        setSubject(qJson.getItemString("subject"));
+        setContent(qJson.getItemString("content"));
+        setType(qJson.getItemString("type"));
+        setStatuses(getStatuses(qJson.getItemQJson("statuses")));
+        setReference(qJson.getItemLong("reference"));
+        setZLVL(qJson.getItemLong(DBConstants.ZLVL) == null ?
                 null : Objects.requireNonNull(qJson.getItemLong(DBConstants.ZLVL)).shortValue()
         );
-        return params;
     }
 
     private static List<String> getStatuses(QJson qJson) {

@@ -6,28 +6,16 @@
 
 package org.eustrosoft.handlers.cms.dto;
 
-import org.eustrosoft.core.json.interfaces.JsonData;
+import org.eustrosoft.core.json.interfaces.JsonConvertible;
 import org.eustrosoft.core.response.basic.BasicResponseBlock;
 
-import java.util.List;
+import static org.eustrosoft.constants.Constants.SUBSYSTEM_CMS;
 
-public final class CMSResponseBlock<T extends JsonData> extends BasicResponseBlock<T> {
-    private List<CMSObject> content;
+public final class CMSResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
 
-    public CMSResponseBlock() {
-        super();
+    public CMSResponseBlock(String response) {
+        this.s = SUBSYSTEM_CMS;
+        this.r = response;
     }
 
-    public List<CMSObject> getContent() {
-        return content;
-    }
-
-    public void setContent(List<CMSObject> content) {
-        this.content = content;
-    }
-
-    @Override
-    public String toJsonString() {
-        return null;
-    }
 }

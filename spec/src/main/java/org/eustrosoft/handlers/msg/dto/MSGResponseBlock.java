@@ -12,20 +12,9 @@ import org.eustrosoft.core.response.basic.BasicResponseBlock;
 import static org.eustrosoft.constants.Constants.SUBSYSTEM_SAM;
 
 public final class MSGResponseBlock<T extends JsonConvertible> extends BasicResponseBlock<T> {
-    private T data;
 
     public MSGResponseBlock(String requestType) {
         this.s = SUBSYSTEM_SAM;
         this.r = requestType;
     }
-
-    @Override
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
 }

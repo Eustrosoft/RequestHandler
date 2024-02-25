@@ -9,8 +9,8 @@ package org.eustrosoft.msg.model;
 import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.date.DateTimeZone;
 import org.eustrosoft.core.db.model.DBObject;
+import org.eustrosoft.handlers.msg.dto.base.MSGMessageType;
 import org.eustrosoft.handlers.sam.dto.UserDTO;
-import org.eustrosoft.msg.ranges.MSGMessageType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,7 +48,7 @@ public class MSGMessage extends DBObject {
         super.fillFromResultSet(resultSet);
         setContent(resultSet.getString(DBConstants.CONTENT));
         setAnswerId(resultSet.getLong(DBConstants.MSG_ID));
-        setType(MSGMessageType.of(resultSet.getString(DBConstants.TYPE)));
+        setType(MSGMessageType.A.of(resultSet.getString(DBConstants.TYPE)));
     }
 
     public void merge(MSGMessage otherMessage) {

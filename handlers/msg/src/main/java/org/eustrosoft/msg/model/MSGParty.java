@@ -8,7 +8,7 @@ package org.eustrosoft.msg.model;
 
 import org.eustrosoft.constants.DBConstants;
 import org.eustrosoft.core.db.model.DBObject;
-import org.eustrosoft.msg.ranges.MSGPartyRole;
+import org.eustrosoft.handlers.msg.dto.base.MSGPartyRole;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
