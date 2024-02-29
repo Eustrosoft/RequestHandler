@@ -434,7 +434,10 @@ public class DBDataSource implements CMSDataSource {
         String lastLevelSource = getLastLevelFromPath(source);
         String lastLevelDist = getLastLevelFromPath(direction);
 
-        if (!source.equals(direction)) {
+        String sourcePath = source.substring(0, source.length() - lastLevelSource.length());
+        String targetPath = direction.substring(0, direction.length() - lastLevelDist.length());
+
+        if (!source.equals(direction) && !sourcePath.equals(targetPath)) {
             copy(source, direction);
             delete(source);
         } else if (!lastLevelSource.equals(lastLevelDist)) {

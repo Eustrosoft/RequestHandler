@@ -123,7 +123,7 @@ public final class CMSHandler implements Handler {
                 cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
                 break;
             case REQUEST_RENAME:
-                rename(from, to);
+                rename(from, new File(to).getName());
                 break;
             case REQUEST_DOWNLOAD:
                 if (cmsDataSource instanceof DBDataSource) {
