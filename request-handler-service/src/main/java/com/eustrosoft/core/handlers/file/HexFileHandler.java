@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.eustrosoft.core.constants.Constants.CHUNK_SIZE;
+import static com.eustrosoft.core.handlers.cms.CMSHandler.VIRTUAL_SUBSYSTEM;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static com.eustrosoft.core.tools.FileUtils.getNextIterationFilePath;
 
@@ -60,7 +61,8 @@ public class HexFileHandler implements Handler {
                 ).getDataSource();
 
         String answer = "";
-        String uploadPath = requestBl.getPath();
+        String originPath = requestBl.getPath();
+        String uploadPath = originPath.substring(VIRTUAL_SUBSYSTEM.length());
         checkPathInjection(uploadPath);
 
         String fileName = requestBl.getFileName();
