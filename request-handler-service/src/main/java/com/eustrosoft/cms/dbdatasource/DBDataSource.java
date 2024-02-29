@@ -437,7 +437,7 @@ public class DBDataSource implements CMSDataSource {
         if (!source.equals(direction)) {
             copy(source, direction);
             delete(source);
-        } else {
+        } else if (!lastLevelSource.equals(lastLevelDist)) {
             String fullPath = getFullPath(source);
             String lastLevelFromPath = getLastLevelFromPath(fullPath);
             Long fileId = Long.parseLong(lastLevelFromPath);
