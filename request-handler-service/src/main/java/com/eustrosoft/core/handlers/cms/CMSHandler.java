@@ -9,6 +9,7 @@ package com.eustrosoft.core.handlers.cms;
 import com.eustrosoft.cms.CMSDataSource;
 import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.cms.dbdatasource.DBDataSource;
+import com.eustrosoft.cms.dto.CMSGeneralObject;
 import com.eustrosoft.cms.dto.CMSObject;
 import com.eustrosoft.cms.exception.CMSException;
 import com.eustrosoft.cms.parameters.CMSObjectUpdateParameters;
@@ -21,22 +22,37 @@ import com.eustrosoft.core.providers.context.UsersContext;
 import com.eustrosoft.core.services.FileDownloadService;
 import com.eustrosoft.core.services.UserStorage;
 import com.eustrosoft.core.services.ZipService;
+import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.eustrosoft.core.constants.Constants.*;
+import static com.eustrosoft.core.constants.Constants.REQUEST_COPY;
+import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_DOWNLOAD;
+import static com.eustrosoft.core.constants.Constants.REQUEST_MOVE;
+import static com.eustrosoft.core.constants.Constants.REQUEST_RENAME;
+import static com.eustrosoft.core.constants.Constants.REQUEST_TICKET;
+import static com.eustrosoft.core.constants.Constants.REQUEST_VIEW;
+import static com.eustrosoft.core.constants.DBConstants.SEPARATOR;
 import static com.eustrosoft.core.tools.FileUtils.checkPathInjection;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
 public final class CMSHandler implements Handler {
+    public static final String VIRTUAL_SUBSYSTEM = "/s";
+
     private CMSDataSource cmsDataSource;
     private UserStorage userStorage;
     private UsersContext usersContext;
@@ -52,18 +68,19 @@ public final class CMSHandler implements Handler {
         CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
         cmsResponseBlock.setE(0);
         cmsResponseBlock.setErrMsg("Ok.");
-        // TODO
-        String path = cmsRequestBlock.getPath();
-        String from = cmsRequestBlock.getFrom();
-        String to = cmsRequestBlock.getTo();
-        postProcessPath(path);
-        postProcessPath(from);
-        postProcessPath(to);
+        String original = cmsRequestBlock.getPath();
+        String path = postProcessPath(original);
+        String from = postProcessPath(cmsRequestBlock.getFrom());
+        String to = postProcessPath(cmsRequestBlock.getTo());
         String requestType = cmsRequestBlock.getR();
         switch (requestType) {
             case REQUEST_VIEW:
-                List<CMSObject> directoryObjects = getDirectoryObjects(path);
-                cmsResponseBlock.setContent(directoryObjects);
+                if (original == null || original.isEmpty() || original.equalsIgnoreCase(SEPARATOR)) {
+                    cmsResponseBlock.setContent(getVirtualSubsystem());
+                } else {
+                    List<CMSObject> directoryObjects = getDirectoryObjects(path);
+                    cmsResponseBlock.setContent(directoryObjects);
+                }
                 break;
             case REQUEST_CREATE:
                 if (CMSType.FILE.equals(cmsRequestBlock.getType())) {
@@ -122,6 +139,16 @@ public final class CMSHandler implements Handler {
         return cmsResponseBlock;
     }
 
+    private List<CMSObject> getVirtualSubsystem() {
+        CMSGeneralObject directory = new CMSGeneralObject(
+                null, "s", VIRTUAL_SUBSYSTEM, null, 0L,
+                null, null, CMSType.DIRECTORY, null
+        );
+        List<CMSObject> virtualDirectory = new ArrayList<>();
+        virtualDirectory.add(directory);
+        return virtualDirectory;
+    }
+
     // TODO: only for file data source
     @SneakyThrows
     public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) {
@@ -159,8 +186,15 @@ public final class CMSHandler implements Handler {
     }
 
     private String postProcessPath(String path) {
-        if (path != null) {
-            path = path.replaceAll("\\\\", "/");
+        if (path == null) {
+            return SEPARATOR; // return root if null
+        }
+        path = path.replaceAll("\\\\", SEPARATOR);
+        if (path.startsWith(VIRTUAL_SUBSYSTEM)) {
+            path = path.substring(VIRTUAL_SUBSYSTEM.length());
+        }
+        if (path.isEmpty()) {
+            return SEPARATOR;
         }
         return path;
     }

@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 
 import static com.eustrosoft.core.constants.Constants.*;
+import static com.eustrosoft.core.handlers.cms.CMSHandler.VIRTUAL_SUBSYSTEM;
 import static com.eustrosoft.core.tools.HttpTools.*;
 import static com.eustrosoft.core.tools.LoginChecker.checkLogin;
 import static com.eustrosoft.core.tools.LoginChecker.getUnauthorizedResponse;
@@ -56,7 +57,8 @@ public class HttpRequestDispatcher extends HttpServlet {
 
         String id = req.getParameter("id");
         String name = req.getParameter("name");
-        String path = req.getParameter("path");
+        String preprocessed = req.getParameter("path");
+        String path = preprocessed.substring(VIRTUAL_SUBSYSTEM.length());
         String ticket = req.getParameter("ticket");
         String contentType = req.getParameter("contentType");
         QDBPSession session = new SessionProvider(req, resp).getSession();
@@ -71,6 +73,7 @@ public class HttpRequestDispatcher extends HttpServlet {
                             "source is not possible to get file from other sources.");
                 }
                 path = (path == null || path.isEmpty()) ? String.format("/%s", id) : path;
+
                 InputStream fileStream = dataSource.getFileStream(path);
                 FileDetails fileDetails = dataSource.getFileDetails(path);
                 if (contentType != null && !contentType.isEmpty()) {
