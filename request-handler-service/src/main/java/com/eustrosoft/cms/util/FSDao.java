@@ -229,18 +229,11 @@ public final class FSDao extends BasicDAO {
     @SneakyThrows
     public void renameFile(Long zoid, String name, String targetName) {
         FDir fDir = getFDir(zoid, name);
-        FFile fFile = getFFile(zoid, name);
         if (fDir == null) {
             throw new Exception("FDir was null while renaming");
         }
         fDir.setFileName(targetName);
         updateFDir(fDir);
-        if (fFile == null) {
-            throw new Exception("FFile was null while renaming");
-        }
-        fFile = getFFile(zoid, name);
-        fFile.setFileName(targetName);
-        updateFFile(fFile);
     }
 
     @SneakyThrows
