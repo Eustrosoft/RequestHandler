@@ -50,7 +50,6 @@ public class HttpRequestDispatcher extends HttpServlet {
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
         } catch (Exception ex) {
-            System.err.println("Unauthorized access.");
             printError(resp, getUnauthorizedResponse());
             return;
         }
@@ -120,7 +119,7 @@ public class HttpRequestDispatcher extends HttpServlet {
         try {
             session = new SessionProvider(request, response).getSession();
         } catch (Exception ex) {
-            System.out.println("User without session");
+            // ignored
         }
         Response resp = null;
         if (session != null) {

@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eustrosoft.core.constants.Constants.ERR_UNSUPPORTED;
 import static com.eustrosoft.core.constants.Constants.REQUEST_COPY;
 import static com.eustrosoft.core.constants.Constants.REQUEST_CREATE;
 import static com.eustrosoft.core.constants.Constants.REQUEST_DELETE;
@@ -73,6 +74,7 @@ public final class CMSHandler implements Handler {
         String from = postProcessPath(cmsRequestBlock.getFrom());
         String to = postProcessPath(cmsRequestBlock.getTo());
         String requestType = cmsRequestBlock.getR();
+        cmsResponseBlock.setResponseType(requestType);
         switch (requestType) {
             case REQUEST_VIEW:
                 if (original == null || original.isEmpty() || original.equalsIgnoreCase(SEPARATOR)) {
@@ -102,10 +104,11 @@ public final class CMSHandler implements Handler {
                 copyFile(from, to);
                 break;
             case REQUEST_MOVE:
-                if (from != null && !from.isEmpty()) {
+                boolean notEmptyTo = to != null && !to.isEmpty();
+                if ((from != null && !from.isEmpty()) && notEmptyTo) {
                     move(from, to);
                 }
-                if (cmsDataSource instanceof DBDataSource) {
+                if (cmsDataSource instanceof DBDataSource && notEmptyTo) {
                     CMSObjectUpdateParameters data = new CMSObjectUpdateParameters(
                             to, cmsRequestBlock.getDescription()
                     );
@@ -123,7 +126,8 @@ public final class CMSHandler implements Handler {
                 cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
                 break;
             case REQUEST_RENAME:
-                rename(from, new File(to).getName());
+                cmsResponseBlock.setE(ERR_UNSUPPORTED);
+                cmsResponseBlock.setErrMsg("This method is deprecated. Use move instead.");
                 break;
             case REQUEST_DOWNLOAD:
                 if (cmsDataSource instanceof DBDataSource) {
@@ -187,7 +191,7 @@ public final class CMSHandler implements Handler {
 
     private String postProcessPath(String path) {
         if (path == null) {
-            return SEPARATOR; // return root if null
+            return null; // return null (incorrect path)
         }
         path = path.replaceAll("\\\\", SEPARATOR);
         if (path.startsWith(VIRTUAL_SUBSYSTEM)) {
@@ -245,15 +249,6 @@ public final class CMSHandler implements Handler {
         return moveFile(
                 postProcessPath(new File(from).getPath()),
                 postProcessPath(new File(to).getPath())
-        );
-    }
-
-    private boolean rename(String source, String name) throws Exception {
-        return moveFile(
-                source,
-                postProcessPath(
-                        new File(getProcessedParentPath(source), name).getPath()
-                )
         );
     }
 

@@ -55,7 +55,7 @@ public final class PostRequestProcessor {
         try {
             jsonPart = request.getPart("json");
         } catch (Exception ex) {
-            System.err.println("Failed parsing request with parts");
+            // ignored
         }
 
         QJson qJson = new QJson();
@@ -132,10 +132,6 @@ public final class PostRequestProcessor {
                             requestType
                     ));
                 }
-                System.out.println(
-                        String.format("%d exceptions occurred\n%s errors msgs",
-                                exCount, exceptionsBuilder)
-                );
             }
         }
         return responses;
@@ -151,7 +147,7 @@ public final class PostRequestProcessor {
             try {
                 requestType = qJson.getItemString(REQUEST);
             } catch (Exception ex) {
-                System.err.println("Can not get Request type. " + ex.getMessage());
+                // ignored
             }
             checkLogin(request, response, subSystem); // main filter for logging user
             RequestBlock requestBlock = null;

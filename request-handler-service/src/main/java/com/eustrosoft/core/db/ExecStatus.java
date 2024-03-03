@@ -59,7 +59,7 @@ public final class ExecStatus {
             setP2(params[6]);
             setP3(params[7]);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            System.err.println("No more properties found for query.");
+            // ignored
         }
     }
 
