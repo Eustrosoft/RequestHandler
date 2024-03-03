@@ -7,24 +7,21 @@
 package com.eustrosoft.core.model.user;
 
 import com.eustrosoft.core.model.DBObject;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static com.eustrosoft.core.constants.Constants.UNKNOWN;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class User extends DBObject {
     private Long id;
     private String username;
     private String fullName;
     private String dbUser;
     private String sessionPath;
+
+    public User() {
+    }
 
     public User(String fullName, String username) {
         this.fullName = fullName;
@@ -53,5 +50,45 @@ public class User extends DBObject {
         } finally {
             resultSet.close();
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    public String getSessionPath() {
+        return sessionPath;
+    }
+
+    public void setSessionPath(String sessionPath) {
+        this.sessionPath = sessionPath;
     }
 }

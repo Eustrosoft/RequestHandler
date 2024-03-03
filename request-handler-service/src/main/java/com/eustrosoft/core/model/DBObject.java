@@ -3,10 +3,6 @@ package com.eustrosoft.core.model;
 import com.eustrosoft.core.model.interfaces.IDBObject;
 import com.eustrosoft.core.model.interfaces.ResultSetConverter;
 import com.eustrosoft.core.tools.DateTimeZone;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +14,6 @@ import static com.eustrosoft.core.constants.DBConstants.ZRID;
 import static com.eustrosoft.core.constants.DBConstants.ZSID;
 import static com.eustrosoft.core.constants.DBConstants.ZVER;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
     private Long zoid;
     private Long zver;
@@ -29,6 +21,70 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
     private Long zsid;
     private Short zlvl;
     private String created;
+
+    public DBObject() {
+    }
+
+    public DBObject(Long zoid, Long zver, Long zrid, Long zsid, Short zlvl) {
+        this.zoid = zoid;
+        this.zver = zver;
+        this.zrid = zrid;
+        this.zsid = zsid;
+        this.zlvl = zlvl;
+    }
+
+    @Override
+    public Long getZoid() {
+        return zoid;
+    }
+
+    public void setZoid(Long zoid) {
+        this.zoid = zoid;
+    }
+
+    @Override
+    public Long getZver() {
+        return zver;
+    }
+
+    public void setZver(Long zver) {
+        this.zver = zver;
+    }
+
+    @Override
+    public Long getZrid() {
+        return zrid;
+    }
+
+    public void setZrid(Long zrid) {
+        this.zrid = zrid;
+    }
+
+    @Override
+    public Long getZsid() {
+        return zsid;
+    }
+
+    public void setZsid(Long zsid) {
+        this.zsid = zsid;
+    }
+
+    @Override
+    public Short getZlvl() {
+        return zlvl;
+    }
+
+    public void setZlvl(Short zlvl) {
+        this.zlvl = zlvl;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
 
     public DBObject(ResultSet resultSet) throws SQLException {
         fillFromResultSet(resultSet);

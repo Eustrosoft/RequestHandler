@@ -7,14 +7,10 @@
 package com.eustrosoft.core.handlers.ping;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
-import lombok.Getter;
-import lombok.Setter;
 
 import static com.eustrosoft.core.constants.Constants.REQUEST_PING;
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_PING;
 
-@Getter
-@Setter
 public class PingResponseBlock extends BasicResponse {
     private String userId;
     private String username;
@@ -24,5 +20,37 @@ public class PingResponseBlock extends BasicResponse {
 
     public PingResponseBlock() {
         super(SUBSYSTEM_PING, REQUEST_PING);
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
     }
 }

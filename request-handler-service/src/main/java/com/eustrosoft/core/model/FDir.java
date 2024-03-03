@@ -7,17 +7,12 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.model.interfaces.Updatable;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static com.eustrosoft.core.constants.DBConstants.*;
 
-@Getter
-@Setter
 public class FDir extends DBObject implements Updatable {
     private Long fileId;
     private String fileName;
@@ -38,13 +33,44 @@ public class FDir extends DBObject implements Updatable {
     }
 
     @Override
-    @SneakyThrows
-    public void fillFromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
         setFileId(resultSet.getLong(FILE_ID));
         setFileName(resultSet.getString(F_NAME));
         setMimeType(resultSet.getString(MIME_TYPE));
         setDescription(resultSet.getString(DESCRIPTION));
+    }
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String toUpdateString() {

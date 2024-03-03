@@ -22,17 +22,17 @@ import com.eustrosoft.core.handlers.responses.ResponseBlock;
 import com.eustrosoft.core.handlers.sam.SAMHandler;
 import com.eustrosoft.core.handlers.sam.SAMRequestBlock;
 import com.eustrosoft.core.tools.QJson;
-import lombok.SneakyThrows;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.eustrosoft.core.constants.Constants.*;
-import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static com.eustrosoft.core.tools.LoginChecker.checkLogin;
 
 public final class PostRequestProcessor {
@@ -47,8 +47,7 @@ public final class PostRequestProcessor {
         this.response = response;
     }
 
-    @SneakyThrows
-    public Response processRequest() {
+    public Response processRequest() throws Exception {
         // Parsing query and getting request blocks
         Part jsonPart = null;
         long millis = System.currentTimeMillis();
@@ -79,7 +78,6 @@ public final class PostRequestProcessor {
         return qTisResponse;
     }
 
-    @SneakyThrows
     private List<ResponseBlock> processRequestBlocks(List<RequestBlock> requestBlocks) {
         List<ResponseBlock> responses = new ArrayList<>();
         for (RequestBlock block : requestBlocks) {
@@ -136,8 +134,7 @@ public final class PostRequestProcessor {
         return responses;
     }
 
-    @SneakyThrows
-    private List<RequestBlock> getRequestBlocks(QJson requestsArray) {
+    private List<RequestBlock> getRequestBlocks(QJson requestsArray) throws Exception {
         List<RequestBlock> requestBlocks = new ArrayList<>();
         for (int i = 0; i < requestsArray.size(); i++) {
             QJson qJson = requestsArray.getItemQJson(i);

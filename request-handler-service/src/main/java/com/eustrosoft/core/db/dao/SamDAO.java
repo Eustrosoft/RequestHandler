@@ -2,12 +2,12 @@ package com.eustrosoft.core.db.dao;
 
 import com.eustrosoft.core.db.util.DBUtils;
 import com.eustrosoft.core.model.user.User;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +20,7 @@ public class SamDAO extends BasicDAO {
         super(poolConnection);
     }
 
-    @SneakyThrows
-    public Long getUserSid() {
+    public Long getUserSid() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_sid");
         Long zsid = null;
@@ -35,8 +34,7 @@ public class SamDAO extends BasicDAO {
         return zsid;
     }
 
-    @SneakyThrows
-    public Long getUserId() {
+    public Long getUserId() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user");
         Long userId = null;
@@ -50,7 +48,6 @@ public class SamDAO extends BasicDAO {
         return userId;
     }
 
-    @SneakyThrows
     public User getUserById(Long id) {
         if (id == null || id <= 0) {
             return new User(UNKNOWN, UNKNOWN);
@@ -74,8 +71,7 @@ public class SamDAO extends BasicDAO {
         return user;
     }
 
-    @SneakyThrows
-    public ResultSet getUserResultSetById(Long id) {
+    public ResultSet getUserResultSetById(Long id) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM SAM.V_User where id = ?"
@@ -87,8 +83,7 @@ public class SamDAO extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public ResultSet getUserResultSet(String login) {
+    public ResultSet getUserResultSet(String login) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement =
                 connection.prepareStatement("SELECT * FROM SAM.V_User where db_user = ?");
@@ -99,8 +94,7 @@ public class SamDAO extends BasicDAO {
         return null;
     }
 
-    @SneakyThrows
-    public String getUserLogin() {
+    public String getUserLogin() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_login");
         String userLogin = null;
@@ -114,8 +108,7 @@ public class SamDAO extends BasicDAO {
         return userLogin;
     }
 
-    @SneakyThrows
-    public String getUserLang() {
+    public String getUserLang() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_lang");
         String userLang = null;
@@ -129,8 +122,7 @@ public class SamDAO extends BasicDAO {
         return userLang;
     }
 
-    @SneakyThrows
-    public Integer getUserSLvl() {
+    public Integer getUserSLvl() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_slevel");
         Integer userSlvl = null;
@@ -144,8 +136,7 @@ public class SamDAO extends BasicDAO {
         return userSlvl;
     }
 
-    @SneakyThrows
-    public int[] getUserAvailableSlvl() {
+    public int[] getUserAvailableSlvl() throws SQLException {
         Connection connection = getPoolConnection().get();
         int[] slvls = new int[2];
         PreparedStatement minPrep = DBStatements.getFunctionStatement(connection, "SAM.get_user_slevel_min");
@@ -167,8 +158,7 @@ public class SamDAO extends BasicDAO {
         return slvls;
     }
 
-    @SneakyThrows
-    public List<Long> getZsids(String objectType) {
+    public List<Long> getZsids(String objectType) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM SAM.V_ScopeCurrentUserCreatea where obj_type = ?"

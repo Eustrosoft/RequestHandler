@@ -23,18 +23,20 @@ import com.eustrosoft.core.services.FileDownloadService;
 import com.eustrosoft.core.services.UserStorage;
 import com.eustrosoft.core.services.ZipService;
 import javax.servlet.http.HttpServletResponse;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,8 +156,7 @@ public final class CMSHandler implements Handler {
     }
 
     // TODO: only for file data source
-    @SneakyThrows
-    public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) {
+    public FileTicket getDownloadPathDetails(String pathToDownload, String userDir) throws Exception {
         checkPathInjection(pathToDownload);
         File file = new File(this.cmsDataSource.getFullPath(pathToDownload));
         if (!file.exists()) {
@@ -203,7 +204,7 @@ public final class CMSHandler implements Handler {
         return path;
     }
 
-    private FileTicket getFileTicket(RequestBlock requestBlock) throws IOException {
+    private FileTicket getFileTicket(RequestBlock requestBlock) throws Exception {
         String session =
                 new QTISSessionCookie(requestBlock.getHttpRequest(), requestBlock.getHttpResponse())
                         .getCookieValue();

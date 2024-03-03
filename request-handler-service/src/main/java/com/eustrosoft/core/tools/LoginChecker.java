@@ -2,7 +2,6 @@ package com.eustrosoft.core.tools;
 
 import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.providers.context.DBPoolContext;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
 import org.eustrosoft.qtis.SessionCookie.QTISSessionCookie;
@@ -17,17 +16,15 @@ import static com.eustrosoft.core.tools.HttpTools.printError;
 
 public final class LoginChecker {
 
-    @SneakyThrows
     public static void checkLogin(HttpServletRequest request,
                                   HttpServletResponse response,
-                                  String subsystem) {
+                                  String subsystem) throws Exception {
         if (getSession(request, response) == null && !isLoginSubsystem(subsystem)) {
             printError(response, getUnauthorizedResponse());
             throw new Exception("Unauthorized access");
         }
     }
 
-    @SneakyThrows
     public static QDBPSession getSession(HttpServletRequest request,
                                          HttpServletResponse response) {
         QTISSessionCookie qTisCookie = new QTISSessionCookie(request, response);

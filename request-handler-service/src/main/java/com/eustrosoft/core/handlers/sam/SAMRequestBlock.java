@@ -8,16 +8,12 @@ package com.eustrosoft.core.handlers.sam;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
 
-@Getter
-@Setter
 public class SAMRequestBlock extends BasicRequest {
     private String id;
     private String type;
@@ -49,5 +45,21 @@ public class SAMRequestBlock extends BasicRequest {
             throw new NullPointerException("QJson was null");
         }
         setType(qJson.getItemString("type"));
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

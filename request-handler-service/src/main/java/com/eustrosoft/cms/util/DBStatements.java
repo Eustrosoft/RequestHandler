@@ -1,10 +1,10 @@
 package com.eustrosoft.cms.util;
 
 import com.eustrosoft.core.db.Query;
-import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import static com.eustrosoft.cms.constants.Constants.ROOTS;
 import static com.eustrosoft.cms.constants.Constants.SCOPES;
@@ -12,8 +12,7 @@ import static com.eustrosoft.cms.util.FileUtils.*;
 import static com.eustrosoft.core.constants.DBConstants.*;
 
 public class DBStatements {
-    @SneakyThrows
-    public static PreparedStatement getViewStatementForPath(Connection connection, String path) {
+    public static PreparedStatement getViewStatementForPath(Connection connection, String path) throws Exception {
         int pathLvl = getPathLvl(path);
         if (pathLvl == LVL_SCOPE) {
             return connection.prepareStatement(
@@ -117,8 +116,7 @@ public class DBStatements {
         ).buildWithSemicolon().toString();
     }
 
-    @SneakyThrows
-    public static PreparedStatement getFileDetails(Connection connection, Long zoid) {
+    public static PreparedStatement getFileDetails(Connection connection, Long zoid) throws SQLException {
         return connection.prepareStatement(
                 Query.builder()
                         .select()
@@ -131,8 +129,7 @@ public class DBStatements {
         );
     }
 
-    @SneakyThrows
-    public static PreparedStatement getBlobDetails(Connection connection, String zoid) {
+    public static PreparedStatement getBlobDetails(Connection connection, String zoid) throws SQLException {
         return connection.prepareStatement(
                 Query.builder()
                         .select()
@@ -146,8 +143,7 @@ public class DBStatements {
         );
     }
 
-    @SneakyThrows
-    public static PreparedStatement getBlobLength(Connection connection, Long zoid) {
+    public static PreparedStatement getBlobLength(Connection connection, Long zoid) throws SQLException {
         return connection.prepareStatement(
                 Query.builder()
                         .select()

@@ -6,14 +6,16 @@
 
 package com.eustrosoft.cms;
 
-import lombok.Getter;
 
 public enum Source {
     DATABASE("DATABASE"),
     FILE_SYSTEM("FILE_SYSTEM");
 
-    @Getter
     private String value;
+
+    public String getValue() {
+        return value;
+    }
 
     Source(String value) {
         this.value = value;

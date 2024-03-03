@@ -6,17 +6,43 @@
 
 package com.eustrosoft.core.handlers.cms;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.InputStream;
 
-@Getter
-@Setter
-@AllArgsConstructor
 public class DownloadFileDetails {
     private InputStream inputStream;
     private String fileName;
     private Long fileLength;
+
+    public DownloadFileDetails() {
+    }
+
+    public DownloadFileDetails(InputStream inputStream, String fileName, Long fileLength) {
+        this.inputStream = inputStream;
+        this.fileName = fileName;
+        this.fileLength = fileLength;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Long getFileLength() {
+        return fileLength;
+    }
+
+    public void setFileLength(Long fileLength) {
+        this.fileLength = fileLength;
+    }
 }

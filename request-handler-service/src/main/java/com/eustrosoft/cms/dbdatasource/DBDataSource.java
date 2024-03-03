@@ -19,7 +19,6 @@ import com.eustrosoft.cms.util.DBStatements;
 import com.eustrosoft.cms.util.FSDao;
 import com.eustrosoft.core.db.ExecStatus;
 import com.eustrosoft.core.model.FDir;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.File;
@@ -28,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +84,7 @@ public class DBDataSource implements CMSDataSource {
         return cmsObjects;
     }
 
-    private void fillSpaceForFiles(List<CMSObject> objects) { // todo: make a single query
+    private void fillSpaceForFiles(List<CMSObject> objects) throws SQLException { // todo: make a single query
         FSDao functions = new FSDao(poolConnection);
         for (int i = 0; i < objects.size(); i++) {
             CMSObject cmsObject = objects.get(i);
@@ -548,8 +548,7 @@ public class DBDataSource implements CMSDataSource {
         return commit.isOk();
     }
 
-    @SneakyThrows
-    private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) {
+    private List<CMSObject> processResultSetToCMSObjects(ResultSet resultSet, String fullPath) throws Exception {
         List<CMSObject> objects = new ArrayList<>();
         int pathLvl = getPathLvl(fullPath);
         fullPath = VIRTUAL_SUBSYSTEM + fullPath;

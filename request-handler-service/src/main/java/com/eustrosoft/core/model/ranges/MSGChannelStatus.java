@@ -1,6 +1,5 @@
 package com.eustrosoft.core.model.ranges;
 
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +11,11 @@ public enum MSGChannelStatus {
     W("W"),
     I("I"),
     C("C");
-    @Getter
     final String value;
+
+    public String getValue() {
+        return value;
+    }
 
     MSGChannelStatus(String value) {
         this.value = value;

@@ -8,16 +8,12 @@ package com.eustrosoft.core.handlers.msg;
 
 import com.eustrosoft.core.handlers.requests.BasicRequest;
 import com.eustrosoft.core.tools.QJson;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_MSG;
 
-@Getter
-@Setter
 public class MSGRequestBlock extends BasicRequest {
     private String id;
     private MsgParams params;
@@ -56,5 +52,21 @@ public class MSGRequestBlock extends BasicRequest {
             setParams(MsgParams.fromJson(qJson.getItemQJson("params")));
         } catch (Exception ex) {
         }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public MsgParams getParams() {
+        return params;
+    }
+
+    public void setParams(MsgParams params) {
+        this.params = params;
     }
 }

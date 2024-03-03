@@ -19,7 +19,6 @@ import com.eustrosoft.core.providers.SessionProvider;
 import com.eustrosoft.core.services.FileDownloadService;
 import com.eustrosoft.core.tools.Json;
 import com.eustrosoft.core.tools.QJson;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPSession;
 
 import javax.servlet.annotation.MultipartConfig;
@@ -29,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.handlers.cms.CMSHandler.VIRTUAL_SUBSYSTEM;
@@ -44,13 +44,16 @@ import static com.eustrosoft.core.tools.LoginChecker.getUnauthorizedResponse;
 public class HttpRequestDispatcher extends HttpServlet {
 
     @Override
-    @SneakyThrows
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws UnsupportedEncodingException {
         req.setCharacterEncoding("UTF-8");
         try {
             checkLogin(req, resp, SUBSYSTEM_CMS);
         } catch (Exception ex) {
-            printError(resp, getUnauthorizedResponse());
+            try {
+                printError(resp, getUnauthorizedResponse());
+            } catch (Exception exception) {
+                // ignored
+            }
             return;
         }
 
@@ -61,8 +64,13 @@ public class HttpRequestDispatcher extends HttpServlet {
         String ticket = req.getParameter("ticket");
         String contentType = req.getParameter("contentType");
         QDBPSession session = new SessionProvider(req, resp).getSession();
-        CMSDataSource dataSource = DataSourceProvider.getInstance(session.getConnection())
-                .getDataSource();
+        CMSDataSource dataSource = null;
+        try {
+            dataSource = DataSourceProvider.getInstance(session.getConnection())
+                    .getDataSource();
+        } catch (Exception ignored) {
+
+        }
 
         try {
             if (dataSource instanceof DBDataSource) {
@@ -99,14 +107,18 @@ public class HttpRequestDispatcher extends HttpServlet {
             }
         } catch (Exception ex) {
             // ex.printStackTrace();
-            printError(resp,
-                    getExceptionResponse(
-                            ex.getMessage(),
-                            SUBSYSTEM_CMS,
-                            REQUEST_DOWNLOAD,
-                            ERR_SERVER
-                    )
-            );
+            try {
+                printError(resp,
+                        getExceptionResponse(
+                                ex.getMessage(),
+                                SUBSYSTEM_CMS,
+                                REQUEST_DOWNLOAD,
+                                ERR_SERVER
+                        )
+                );
+            } catch (Exception exception) {
+                // ignored
+            }
         }
     }
 
@@ -124,10 +136,18 @@ public class HttpRequestDispatcher extends HttpServlet {
         Response resp = null;
         if (session != null) {
             synchronized (session) {
-                resp = requestProcessor.processRequest();
+                try {
+                    resp = requestProcessor.processRequest();
+                } catch (Exception exception) {
+                    // ignored
+                }
             }
         } else {
-            resp = requestProcessor.processRequest();
+            try {
+                resp = requestProcessor.processRequest();
+            } catch (Exception exception) {
+                // ignored
+            }
         }
         response.setContentType("application/json"); // todo think about it
         response.setHeader("Cache-Control", "nocache");

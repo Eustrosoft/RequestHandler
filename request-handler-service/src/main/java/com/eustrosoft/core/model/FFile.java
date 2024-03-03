@@ -26,9 +26,6 @@ package com.eustrosoft.core.model;
 
 import com.eustrosoft.cms.dbdatasource.ranges.FileType;
 import com.eustrosoft.core.model.interfaces.Updatable;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,8 +33,6 @@ import java.sql.SQLException;
 import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
 import static com.eustrosoft.core.constants.DBConstants.NAME;
 
-@Getter
-@Setter
 public class FFile extends DBObject implements Updatable {
     private String fileName;
     private FileType fileType;
@@ -74,9 +69,104 @@ public class FFile extends DBObject implements Updatable {
         this.tDigest = tDigest;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
+    }
+
+    public Character getExtStore() {
+        return extStore;
+    }
+
+    public void setExtStore(Character extStore) {
+        this.extStore = extStore;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getChcnt() {
+        return chcnt;
+    }
+
+    public void setChcnt(Long chcnt) {
+        this.chcnt = chcnt;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public String getDigest() {
+        return digest;
+    }
+
+    public void setDigest(String digest) {
+        this.digest = digest;
+    }
+
+    public Long getBSize() {
+        return bSize;
+    }
+
+    public void setBSize(Long bSize) {
+        this.bSize = bSize;
+    }
+
+    public Long getTChcnt() {
+        return tChcnt;
+    }
+
+    public void setTChcnt(Long tChcnt) {
+        this.tChcnt = tChcnt;
+    }
+
+    public String getTAlgorithm() {
+        return tAlgorithm;
+    }
+
+    public void setTAlgorithm(String tAlgorithm) {
+        this.tAlgorithm = tAlgorithm;
+    }
+
+    public String getTDigest() {
+        return tDigest;
+    }
+
+    public void setTDigest(String tDigest) {
+        this.tDigest = tDigest;
+    }
+
     @Override
-    @SneakyThrows
-    public void fillFromResultSet(ResultSet resultSet) {
+    public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
         // TODO: constants
         setFileName(resultSet.getString(NAME));

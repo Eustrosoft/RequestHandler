@@ -19,7 +19,6 @@ import com.eustrosoft.cms.util.FileUtils;
 import com.eustrosoft.core.tools.ColorTextUtil;
 import com.eustrosoft.core.tools.DateTimeZone;
 import com.eustrosoft.core.tools.PropsContainer;
-import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
@@ -35,9 +34,17 @@ import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 import static com.eustrosoft.core.tools.PropertiesConstants.PROPERTY_CMS_ROOT_PATH;
 
 public class FileCMSDataSource implements CMSDataSource, PropsContainer {
-    @Getter
     private final Properties properties = new Properties();
     private String filePath;
+
+    @Override
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
 
     public FileCMSDataSource() throws Exception {
         loadProps();

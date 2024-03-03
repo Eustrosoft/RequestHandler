@@ -6,14 +6,20 @@
 
 package com.eustrosoft.core.handlers.cms;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@RequiredArgsConstructor
 public class FileTicket {
-    @Setter
     private final String ticket;
     private final DownloadFileDetails downloadFileDetails;
+
+    public FileTicket(String ticket, DownloadFileDetails downloadFileDetails) {
+        this.ticket = ticket;
+        this.downloadFileDetails = downloadFileDetails;
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public DownloadFileDetails getDownloadFileDetails() {
+        return downloadFileDetails;
+    }
 }

@@ -2,7 +2,6 @@ package com.eustrosoft.core.db.dao;
 
 import com.eustrosoft.core.constants.DBConstants;
 import com.eustrosoft.core.model.DIC;
-import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.sql.Connection;
@@ -18,8 +17,7 @@ public class DicDAO extends BasicDAO {
         super(poolConnection);
     }
 
-    @SneakyThrows
-    public List<String> getDicNames() {
+    public List<String> getDicNames() throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT DISTINCT dic FROM DIC.V_QDIC ORDER BY dic"
@@ -39,8 +37,7 @@ public class DicDAO extends BasicDAO {
         return values;
     }
 
-    @SneakyThrows
-    public List<DIC> getDictionaryValues(String dicName) {
+    public List<DIC> getDictionaryValues(String dicName) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM DIC.V_QDIC where dic = ?"

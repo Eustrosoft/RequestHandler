@@ -1,8 +1,5 @@
 package com.eustrosoft.core.tools;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,8 +7,6 @@ import java.util.Date;
 
 import static com.eustrosoft.tools.Constants.DATE_FORMAT;
 
-@Getter
-@Setter
 public class DateTimeZone {
     private final Date utilDate;
     private final Timestamp sqlDate;
@@ -65,6 +60,22 @@ public class DateTimeZone {
             this.utilDate = sdf.parse(this.stringDate);
             this.sqlDate = new Timestamp(this.utilDate.getTime());
         }
+    }
+
+    public Date getUtilDate() {
+        return utilDate;
+    }
+
+    public Timestamp getSqlDate() {
+        return sqlDate;
+    }
+
+    public String getStringDate() {
+        return stringDate;
+    }
+
+    public SimpleDateFormat getSdf() {
+        return sdf;
     }
 
     @Override

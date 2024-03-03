@@ -12,7 +12,6 @@ import com.eustrosoft.cms.dbdatasource.DBDataSource;
 import com.eustrosoft.cms.filedatasource.FileCMSDataSource;
 import com.eustrosoft.core.tools.ColorTextUtil;
 import com.eustrosoft.core.tools.PropsContainer;
-import lombok.Getter;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.FileNotFoundException;
@@ -25,7 +24,6 @@ import static com.eustrosoft.core.tools.PropertiesConstants.CMS_FILE_NAME;
 
 public final class DataSourceProvider implements PropsContainer {
     private static DataSourceProvider dataSourceProvider;
-    @Getter
     private Properties properties;
     private CMSDataSource dataSource;
 
@@ -48,6 +46,11 @@ public final class DataSourceProvider implements PropsContainer {
         // refresh connection or other info for cms data source based on different instances
         dataSourceProvider.refresh(connection);
         return dataSourceProvider;
+    }
+
+    @Override
+    public Properties getProperties() {
+        return properties;
     }
 
     public CMSDataSource getDataSource() {
