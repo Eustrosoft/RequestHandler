@@ -2,6 +2,7 @@ package com.eustrosoft.core.tools;
 
 import com.eustrosoft.cms.parameters.FileDetails;
 import com.eustrosoft.core.handlers.ExceptionBlock;
+import com.eustrosoft.core.handlers.responses.QTisResponse;
 import com.eustrosoft.core.tools.json.JsonParser;
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.eustrosoft.core.constants.Constants.ERR_UNSUPPORTED;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
@@ -53,7 +55,8 @@ public final class HttpTools {
             throws Exception {
         resp.setContentType("application/json");
         PrintWriter writer = resp.getWriter();
-        writer.println(new JsonParser().parseObject(exceptionBlock));
+        QTisResponse response = new QTisResponse(Collections.singletonList(exceptionBlock));
+        writer.println(new JsonParser().parseObject(response));
         writer.flush();
         writer.close();
     }

@@ -50,6 +50,7 @@ import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
 import static com.eustrosoft.core.constants.DBConstants.ZSID;
+import static com.eustrosoft.core.db.util.DBUtils.getFid;
 import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
 import static com.eustrosoft.core.db.util.DBUtils.getType;
 import static com.eustrosoft.core.db.util.DBUtils.getZoid;
@@ -88,7 +89,12 @@ public class DBDataSource implements CMSDataSource {
         for (int i = 0; i < objects.size(); i++) {
             CMSObject cmsObject = objects.get(i);
             if (cmsObject instanceof CMSGeneralObject) {
-                ((CMSGeneralObject) cmsObject).setSpace(functions.getFileLength(cmsObject.getZoid()));
+                if (cmsObject.getType().equals(CMSType.DIRECTORY)) {
+                    ((CMSGeneralObject) cmsObject).setSpace(0L);
+                } else if (cmsObject.getType().equals(CMSType.FILE)) {
+                    ((CMSGeneralObject) cmsObject)
+                            .setSpace(functions.getFileLength(((CMSGeneralObject) cmsObject).getFileId()));
+                }
             }
         }
     }
@@ -558,8 +564,7 @@ public class DBDataSource implements CMSDataSource {
                     String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
-                    // String fid = getFid(resultSet);
-                    // Long id = fid.isEmpty() ? zoid : Long.parseLong(fid);
+                    String fid = getFid(resultSet);
                     CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
                             .description(descr)
                             .fullPath(new File(fullPath, finalName).getPath())
@@ -567,6 +572,9 @@ public class DBDataSource implements CMSDataSource {
                             .type(type);
                     try {
                         builder.securityLevel(Integer.valueOf(zlvl, 10));
+                        if (fid != null && !fid.isEmpty()) {
+                            builder.fileId(Long.parseLong(fid));
+                        }
                     } catch (Exception ex) {
                         // ex.printStackTrace();
                     }

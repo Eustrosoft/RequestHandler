@@ -30,6 +30,7 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
     private String hash;
     private CMSType type;
     private String description;
+    private Long fileId;
     private Date modified;
 
     public CMSGeneralObject(String extension, String fileName, String fullPath, List<String> links,

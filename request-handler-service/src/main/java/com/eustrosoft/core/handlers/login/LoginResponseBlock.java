@@ -12,7 +12,7 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_LOGIN;
 
 public final class LoginResponseBlock extends BasicResponse {
 
-    public LoginResponseBlock() {
-        super(SUBSYSTEM_LOGIN);
+    public LoginResponseBlock(String r) {
+        super(SUBSYSTEM_LOGIN, r);
     }
 }

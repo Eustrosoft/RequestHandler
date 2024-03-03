@@ -35,7 +35,7 @@ public final class LoginHandler implements Handler {
     @Override
     public ResponseBlock processRequest(RequestBlock requestBlock) throws Exception {
         LoginRequestBlock loginRequestBlock = (LoginRequestBlock) requestBlock;
-        LoginResponseBlock responseBlock = new LoginResponseBlock();
+        LoginResponseBlock responseBlock = new LoginResponseBlock(loginRequestBlock.getR());
         responseBlock.setE(0);
         switch (loginRequestBlock.getR()) {
             case REQUEST_LOGIN:
