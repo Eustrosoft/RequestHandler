@@ -263,6 +263,32 @@ public final class FSDao extends BasicDAO {
     }
 
     @SneakyThrows
+    public FDir getFDirByFileId(Long fileId, String name) {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                Query.builder()
+                        .select()
+                        .all()
+                        .from()
+                        .add("FS.V_FDir")
+                        .where(String.format("%s = %s and %s = '%s'", FILE_ID, fileId, F_NAME, name))
+                        .buildWithSemicolon()
+                        .toString()
+        );
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            try {
+                boolean next = resultSet.next();
+                return new FDir(resultSet);
+            } finally {
+                preparedStatement.close();
+                resultSet.close();
+            }
+        }
+        return null;
+    }
+
+    @SneakyThrows
     public FDir getFDir(Long zoid, String name) {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
@@ -271,14 +297,14 @@ public final class FSDao extends BasicDAO {
                         .all()
                         .from()
                         .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = '%s'", FILE_ID, zoid, F_NAME, name))
+                        .where(String.format("%s = %s and %s = '%s'", ZOID, zoid, F_NAME, name))
                         .buildWithSemicolon()
                         .toString()
         );
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
-                boolean next = resultSet.next();
+                resultSet.next();
                 return new FDir(resultSet);
             } finally {
                 preparedStatement.close();

@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.eustrosoft.cms.util.DBStatements.getSelectForPath;
 import static com.eustrosoft.cms.util.DBStatements.getViewStatementForPath;
@@ -49,7 +50,6 @@ import static com.eustrosoft.core.constants.DBConstants.ZLVL;
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZRID;
 import static com.eustrosoft.core.constants.DBConstants.ZSID;
-import static com.eustrosoft.core.db.util.DBUtils.getFid;
 import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
 import static com.eustrosoft.core.db.util.DBUtils.getType;
 import static com.eustrosoft.core.db.util.DBUtils.getZoid;
@@ -380,7 +380,7 @@ public class DBDataSource implements CMSDataSource {
         String fullPath = getFullPath(path);
         Long zoid = Long.parseLong(getLastLevelFromPath(fullPath));
         FSDao fsDao = new FSDao(poolConnection);
-        FDir fDir = fsDao.getFDir(zoid, getLastLevelFromPath(path));
+        FDir fDir = fsDao.getFDirByFileId(zoid, getLastLevelFromPath(path));
         if (Objects.nonNull(data.getDescription())) {
             fDir.setDescription(data.getDescription());
         }
@@ -398,7 +398,7 @@ public class DBDataSource implements CMSDataSource {
 
         String dirToMove = direction.substring(0, direction.length() - lastLevelDist.length() - 1);
         Long dirId = Long.parseLong(getLastLevelFromPath(getFullPath(dirToMove)));
-        FDir fDir = fsDao.getFDir(fileId, lastLevelDist);
+        FDir fDir = fsDao.getFDirByFileId(fileId, lastLevelDist);
         ExecStatus opened = fsDao.openObject("FS.F", dirId);
         try {
             if (!opened.isOk()) {
@@ -441,15 +441,16 @@ public class DBDataSource implements CMSDataSource {
             copy(source, direction);
             delete(source);
         } else if (!lastLevelSource.equals(lastLevelDist)) {
-            String fullPath = getFullPath(source);
-            String lastLevelFromPath = getLastLevelFromPath(fullPath);
-            Long fileId = Long.parseLong(lastLevelFromPath);
-            FSDao fsDao = new FSDao(poolConnection);
-            fsDao.renameFile(
-                    fileId,
-                    lastLevelSource,
-                    lastLevelDist
-            );
+            List<CMSObject> content = getContent(sourcePath);
+            Optional<CMSObject> first = content.stream().filter(c -> c.getFileName().equals(lastLevelSource)).findFirst();
+            if (first.isPresent()) {
+                FSDao fsDao = new FSDao(poolConnection);
+                fsDao.renameFile(
+                        first.get().getZoid(),
+                        lastLevelSource,
+                        lastLevelDist
+                );
+            }
         }
         return true;
     }
@@ -554,11 +555,11 @@ public class DBDataSource implements CMSDataSource {
                     CMSType type = pathLvl < 2 ? CMSType.DIRECTORY : getType(resultSet);
                     Long sid = getZsid(resultSet);
                     Long zoid = getZoid(resultSet);
-                    String fid = getFid(resultSet);
                     String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
                     String finalName = fname.isEmpty() ? name : fname;
-                    Long id = fid.isEmpty() ? zoid : Long.parseLong(fid);
+                    // String fid = getFid(resultSet);
+                    // Long id = fid.isEmpty() ? zoid : Long.parseLong(fid);
                     CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
                             .description(descr)
                             .fullPath(new File(fullPath, finalName).getPath())
@@ -570,7 +571,7 @@ public class DBDataSource implements CMSDataSource {
                         // ex.printStackTrace();
                     }
                     CMSGeneralObject build = builder.build();
-                    build.setZoid(id);
+                    build.setZoid(zoid);
                     objects.add(build);
                 } catch (Exception ex) {
                     // ex.printStackTrace();
