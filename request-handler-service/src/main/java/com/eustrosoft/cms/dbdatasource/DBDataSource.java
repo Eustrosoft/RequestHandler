@@ -379,14 +379,18 @@ public class DBDataSource implements CMSDataSource {
         if (isEmpty(path) || data.getDescription() == null) {
             return true;
         }
-        String fullPath = getFullPath(path);
-        Long zoid = Long.parseLong(getLastLevelFromPath(fullPath));
-        FSDao fsDao = new FSDao(poolConnection);
-        FDir fDir = fsDao.getFDirByFileId(zoid, getLastLevelFromPath(path));
-        if (Objects.nonNull(data.getDescription())) {
-            fDir.setDescription(data.getDescription());
+        String fileName = getLastLevelFromPath(path);
+        //Long zoid = Long.parseLong(fileName);
+        List<CMSObject> content = getContent(path.substring(0, path.length() - fileName.length()));
+        Optional<CMSObject> first = content.stream().filter(c -> c.getFileName().equals(fileName)).findFirst();
+        if (first.isPresent()) {
+            FSDao fsDao = new FSDao(poolConnection);
+            FDir fDir = fsDao.getFDir(first.get().getZoid(), fileName);
+            if (Objects.nonNull(data.getDescription())) {
+                fDir.setDescription(data.getDescription());
+            }
+            fsDao.updateFDir(fDir);
         }
-        fsDao.updateFDir(fDir);
         return true;
     }
 
@@ -587,16 +591,7 @@ public class DBDataSource implements CMSDataSource {
         return objects;
     }
 
-    @SneakyThrows
-    public void setSLvl() {
-
-    }
-
     private boolean isEmpty(String str) {
         return str == null || str.isEmpty();
-    }
-
-    private boolean isEmpty(Integer val) {
-        return val == null;
     }
 }
