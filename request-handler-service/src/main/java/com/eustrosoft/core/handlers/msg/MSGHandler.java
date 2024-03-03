@@ -49,9 +49,9 @@ public final class MSGHandler implements Handler {
         MsgParams params = msgRequestBlock.getParams();
         MSGResponseBlock msgResponseBlock = new MSGResponseBlock();
         msgResponseBlock.setE(ERR_OK);
-        msgResponseBlock.setErrMsg(MSG_OK);
+        msgResponseBlock.setM(MSG_OK);
         String requestType = msgRequestBlock.getR();
-        msgResponseBlock.setResponseType(requestType);
+        msgResponseBlock.setR(requestType);
         switch (requestType) {
             case REQUEST_CHATS:
                 List<String> statuses = params == null ? Collections.emptyList() : params.getStatuses();
@@ -71,8 +71,8 @@ public final class MSGHandler implements Handler {
             case REQUEST_SEND:
                 String message = createMessage(params);
                 if (message == null) {
-                    msgResponseBlock.setErrCode((short) 1);
-                    msgResponseBlock.setErrMsg("Error while creating message");
+                    msgResponseBlock.setE((short) 1);
+                    msgResponseBlock.setM("Error while creating message");
                 }
                 break;
             case REQUEST_EDIT:
@@ -96,7 +96,7 @@ public final class MSGHandler implements Handler {
                 break;
             default:
                 msgResponseBlock.setE(1);
-                msgResponseBlock.setErrMsg("Has no this request type");
+                msgResponseBlock.setM("Has no this request type");
                 break;
         }
         return msgResponseBlock;

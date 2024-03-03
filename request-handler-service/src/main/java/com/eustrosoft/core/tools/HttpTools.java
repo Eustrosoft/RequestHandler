@@ -1,18 +1,16 @@
 package com.eustrosoft.core.tools;
 
 import com.eustrosoft.cms.parameters.FileDetails;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import lombok.SneakyThrows;
-
+import com.eustrosoft.core.handlers.ExceptionBlock;
+import com.eustrosoft.core.tools.json.JsonParser;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 
 import static com.eustrosoft.core.constants.Constants.ERR_UNSUPPORTED;
-import static com.eustrosoft.core.handlers.responses.ResponseLang.en_US;
 import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
 public final class HttpTools {
@@ -33,8 +31,8 @@ public final class HttpTools {
         httpResponse.setContentType("application/octet-stream");
     }
 
-    @SneakyThrows
-    public static void setHeadersForFileDownload(HttpServletResponse response, FileDetails fileDetails) {
+    public static void setHeadersForFileDownload(HttpServletResponse response, FileDetails fileDetails)
+            throws UnsupportedEncodingException {
         response.reset();
         setContentType(response, fileDetails.getMimeType());
         response.setCharacterEncoding(fileDetails.getEncoding());
@@ -51,32 +49,28 @@ public final class HttpTools {
         response.setHeader("Accept-Ranges", "bytes");
     }
 
-    public static void printError(HttpServletResponse resp, JsonObject exceptionBlock)
-            throws IOException {
+    public static void printError(HttpServletResponse resp, ExceptionBlock exceptionBlock)
+            throws Exception {
         resp.setContentType("application/json");
         PrintWriter writer = resp.getWriter();
-        writer.println(new Gson().toJson(exceptionBlock));
+        writer.println(new JsonParser().parseObject(exceptionBlock));
         writer.flush();
         writer.close();
     }
 
-    public static JsonObject getUnsupportedException() {
-        return getExceptionResponse("Unsupported", "", "", ERR_UNSUPPORTED);
+    public static String getUnsupportedException() {
+        try {
+            return new JsonParser().parseObject(getExceptionResponse("Unsupported", "", "", ERR_UNSUPPORTED));
+        } catch (Exception ex) {
+            return "exception duting parsing";
+        }
     }
 
-    public static JsonObject getExceptionResponse(
+    public static ExceptionBlock getExceptionResponse(
             String message, String subsystem,
             String request, Short errType
     ) {
-        JsonObject object = new JsonObject();
-        object.addProperty("l", en_US);
-        JsonObject response = new JsonObject();
-        response.addProperty("m", message);
-        response.addProperty("e", errType);
-        response.addProperty("s", subsystem);
-        response.addProperty("r", request);
-        object.add("r", response);
-        return object;
+        return new ExceptionBlock(message, errType, subsystem, request);
     }
 
     private static boolean isAvailableContentType(String contentType) {

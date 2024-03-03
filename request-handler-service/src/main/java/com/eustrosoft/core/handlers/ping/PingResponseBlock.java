@@ -7,8 +7,6 @@
 package com.eustrosoft.core.handlers.ping;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
-import com.eustrosoft.core.handlers.responses.ResponseLang;
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,53 +16,13 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_PING;
 @Getter
 @Setter
 public class PingResponseBlock extends BasicResponse {
-    private Short errCode = 0;
-    private String errMsg = "";
     private String userId;
     private String username;
     private String fullName;
     private String dbUser;
 
-    @Override
-    public String getS() {
-        return SUBSYSTEM_PING;
-    }
 
-    @Override
-    public String getR() {
-        return REQUEST_PING;
-    }
-
-    @Override
-    public Short getE() {
-        return this.errCode;
-    }
-
-    @Override
-    public String getM() {
-        return this.errMsg;
-    }
-
-    @Override
-    public String getL() {
-        return ResponseLang.en_US; // TODO
-    }
-
-    @Override
-    public JsonObject toJsonObject() throws Exception {
-        JsonObject object = super.toJsonObject();
-        if (getUserId() != null) {
-            object.addProperty("userId", getUserId());
-        }
-        if (getFullName() != null) {
-            object.addProperty("fullName", getFullName());
-        }
-        if (getUsername() != null) {
-            object.addProperty("username", getUsername());
-        }
-        if (getDbUser() != null) {
-            object.addProperty("dbUser", getDbUser());
-        }
-        return object;
+    public PingResponseBlock() {
+        super(SUBSYSTEM_PING, REQUEST_PING);
     }
 }

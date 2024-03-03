@@ -7,10 +7,7 @@
 package com.eustrosoft.core.handlers.sql;
 
 import com.eustrosoft.core.handlers.responses.BasicResponse;
-import com.eustrosoft.core.handlers.responses.ResponseLang;
 import com.eustrosoft.core.handlers.sql.dto.ResultSetAnswer;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -18,61 +15,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLResponseBlock extends BasicResponse {
-    private String errMsg = "";
-    private Short errCode = 0;
+import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SQL;
 
+public class SQLResponseBlock extends BasicResponse {
     private List<ResultSet> resultSets;
 
     public SQLResponseBlock() {
-    }
-
-    @Override
-    public String getS() {
-        return "sql";
-    }
-
-    @Override
-    public String getR() {
-        return "sql";
-    }
-
-    @Override
-    public String getM() {
-        return this.errMsg;
-    }
-
-    @Override
-    public String getL() {
-        return ResponseLang.en_US;
-    }
-
-    @Override
-    public Short getE() {
-        return errCode;
-    }
-
-    public void setE(int code) {
-        errCode = (short) code;
+        super(SUBSYSTEM_SQL);
     }
 
     public List<ResultSet> getResultSets() {
-        return this.resultSets;
+        return resultSets;
     }
 
-    public void setResultSet(List<ResultSet> resultSets) {
+    public void setResultSets(List<ResultSet> resultSets) {
         this.resultSets = resultSets;
-    }
-
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
-    }
-
-    @Override
-    public JsonObject toJsonObject() throws Exception {
-        JsonObject object = super.toJsonObject();
-        object.add("r", new Gson().toJsonTree(processResultSets()));
-        return object;
     }
 
     private List<ResultSetAnswer> processResultSets() throws SQLException {

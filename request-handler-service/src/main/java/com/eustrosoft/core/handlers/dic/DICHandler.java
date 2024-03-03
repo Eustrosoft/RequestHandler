@@ -47,13 +47,13 @@ public final class DICHandler implements Handler {
                 break;
             default:
                 respBlock.setE(ERR_UNEXPECTED);
-                respBlock.setErrMsg(MSG_REQUEST_TYPE_NOT_SUPPORTED);
+                respBlock.setM(MSG_REQUEST_TYPE_NOT_SUPPORTED);
                 break;
         }
 
         respBlock.setE(ERR_OK);
-        respBlock.setErrMsg(MSG_OK);
-        respBlock.setResponseType(requestType);
+        respBlock.setM(MSG_OK);
+        respBlock.setR(requestType);
         return respBlock;
     }
 }

@@ -6,74 +6,72 @@
 
 package com.eustrosoft.core.handlers.responses;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.eustrosoft.core.tools.json.JsonParser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class QTisResponse implements Response {
-    private Long timeout;
-    private List<ResponseBlock> responseBlocks;
+    private Long t;
+    private List<ResponseBlock> r;
 
     public QTisResponse(List<ResponseBlock> responseBlocks) {
-        this.responseBlocks = responseBlocks;
+        this.r = responseBlocks;
     }
 
     public QTisResponse() {
 
     }
 
-    public void setResponseBlocks(List<ResponseBlock> responseBlocks) {
-        this.responseBlocks = responseBlocks;
+    public void setR(List<ResponseBlock> r) {
+        this.r = r;
     }
 
-    public void addResponseBlock(ResponseBlock responseBlock) {
-        this.responseBlocks.add(responseBlock);
+    public void addResponseBlock(ResponseBlock r) {
+        this.r.add(r);
     }
-//
-//    @Override
-//    public long getQTisVer() {
-//        return 0;
-//    }
 
     @Override
     public List<ResponseBlock> getR() {
-        return this.responseBlocks;
+        return this.r;
     }
 
     @Override
     public Long getT() {
-        return this.timeout;
+        return this.t;
     }
 
     public void setT(Long timeout) {
-        this.timeout = timeout;
+        this.t = timeout;
     }
 
     @Override
     public String getJson() {
-        JsonObject object = new JsonObject();
-        object.add("r", getResponsesString());
-        object.addProperty("t", String.valueOf(getT()));
-        return object.toString();
+        try {
+            return new JsonParser().parseObject(this);
+//            JsonObject object = new JsonObject();
+//            object.add("r", getResponsesString());
+//            object.addProperty("t", String.valueOf(getT()));
+//            return object.toString();
+        } catch (Exception exception) {
+            return null;
+        }
     }
 
-    private JsonArray getResponsesString() {
-        List<String> jsonResponses = new ArrayList<>();
-        for (ResponseBlock responseBlock : responseBlocks) {
-            try {
-                jsonResponses.add(
-                        new Gson().toJson(responseBlock.toJsonObject())
-                );
-            } catch (Exception ex) {
-                jsonResponses.add(
-                        "{\"m\":\"Exception while processing block\"}"
-                );
-            }
-        }
-        return new Gson().fromJson(jsonResponses.toString(), JsonArray.class);
-    }
+//    private String getResponsesString() throws Exception {
+////        return new JsonParser().parseCollection(responseBlocks);
+////        List<String> jsonResponses = new ArrayList<>();
+////        for (ResponseBlock responseBlock : r) {
+////            try {
+////                jsonResponses.add(
+////                        new Gson().toJson(responseBlock.toJsonObject())
+////                );
+////            } catch (Exception ex) {
+////                jsonResponses.add(
+////                        "{\"m\":\"Exception while processing block\"}"
+////                );
+////            }
+////        }
+////        return new Gson().fromJson(jsonResponses.toString(), JsonArray.class);
+//    }
 
 }

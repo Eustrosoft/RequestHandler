@@ -79,7 +79,7 @@ public class FileDownloadService {
 
     public void downloadFile(HttpServletRequest req, HttpServletResponse resp,
                              String ticket, String contentType)
-            throws IOException {
+            throws Exception {
         Json.JsonBuilder builder = new Json().builder();
         builder.addKeyValue("s", SUBSYSTEM_CMS);
         if (ticket != null && !ticket.isEmpty()) {

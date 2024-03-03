@@ -44,13 +44,13 @@ public final class SQLHandler implements Handler {
                 PreparedStatement preparedStatement = sqlConnection.prepareStatement(targetQuery);
                 resultSet.add(preparedStatement.executeQuery());
                 responseBlock.setE(ERR_OK);
-                responseBlock.setErrMsg(MSG_OK);
+                responseBlock.setM(MSG_OK);
             }
         } catch (Exception ex) {
-            responseBlock.setErrMsg(ex.getMessage());
+            responseBlock.setM(ex.getMessage());
             responseBlock.setE(ERR_UNEXPECTED);
         }
-        responseBlock.setResultSet(resultSet);
+        responseBlock.setResultSets(resultSet);
         return responseBlock;
     }
 

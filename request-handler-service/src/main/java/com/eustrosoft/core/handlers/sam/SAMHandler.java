@@ -39,7 +39,7 @@ public final class SAMHandler implements Handler {
         SAMRequestBlock samRequestBlock = (SAMRequestBlock) requestBlock;
         String requestType = samRequestBlock.getR();
         SAMResponseBlock respBlock = new SAMResponseBlock();
-        respBlock.setResponseType(requestType);
+        respBlock.setR(requestType);
 
         SamDAO dao = new SamDAO(poolConnection);
         switch (requestType) {
@@ -63,11 +63,11 @@ public final class SAMHandler implements Handler {
                 break;
             default:
                 respBlock.setE(ERR_UNEXPECTED);
-                respBlock.setErrMsg(MSG_REQUEST_TYPE_NOT_SUPPORTED);
+                respBlock.setM(MSG_REQUEST_TYPE_NOT_SUPPORTED);
                 break;
         }
         respBlock.setE(ERR_OK);
-        respBlock.setErrMsg(MSG_OK);
+        respBlock.setM(MSG_OK);
         return respBlock;
     }
 }

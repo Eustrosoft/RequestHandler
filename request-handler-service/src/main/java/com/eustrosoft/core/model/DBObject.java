@@ -1,7 +1,6 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.model.interfaces.IDBObject;
-import com.eustrosoft.core.model.interfaces.JsonFormat;
 import com.eustrosoft.core.model.interfaces.ResultSetConverter;
 import com.eustrosoft.core.tools.DateTimeZone;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,7 @@ import static com.eustrosoft.core.constants.DBConstants.ZVER;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DBObject implements IDBObject, ResultSetConverter<DBObject>, JsonFormat {
+public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
     private Long zoid;
     private Long zver;
     private Long zrid;

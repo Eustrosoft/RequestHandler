@@ -8,6 +8,7 @@ package com.eustrosoft.cms.dto;
 
 import com.eustrosoft.cms.CMSType;
 import com.eustrosoft.core.model.DBObject;
+import com.eustrosoft.core.tools.json.JsonNotNull;
 import lombok.*;
 
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonNotNull
 public class CMSGeneralObject extends DBObject implements CMSObject {
     private String extension;
     private String fileName;
@@ -41,10 +43,5 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
         this.hash = hash;
         this.type = type;
         this.description = description;
-    }
-
-    @Override
-    public String toJson() {
-        return this.toString();
     }
 }

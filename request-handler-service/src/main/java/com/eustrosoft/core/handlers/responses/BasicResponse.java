@@ -6,17 +6,62 @@
 
 package com.eustrosoft.core.handlers.responses;
 
-import com.google.gson.JsonObject;
-
 public abstract class BasicResponse implements ResponseBlock {
+    protected final String s;
+    protected String m = "";
+    protected Short e = 0;
+    protected String r;
 
-    public JsonObject toJsonObject() throws Exception {
-        JsonObject object = new JsonObject();
-        object.addProperty("s", getS());
-        object.addProperty("e", getE());
-        object.addProperty("m", getM());
-        object.addProperty("l", getL());
-        object.addProperty("r", getR());
-        return object;
+    public BasicResponse(String subsystem) {
+        this.s = subsystem;
+    }
+
+    public BasicResponse(String s, String r) {
+        this.s = s;
+        this.r = r;
+    }
+
+    public BasicResponse(String s, String m, Short e, String r) {
+        this.s = s;
+        this.m = m;
+        this.e = e;
+        this.r = r;
+    }
+
+    @Override
+    public String getR() {
+        return this.r;
+    }
+
+    @Override
+    public String getM() {
+        return this.m;
+    }
+
+    @Override
+    public String getL() {
+        return ResponseLang.en_US;
+    }
+
+    @Override
+    public Short getE() {
+        return e;
+    }
+
+    @Override
+    public String getS() {
+        return this.s;
+    }
+
+    public void setE(int code) {
+        this.e = (short) code;
+    }
+
+    public void setM(String m) {
+        this.m = m;
+    }
+
+    public void setR(String r) {
+        this.r = r;
     }
 }

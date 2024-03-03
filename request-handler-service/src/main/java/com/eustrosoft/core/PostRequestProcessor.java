@@ -74,7 +74,7 @@ public final class PostRequestProcessor {
         // Processing request blocks
         QTisResponse qTisResponse = new QTisResponse();
         List<ResponseBlock> responses = processRequestBlocks(requestBlocks);
-        qTisResponse.setResponseBlocks(responses);
+        qTisResponse.setR(responses);
         qTisResponse.setT(System.currentTimeMillis() - millis);
         return qTisResponse;
     }
@@ -127,7 +127,6 @@ public final class PostRequestProcessor {
                     responses.add(new ExceptionBlock(
                             ex.getMessage(),
                             (short) 500,
-                            en_US,
                             requestSubsystem,
                             requestType
                     ));

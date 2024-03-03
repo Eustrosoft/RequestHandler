@@ -36,8 +36,8 @@ public class PingHandler implements Handler {
         );
         QDBPSession dbps = dbPool.logon(qtisSessionCookie.getCookieValue());
         if (dbps.checkSecretCookie(dbps.getSecretCookie())) {
-            pingResponseBlock.setErrCode(ERR_OK);
-            pingResponseBlock.setErrMsg(MSG_OK);
+            pingResponseBlock.setE(ERR_OK);
+            pingResponseBlock.setM(MSG_OK);
             SamDAO samDAO = new SamDAO(dbps.getConnection());
             User user = samDAO.getUserById(samDAO.getUserId());
             pingResponseBlock.setUsername(user.getUsername());
@@ -45,8 +45,8 @@ public class PingHandler implements Handler {
             pingResponseBlock.setDbUser(user.getDbUser());
             pingResponseBlock.setUserId(user.getId().toString());
         } else {
-            pingResponseBlock.setErrCode(ERR_UNAUTHORIZED);
-            pingResponseBlock.setErrMsg(MSG_UNAUTHORIZED);
+            pingResponseBlock.setE(ERR_UNAUTHORIZED);
+            pingResponseBlock.setM(MSG_UNAUTHORIZED);
         }
         return pingResponseBlock;
     }

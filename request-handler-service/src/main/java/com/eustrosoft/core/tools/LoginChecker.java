@@ -1,7 +1,7 @@
 package com.eustrosoft.core.tools;
 
+import com.eustrosoft.core.handlers.ExceptionBlock;
 import com.eustrosoft.core.providers.context.DBPoolContext;
-import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
 import org.eustrosoft.qdbp.QDBPSession;
 import org.eustrosoft.qdbp.QDBPool;
@@ -44,7 +44,7 @@ public final class LoginChecker {
         return SUBSYSTEM_LOGIN.equalsIgnoreCase(subsystem);
     }
 
-    public static JsonObject getUnauthorizedResponse() {
+    public static ExceptionBlock getUnauthorizedResponse() {
         return getExceptionResponse("Unauthorized", "login", "login", ERR_UNAUTHORIZED);
     }
 }

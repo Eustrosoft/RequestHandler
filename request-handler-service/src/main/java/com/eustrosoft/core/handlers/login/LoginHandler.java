@@ -40,15 +40,15 @@ public final class LoginHandler implements Handler {
         switch (loginRequestBlock.getR()) {
             case REQUEST_LOGIN:
                 login(loginRequestBlock);
-                responseBlock.setErrMsg("Login success!");
+                responseBlock.setM("Login success!");
                 break;
             case REQUEST_LOGOUT:
                 logout(loginRequestBlock);
-                responseBlock.setErrMsg("Logout success!");
+                responseBlock.setM("Logout success!");
                 break;
             default:
                 responseBlock.setE(404);
-                responseBlock.setErrMsg("Not yet implemented.");
+                responseBlock.setM("Not yet implemented.");
                 break;
         }
         return responseBlock;

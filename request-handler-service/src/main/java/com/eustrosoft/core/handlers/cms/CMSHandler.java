@@ -68,13 +68,13 @@ public final class CMSHandler implements Handler {
         CMSRequestBlock cmsRequestBlock = (CMSRequestBlock) requestBlock;
         CMSResponseBlock cmsResponseBlock = new CMSResponseBlock();
         cmsResponseBlock.setE(0);
-        cmsResponseBlock.setErrMsg("Ok.");
+        cmsResponseBlock.setM("Ok.");
         String original = cmsRequestBlock.getPath();
         String path = postProcessPath(original);
         String from = postProcessPath(cmsRequestBlock.getFrom());
         String to = postProcessPath(cmsRequestBlock.getTo());
         String requestType = cmsRequestBlock.getR();
-        cmsResponseBlock.setResponseType(requestType);
+        cmsResponseBlock.setR(requestType);
         switch (requestType) {
             case REQUEST_VIEW:
                 if (original == null || original.isEmpty() || original.equalsIgnoreCase(SEPARATOR)) {
@@ -123,11 +123,11 @@ public final class CMSHandler implements Handler {
                     throw new Exception("This functionality is not implemented for database.");
                 }
                 FileTicket downloadPathDetails = getFileTicket(requestBlock);
-                cmsResponseBlock.setErrMsg(downloadPathDetails.getTicket());
+                cmsResponseBlock.setM(downloadPathDetails.getTicket());
                 break;
             case REQUEST_RENAME:
                 cmsResponseBlock.setE(ERR_UNSUPPORTED);
-                cmsResponseBlock.setErrMsg("This method is deprecated. Use move instead.");
+                cmsResponseBlock.setM("This method is deprecated. Use move instead.");
                 break;
             case REQUEST_DOWNLOAD:
                 if (cmsDataSource instanceof DBDataSource) {
@@ -137,7 +137,7 @@ public final class CMSHandler implements Handler {
                 break;
             default:
                 cmsResponseBlock.setE(404);
-                cmsResponseBlock.setErrMsg("Not yet implemented.");
+                cmsResponseBlock.setM("Not yet implemented.");
                 break;
         }
         return cmsResponseBlock;

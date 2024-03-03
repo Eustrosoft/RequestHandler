@@ -6,9 +6,6 @@
 
 package com.eustrosoft.core.tools;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -38,20 +35,6 @@ public final class Json {
             // ex.printStackTrace();
         }
         return value;
-    }
-
-    public static String fromObject(Object object) {
-        Gson gson = new Gson();
-        return gson.toJson(object);
-    }
-
-    public String toString() {
-        Gson gson = new Gson();
-        JsonObject object = new JsonObject();
-        for (Map.Entry<String, Object> entry : jsonMap.entrySet()) {
-            object.add(entry.getKey(), gson.toJsonTree(entry.getValue()));
-        }
-        return object.toString();
     }
 
     public static class JsonBuilder {

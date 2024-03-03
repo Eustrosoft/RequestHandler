@@ -6,8 +6,6 @@
 
 package com.eustrosoft.core.handlers.responses;
 
-import com.google.gson.JsonObject;
-
 public interface ResponseBlock {
     String getS();
 
@@ -19,13 +17,4 @@ public interface ResponseBlock {
 
     String getL();
 
-    default JsonObject toJsonObject() throws Exception {
-        JsonObject object = new JsonObject();
-        object.addProperty("s", getS());
-        object.addProperty("e", getE());
-        object.addProperty("r", getR());
-        object.addProperty("m", getM());
-        object.addProperty("l", getL());
-        return object;
-    }
 }

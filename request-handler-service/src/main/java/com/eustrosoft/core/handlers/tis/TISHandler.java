@@ -42,9 +42,9 @@ public final class TISHandler implements Handler {
                     throw new Exception("This functionality is not implemented.");
             }
             resp.setE(ERR_OK);
-            resp.setErrMsg(MSG_OK);
+            resp.setM(MSG_OK);
         } catch (Exception ex) {
-            resp.setErrMsg(ex.getMessage());
+            resp.setM(ex.getMessage());
             resp.setE(ERR_UNEXPECTED);
         }
         return resp;
