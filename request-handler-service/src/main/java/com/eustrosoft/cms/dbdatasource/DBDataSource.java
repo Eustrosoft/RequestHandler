@@ -89,12 +89,8 @@ public class DBDataSource implements CMSDataSource {
         for (int i = 0; i < objects.size(); i++) {
             CMSObject cmsObject = objects.get(i);
             if (cmsObject instanceof CMSGeneralObject) {
-                if (cmsObject.getType().equals(CMSType.DIRECTORY)) {
-                    ((CMSGeneralObject) cmsObject).setSpace(0L);
-                } else if (cmsObject.getType().equals(CMSType.FILE)) {
-                    ((CMSGeneralObject) cmsObject)
-                            .setSpace(functions.getFileLength(((CMSGeneralObject) cmsObject).getFileId()));
-                }
+                ((CMSGeneralObject) cmsObject)
+                        .setSpace(functions.getFileLength(((CMSGeneralObject) cmsObject).getFileId()));
             }
         }
     }
