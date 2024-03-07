@@ -564,18 +564,21 @@ public class DBDataSource implements CMSDataSource {
     @Override
     public boolean delete(String path) throws Exception {
         String fullPath = getFullPath(path);
-        String dirName = getLastLevelFromPath(fullPath);
+        String dirName = getLastLevelFromPath(path);
         String parentPath = getParentPath(fullPath);
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
 
         FSDao fsDao = new FSDao(poolConnection);
         ExecStatus open = fsDao.openObject("FS.F", parentZoid);
         if (!open.isOk()) {
+            fsDao.rollbackObject("FS.F", open.getZoid(), open.getZver(), 'Y');
             throw new Exception(open.getCaption());
         }
-        ResultSet directoryByNameAndId = fsDao.getDirectoryByNameAndId(parentZoid, dirName);
-        ExecStatus commit = null;
+        ExecStatus commit;
+        ResultSet directoryByNameAndId = null;
         try {
+            directoryByNameAndId = fsDao.getDirectoryByNameAndId(parentZoid, dirName);
+
             directoryByNameAndId.next();
             long zrid = directoryByNameAndId.getLong(ZRID);
             ExecStatus delete = fsDao.deleteFDir(

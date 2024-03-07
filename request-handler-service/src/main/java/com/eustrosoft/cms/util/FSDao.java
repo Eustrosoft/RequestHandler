@@ -203,15 +203,10 @@ public final class FSDao extends BasicDAO {
     public ResultSet getDirectoryByNameAndId(Long dirId, String dirName) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = %s", ZOID, dirId, NAME, dirName))
-                        .buildWithSemicolon()
-                        .toString()
+                "SELECT * FROM FS.V_FDir WHERE ZOID = ? AND fname = ?"
         );
+        preparedStatement.setLong(1, dirId);
+        preparedStatement.setString(2, dirName);
         if (preparedStatement != null) {
             return preparedStatement.executeQuery();
         }
