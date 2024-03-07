@@ -262,7 +262,7 @@ public class JsonParser {
         if (obj instanceof Number) {
             finalString = getNumberValue((Number) obj);
         } else if (obj instanceof CharSequence) {
-            finalString = String.format("\"%s\"", obj.toString());
+            finalString = String.format("\"%s\"", obj.toString().replaceAll("\"", "\\\\\""));
         } else if (obj instanceof Boolean) {
             finalString = String.format("%s", obj.toString());
         } else {

@@ -112,17 +112,23 @@ public class DBDataSource implements CMSDataSource {
         String filePath = file.getPath();
         Long parentZoid = Long.parseLong(filePath.substring(filePath.lastIndexOf(SEPARATOR) + 1));
         String scopeZoid = getFirstLevelFromPath(filePath);
-        FSDao FSDao = new FSDao(poolConnection);
-        ExecStatus opened = FSDao.openObject("FS.F", parentZoid);
+        FSDao fsDao = new FSDao(poolConnection);
+        ExecStatus opened = fsDao.openObject("FS.F", parentZoid);
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
-        ExecStatus objectInScope = FSDao.createObjectInScope("FS.F", scopeZoid);
+        ExecStatus objectInScope = fsDao.createObjectInScope("FS.F", scopeZoid);
         if (!objectInScope.isOk()) {
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
             throw new Exception(objectInScope.getCaption());
         }
         String fileName = filePath.substring(filePath.lastIndexOf(SEPARATOR));
-        ExecStatus fFile = FSDao.createFFile(
+        ExecStatus fFile = fsDao.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
                 null,
@@ -130,14 +136,26 @@ public class DBDataSource implements CMSDataSource {
                 fileName
         );
         if (!fFile.isOk()) {
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
             throw new Exception(fFile.getCaption()); // TODO
         }
-        ExecStatus commited = FSDao.commitObject(
+        ExecStatus commited = fsDao.commitObject(
                 "FS.F",
                 opened.getZoid(),
                 opened.getZver()
         );
         if (!commited.isOk()) {
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
             throw new Exception(commited.getCaption()); // TODO
         }
         return commited.getZoid().toString();
@@ -214,6 +232,12 @@ public class DBDataSource implements CMSDataSource {
                         params.getDescription()
                 );
                 if (!fDir.isOk()) {
+                    fsDao.rollbackObject(
+                            "FS.F",
+                            opened.getZoid(),
+                            opened.getZver(),
+                            'Y'
+                    );
                     throw new Exception(fDir.getCaption());
                 }
                 ExecStatus commitFDir = fsDao.commitObject(
@@ -234,6 +258,12 @@ public class DBDataSource implements CMSDataSource {
                         params.getDescription()
                 );
                 if (!fFile.isOk()) {
+                    fsDao.rollbackObject(
+                            "FS.F",
+                            opened.getZoid(),
+                            opened.getZver(),
+                            'Y'
+                    );
                     throw new Exception(fFile.getCaption());
                 }
                 filePid = fFile.getZoid().toString();
@@ -272,16 +302,16 @@ public class DBDataSource implements CMSDataSource {
         String parentPath = getFullPath(getParentPath(path));
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
         String scopeZoid = getFirstLevelFromPath(parentPath);
-        FSDao FSDao = new FSDao(poolConnection);
-        ExecStatus opened = FSDao.openObject("FS.F", parentZoid);
+        FSDao fsDao = new FSDao(poolConnection);
+        ExecStatus opened = fsDao.openObject("FS.F", parentZoid);
         if (!opened.isOk()) {
             throw new Exception(opened.getCaption());
         }
         String slvl = securityLevel == null ? null : securityLevel.toString();
-        ExecStatus objectInScope = FSDao.createObjectInScope("FS.F", scopeZoid, slvl);
+        ExecStatus objectInScope = fsDao.createObjectInScope("FS.F", scopeZoid, slvl);
 
         String dirName = path.substring(path.lastIndexOf(SEPARATOR) + 1);
-        ExecStatus fFile = FSDao.createFFile(
+        ExecStatus fFile = fsDao.createFFile(
                 objectInScope.getZoid().toString(),
                 objectInScope.getZver().toString(),
                 null,
@@ -291,17 +321,29 @@ public class DBDataSource implements CMSDataSource {
                 description
         );
         if (!fFile.isOk()) {
-            throw new Exception(fFile.getCaption()); // TODO
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
+            throw new Exception(fFile.getCaption());
         }
-        ExecStatus commited = FSDao.commitObject(
+        ExecStatus commited = fsDao.commitObject(
                 "FS.F",
                 objectInScope.getZoid(),
                 objectInScope.getZver()
         );
         if (!commited.isOk()) {
-            throw new Exception(commited.getCaption()); // TODO
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
+            throw new Exception(commited.getCaption());
         }
-        ExecStatus fDir = FSDao.createFDir(
+        ExecStatus fDir = fsDao.createFDir(
                 opened.getZoid(),
                 opened.getZver(),
                 fFile.getZver(),
@@ -310,15 +352,27 @@ public class DBDataSource implements CMSDataSource {
                 description
         );
         if (!fDir.isOk()) {
-            throw new Exception(fDir.getCaption()); // TODO
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
+            throw new Exception(fDir.getCaption());
         }
-        ExecStatus objectCommited = FSDao.commitObject(
+        ExecStatus objectCommited = fsDao.commitObject(
                 "FS.F",
                 opened.getZoid(),
                 opened.getZver()
         );
         if (!objectCommited.isOk()) {
-            throw new Exception(objectCommited.getCaption()); // TODO
+            fsDao.rollbackObject(
+                    "FS.F",
+                    opened.getZoid(),
+                    opened.getZver(),
+                    'Y'
+            );
+            throw new Exception(objectCommited.getCaption());
         }
         return objectCommited.getZoid().toString();
     }

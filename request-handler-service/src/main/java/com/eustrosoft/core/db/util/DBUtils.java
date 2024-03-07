@@ -56,6 +56,15 @@ public final class DBUtils {
         }
     }
 
+    public static void setCharOrNull(PreparedStatement preparedStatement, int pos, Character chr)
+            throws SQLException {
+        if (chr == null || chr.toString().isEmpty()) {
+            preparedStatement.setNull(pos, Types.CHAR);
+        } else {
+            preparedStatement.setString(pos, chr.toString());
+        }
+    }
+
     public static String getStrValueOrEmpty(ResultSet resultSet, String colName) {
         String val = "";
         try {

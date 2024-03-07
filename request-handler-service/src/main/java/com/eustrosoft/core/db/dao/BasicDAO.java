@@ -122,6 +122,19 @@ public class BasicDAO {
         return execute(preparedStatement);
     }
 
+    // Character = 'Y'/'N'
+    public ExecStatus rollbackObject(String type, Long objectZoid, Long objectVer, Character force) throws Exception {
+        Connection connection = poolConnection.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT TIS.rollback_object(?, ?, ?, ?)"
+        );
+        setStringOrNull(preparedStatement, 1, type);
+        setLongOrNull(preparedStatement, 2, objectZoid);
+        setLongOrNull(preparedStatement, 3, objectVer);
+        setCharOrNull(preparedStatement, 4, force);
+        return execute(preparedStatement);
+    }
+
     public ExecStatus setZLvl(String type, Long objectZoid, Long objectVer, Short zlvl) throws Exception {
         Connection connection = poolConnection.get();
         PreparedStatement preparedStatement = connection.prepareStatement(
