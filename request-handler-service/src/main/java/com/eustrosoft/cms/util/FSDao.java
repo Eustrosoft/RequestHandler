@@ -208,7 +208,7 @@ public final class FSDao extends BasicDAO {
                         .all()
                         .from()
                         .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = %s", ZOID, dirId, FILE_ID, dirName))
+                        .where(String.format("%s = %s and %s = %s", ZOID, dirId, NAME, dirName))
                         .buildWithSemicolon()
                         .toString()
         );

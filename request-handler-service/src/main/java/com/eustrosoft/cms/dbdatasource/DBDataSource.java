@@ -563,9 +563,9 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public boolean delete(String path) throws Exception {
-        path = getFullPath(path);
-        String dirName = getLastLevelFromPath(path);
-        String parentPath = getParentPath(path);
+        String fullPath = getFullPath(path);
+        String dirName = getLastLevelFromPath(fullPath);
+        String parentPath = getParentPath(fullPath);
         Long parentZoid = Long.parseLong(getLastLevelFromPath(parentPath));
 
         FSDao fsDao = new FSDao(poolConnection);
@@ -587,9 +587,9 @@ public class DBDataSource implements CMSDataSource {
                 throw new Exception(delete.getCaption());
             }
         } catch (Exception ex) {
+            fsDao.rollbackObject("FS.F", open.getZoid(), open.getZver(), 'Y');
             throw new Exception(ex.getMessage());
         } finally {
-            // todo: rollback
             commit = fsDao.commitObject("FS.F", parentZoid, open.getZver());
             directoryByNameAndId.close();
         }
