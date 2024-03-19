@@ -43,15 +43,7 @@ import static com.eustrosoft.cms.util.FileUtils.getLastLevelFromPath;
 import static com.eustrosoft.cms.util.FileUtils.getParentPath;
 import static com.eustrosoft.cms.util.FileUtils.getPathLvl;
 import static com.eustrosoft.cms.util.FileUtils.getPathParts;
-import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
-import static com.eustrosoft.core.constants.DBConstants.F_NAME;
-import static com.eustrosoft.core.constants.DBConstants.ID;
-import static com.eustrosoft.core.constants.DBConstants.NAME;
-import static com.eustrosoft.core.constants.DBConstants.SEPARATOR;
-import static com.eustrosoft.core.constants.DBConstants.ZLVL;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
-import static com.eustrosoft.core.constants.DBConstants.ZRID;
-import static com.eustrosoft.core.constants.DBConstants.ZSID;
+import static com.eustrosoft.core.constants.DBConstants.*;
 import static com.eustrosoft.core.db.util.DBUtils.getFid;
 import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
 import static com.eustrosoft.core.db.util.DBUtils.getType;
@@ -625,12 +617,14 @@ public class DBDataSource implements CMSDataSource {
                     Long zoid = getZoid(resultSet);
                     String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
+                    String mimeType = getStrValueOrEmpty(resultSet, MIME_TYPE);
                     String finalName = fname.isEmpty() ? name : fname;
                     String fid = getFid(resultSet);
                     CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
                             .description(descr)
                             .fullPath(new File(fullPath, finalName).getPath())
                             .fileName(finalName)
+                            .mimeType(mimeType)
                             .type(type);
                     try {
                         builder.securityLevel(Integer.valueOf(zlvl, 10));

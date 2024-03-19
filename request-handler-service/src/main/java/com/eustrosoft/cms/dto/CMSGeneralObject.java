@@ -26,6 +26,7 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
     private String description;
     private Long fileId;
     private Date modified;
+    private String mimeType;
 
     public CMSGeneralObject(String extension, String fileName, String fullPath, List<String> links,
                             Long space, Integer securityLevel, String hash, CMSType type, String description) {
@@ -38,6 +39,14 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
         this.hash = hash;
         this.type = type;
         this.description = description;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     public String getExtension() {
@@ -156,8 +165,14 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
         private Long zsid;
         private Short zlvl;
         private String created;
+        private String mimeType;
 
         private CMSGeneralObjectBuilder() {
+        }
+
+        public CMSGeneralObjectBuilder mimeType(String mimeType) {
+            this.mimeType = mimeType;
+            return this;
         }
 
         public CMSGeneralObjectBuilder extension(String extension) {
@@ -246,7 +261,8 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
         }
 
         public CMSGeneralObject build() {
-            CMSGeneralObject cMSGeneralObject = new CMSGeneralObject(extension, fileName, fullPath, links, space, securityLevel, hash, type, description);
+            CMSGeneralObject cMSGeneralObject
+                    = new CMSGeneralObject(extension, fileName, fullPath, links, space, securityLevel, hash, type, description);
             cMSGeneralObject.setFileId(fileId);
             cMSGeneralObject.setModified(modified);
             cMSGeneralObject.setZoid(zoid);
@@ -255,6 +271,7 @@ public class CMSGeneralObject extends DBObject implements CMSObject {
             cMSGeneralObject.setZsid(zsid);
             cMSGeneralObject.setZlvl(zlvl);
             cMSGeneralObject.setCreated(created);
+            cMSGeneralObject.setMimeType(mimeType);
             return cMSGeneralObject;
         }
     }
