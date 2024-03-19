@@ -19,7 +19,10 @@ import java.util.Vector;
 
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
-import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.core.constants.DBConstants.F_NAME;
+import static com.eustrosoft.core.constants.DBConstants.NAME;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
 
 public final class FSDao extends BasicDAO {
@@ -309,24 +312,18 @@ public final class FSDao extends BasicDAO {
             fDir.setZver(fDirOpen.getZver());
             if (status.isOk() && fDirOpen.isOk()) {
                 Connection connection = getPoolConnection().get();
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        Query.builder()
-                                .select()
-                                .add("FS.update_FDir")
-                                .leftBracket()
-                                .add(fDir.toUpdateString())
-                                .rightBracket()
-                                .buildWithSemicolon()
-                                .toString()
-                );
+                PreparedStatement statement = fDir.toUpdatePrepareStatement(connection);
                 ExecStatus updatedStatus = new ExecStatus();
-                if (preparedStatement != null) {
-                    ResultSet resultSet = preparedStatement.executeQuery();
+                if (statement != null) {
+                    ResultSet resultSet = statement.executeQuery();
                     updatedStatus.fillFromResultSet(resultSet);
-                    preparedStatement.close();
+                    statement.close();
                     resultSet.close();
                 }
             }
+        } catch (Exception exception) {
+            rollbackObject("FS.F", status.getZoid(), status.getZver());
+            rollbackObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
         } finally {
             if (status != null) {
                 commitObject("FS.F", status.getZoid(), status.getZver());

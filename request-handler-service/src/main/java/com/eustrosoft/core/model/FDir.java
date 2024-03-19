@@ -8,10 +8,17 @@ package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.model.interfaces.Updatable;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.core.constants.DBConstants.FILE_ID;
+import static com.eustrosoft.core.constants.DBConstants.F_NAME;
+import static com.eustrosoft.core.constants.DBConstants.MIME_TYPE;
+import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
 
 public class FDir extends DBObject implements Updatable {
     private Long fileId;
@@ -84,6 +91,21 @@ public class FDir extends DBObject implements Updatable {
                 mimeType,
                 description
         );
+    }
+
+    public PreparedStatement toUpdatePrepareStatement(Connection connection) throws Exception {
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT FS.update_FDir(?, ?, ?, ?, ?, ?, ?)"
+        );
+        setLongOrNull(statement, 1, getZoid());
+        setLongOrNull(statement, 2, getZver());
+        setLongOrNull(statement, 3, getZrid());
+        setLongOrNull(statement, 4, getFileId());
+        setLongOrNull(statement, 5, getFileId());
+        setStringOrNull(statement, 6, getFileName());
+        setStringOrNull(statement, 7, getMimeType());
+        setStringOrNull(statement, 8, getDescription());
+        return statement;
     }
 }
 

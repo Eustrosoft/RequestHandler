@@ -16,7 +16,10 @@ import java.sql.SQLException;
 
 import static com.eustrosoft.core.constants.DBConstants.ZOID;
 import static com.eustrosoft.core.constants.DBConstants.ZVER;
-import static com.eustrosoft.core.db.util.DBUtils.*;
+import static com.eustrosoft.core.db.util.DBUtils.setCharOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setShortOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
 
 public class BasicDAO {
     private final QDBPConnection poolConnection;
@@ -120,6 +123,10 @@ public class BasicDAO {
         setLongOrNull(preparedStatement, 2, objectZoid);
         setLongOrNull(preparedStatement, 3, objectVer);
         return execute(preparedStatement);
+    }
+
+    public ExecStatus rollbackObject(String type, Long objectZoid, Long objectVer) throws Exception {
+        return rollbackObject(type, objectZoid, objectVer, 'Y');
     }
 
     // Character = 'Y'/'N'
