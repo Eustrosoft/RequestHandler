@@ -18,8 +18,9 @@ public class HexFileParams {
     private Long chunkNumber;
     private Long chunkCount;
     private Long chunkSize;
+    private String ext;
 
-    public HexFileParams(String destination, String recordId, String recordVer, String filePid, String hex, String crc32, String description, Integer securityLevel, Long chunkNumber, Long chunkCount, Long chunkSize) {
+    public HexFileParams(String destination, String recordId, String recordVer, String filePid, String hex, String crc32, String description, Integer securityLevel, Long chunkNumber, Long chunkCount, Long chunkSize, String ext) {
         this.destination = destination;
         this.recordId = recordId;
         this.recordVer = recordVer;
@@ -31,9 +32,18 @@ public class HexFileParams {
         this.chunkNumber = chunkNumber;
         this.chunkCount = chunkCount;
         this.chunkSize = chunkSize;
+        this.ext = ext;
     }
 
     public HexFileParams() {
+    }
+
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
     }
 
     public String getDestination() {

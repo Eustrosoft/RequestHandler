@@ -114,7 +114,8 @@ public class HexFileHandler implements Handler {
                         requestBl.getSecurityLevel(),
                         requestBl.getChunkNumber(),
                         requestBl.getChunkCount(),
-                        CHUNK_SIZE
+                        CHUNK_SIZE,
+                        requestBl.getExt()
                 )
         );
         fileResult.setFilePid(result.getFilePid());

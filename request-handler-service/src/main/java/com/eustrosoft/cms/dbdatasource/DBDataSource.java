@@ -19,10 +19,12 @@ import com.eustrosoft.cms.util.DBStatements;
 import com.eustrosoft.cms.util.FSDao;
 import com.eustrosoft.core.db.ExecStatus;
 import com.eustrosoft.core.model.FDir;
+import com.eustrosoft.core.providers.MimeType;
 import org.eustrosoft.qdbp.QDBPConnection;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -133,7 +135,8 @@ public class DBDataSource implements CMSDataSource {
                 objectInScope.getZver().toString(),
                 null,
                 FileType.FILE,
-                fileName
+                fileName,
+                MimeType.getMimeTypeByFileName(fileName)
         );
         if (!fFile.isOk()) {
             fsDao.rollbackObject(
@@ -183,7 +186,7 @@ public class DBDataSource implements CMSDataSource {
         Long chunkCount = params.getChunkCount();
         Long chunkSize = params.getChunkSize();
 
-        Long lastLvlPath = Long.parseLong(getLastLevelFromPath(new File(dest).getPath()));
+        Long lastLvlPath = Long.parseLong(getLastLevelFromPath(Paths.get(dest).toUri().toString()));
         FSDao fsDao = new FSDao(poolConnection);
         ResultSet selectObject = fsDao.selectObject(lastLvlPath);
         Long zoid = null;
@@ -229,6 +232,7 @@ public class DBDataSource implements CMSDataSource {
                         zoid,
                         objectInScope.getZoid(),
                         fileName,
+                        MimeType.getMimeTypeByFileName(fileName),
                         params.getDescription()
                 );
                 if (!fDir.isOk()) {
@@ -254,7 +258,8 @@ public class DBDataSource implements CMSDataSource {
                         null,
                         FileType.FILE,
                         fileName,
-                        String.valueOf(params.getSecurityLevel()),
+                        MimeType.getMimeTypeByFileName(fileName),
+                        params.getSecurityLevel(),
                         params.getDescription()
                 );
                 if (!fFile.isOk()) {
@@ -317,7 +322,8 @@ public class DBDataSource implements CMSDataSource {
                 null,
                 FileType.DIRECTORY,
                 dirName,
-                slvl,
+                null,
+                securityLevel,
                 description
         );
         if (!fFile.isOk()) {

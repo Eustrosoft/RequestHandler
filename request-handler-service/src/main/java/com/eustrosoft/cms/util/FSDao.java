@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
+import static com.eustrosoft.core.db.util.DBUtils.setByteaOrNull;
 import static com.eustrosoft.core.db.util.DBUtils.setIntOrNull;
 import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
 import static com.eustrosoft.core.db.util.DBUtils.setNull;
@@ -62,23 +63,24 @@ public final class FSDao extends BasicDAO {
 
 
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
-                                  FileType type, String name) throws SQLException {
-        return createFFile(objectZoid, objectVer, parentVer, FileType.FILE, name, null, null);
+                                  FileType type, String name, String mimeType) throws SQLException {
+        return createFFile(objectZoid, objectVer, parentVer, type, name, mimeType,null, null);
     }
 
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
-                                  FileType type, String name, String securityLevel, String description) throws SQLException {
+                                  FileType type, String name, String mimeType,
+                                  Integer securityLevel, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement statement
                 = connection.prepareStatement("SELECT FS.create_FFile(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         setLongOrNull(statement, 1, Long.parseLong(objectZoid));
         setLongOrNull(statement, 2, Long.parseLong(objectVer));
-        setLongOrNull(statement, 3, Long.parseLong(parentVer));
+        setLongOrNull(statement, 3, parentVer == null ? null : Long.parseLong(parentVer));
         setStringOrNull(statement, 4, name);
         setStringOrNull(statement, 5, type.getValue());
         setStringOrNull(statement, 6, "N");
-        setNull(statement, 7, Types.VARCHAR);
-        setNull(statement, 8, Types.VARCHAR);
+        setStringOrNull(statement, 7, mimeType);
+        setStringOrNull(statement, 8, description);
         setNull(statement, 9, Types.BIGINT);
         setNull(statement, 10, Types.BIGINT);
         setNull(statement, 11, Types.VARCHAR);
@@ -100,6 +102,11 @@ public final class FSDao extends BasicDAO {
 
     public ExecStatus createFDir(Long objectZoid, Long objectVer, Long parentZrid,
                                  Long fileZoid, String name, String description) throws SQLException {
+        return createFDir(objectZoid, objectVer, parentZrid, fileZoid, name, null, description);
+    }
+
+    public ExecStatus createFDir(Long objectZoid, Long objectVer, Long parentZrid,
+                                 Long fileZoid, String name, String mimetype, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement statement
                 = connection.prepareStatement("SELECT FS.create_FDir(?, ?, ?, ?, ?, ?, ?)");
@@ -108,7 +115,8 @@ public final class FSDao extends BasicDAO {
         setLongOrNull(statement, 3, 1L);
         setLongOrNull(statement, 4, fileZoid);
         setStringOrNull(statement, 5, name);
-        setStringOrNull(statement, 6, description);
+        setStringOrNull(statement, 6, mimetype);
+        setStringOrNull(statement, 7, description);
         ExecStatus status = new ExecStatus();
         if (statement != null) {
             ResultSet resultSet = statement.executeQuery();
@@ -126,7 +134,7 @@ public final class FSDao extends BasicDAO {
         setLongOrNull(statement, 1, Long.parseLong(zoid));
         setLongOrNull(statement, 2, Long.parseLong(zver));
         setLongOrNull(statement, 3, Long.parseLong(zpid));
-        setStringOrNull(statement, 4, String.format("\\x%s", hex));
+        setByteaOrNull(statement, 4, hex);
         setLongOrNull(statement, 5, Long.parseLong(chunk));
         setLongOrNull(statement, 6, Long.parseLong(chunkSize));
         setIntOrNull(statement, 7, Integer.parseInt(crc32.substring(3), 16));
