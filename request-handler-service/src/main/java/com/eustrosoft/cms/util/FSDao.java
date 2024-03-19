@@ -14,16 +14,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
 
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
-import static com.eustrosoft.core.constants.DBConstants.FILE_ID;
-import static com.eustrosoft.core.constants.DBConstants.F_NAME;
-import static com.eustrosoft.core.constants.DBConstants.NAME;
-import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.db.util.DBUtils.setIntOrNull;
 import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
+import static com.eustrosoft.core.db.util.DBUtils.setNull;
+import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
 
 public final class FSDao extends BasicDAO {
 
@@ -64,61 +63,35 @@ public final class FSDao extends BasicDAO {
 
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
                                   FileType type, String name) throws SQLException {
-        Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("FS.create_FFile")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
-                                objectZoid,
-                                objectVer,
-                                parentVer,
-                                name,
-                                type.getValue(),
-                                "N" // TODO
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
-        );
-        ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            status.fillFromResultSet(resultSet);
-            preparedStatement.close();
-            resultSet.close();
-        }
-        return status;
+        return createFFile(objectZoid, objectVer, parentVer, FileType.FILE, name, null, null);
     }
 
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
                                   FileType type, String name, String securityLevel, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("FS.create_FFile")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s, '%s', '%s', '%s', null, null, null, null, null, null, null, null, null, null",
-                                objectZoid,
-                                objectVer,
-                                parentVer,
-                                name,
-                                type.getValue(),
-                                "N" // TODO
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
-        );
+        PreparedStatement statement
+                = connection.prepareStatement("SELECT FS.create_FFile(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        setLongOrNull(statement, 1, Long.parseLong(objectZoid));
+        setLongOrNull(statement, 2, Long.parseLong(objectVer));
+        setLongOrNull(statement, 3, Long.parseLong(parentVer));
+        setStringOrNull(statement, 4, name);
+        setStringOrNull(statement, 5, type.getValue());
+        setStringOrNull(statement, 6, "N");
+        setNull(statement, 7, Types.VARCHAR);
+        setNull(statement, 8, Types.VARCHAR);
+        setNull(statement, 9, Types.BIGINT);
+        setNull(statement, 10, Types.BIGINT);
+        setNull(statement, 11, Types.VARCHAR);
+        setNull(statement, 12, Types.VARCHAR);
+        setNull(statement, 13, Types.BIGINT);
+        setNull(statement, 14, Types.BIGINT);
+        setNull(statement, 15, Types.VARCHAR);
+        setNull(statement, 16, Types.VARCHAR);
         ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery();
             status.fillFromResultSet(resultSet);
-            preparedStatement.close();
+            statement.close();
             resultSet.close();
         }
         return status;
@@ -128,58 +101,38 @@ public final class FSDao extends BasicDAO {
     public ExecStatus createFDir(Long objectZoid, Long objectVer, Long parentZrid,
                                  Long fileZoid, String name, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .add("FS.create_FDir")
-                        .leftBracket()
-                        .add(String.format(
-                                "%s, %s, %s, %s, '%s', null, '%s'",
-                                objectZoid,
-                                objectVer,
-                                "1", // TODO
-                                fileZoid,
-                                name,
-                                description
-                        ))
-                        .rightBracket()
-                        .buildWithSemicolon()
-                        .toString()
-        );
+        PreparedStatement statement
+                = connection.prepareStatement("SELECT FS.create_FDir(?, ?, ?, ?, ?, ?, ?)");
+        setLongOrNull(statement, 1, objectZoid);
+        setLongOrNull(statement, 2, objectVer);
+        setLongOrNull(statement, 3, 1L);
+        setLongOrNull(statement, 4, fileZoid);
+        setStringOrNull(statement, 5, name);
+        setStringOrNull(statement, 6, description);
         ExecStatus status = new ExecStatus();
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery();
             status.fillFromResultSet(resultSet);
-            preparedStatement.close();
+            statement.close();
             resultSet.close();
         }
         return status;
     }
 
     public ExecStatus createFBlob(String zoid, String zver, String zpid,
-                                  String hex, String chunk, String shunkSize, String crc32) throws SQLException {
+                                  String hex, String chunk, String chunkSize, String crc32) throws SQLException {
         Connection connection = getPoolConnection().get();
-        String query = Query.builder()
-                .select()
-                .add("FS.create_FBlob")
-                .leftBracket()
-                .add(String.format(
-                        "%s, %s, %s, '\\x%s', %s, %s, %s",
-                        zoid,
-                        zver,
-                        zpid,
-                        hex,
-                        chunk,
-                        shunkSize,
-                        Integer.parseInt(crc32.substring(3), 16)
-                ))
-                .rightBracket()
-                .buildWithSemicolon()
-                .toString();
-        Statement statement = connection.createStatement();
+        PreparedStatement statement = connection.prepareStatement("SELECT FS.create_FBlob(?, ?, ?, ?, ?, ?, ?)");
+        setLongOrNull(statement, 1, Long.parseLong(zoid));
+        setLongOrNull(statement, 2, Long.parseLong(zver));
+        setLongOrNull(statement, 3, Long.parseLong(zpid));
+        setStringOrNull(statement, 4, String.format("\\x%s", hex));
+        setLongOrNull(statement, 5, Long.parseLong(chunk));
+        setLongOrNull(statement, 6, Long.parseLong(chunkSize));
+        setIntOrNull(statement, 7, Integer.parseInt(crc32.substring(3), 16));
         ExecStatus status = new ExecStatus();
         if (statement != null) {
-            ResultSet resultSet = statement.executeQuery(query);
+            ResultSet resultSet = statement.executeQuery();
             status.fillFromResultSet(resultSet);
             statement.close();
             resultSet.close();
@@ -227,23 +180,16 @@ public final class FSDao extends BasicDAO {
 
     public FFile getFFile(Long zoid, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("FS.V_FFile")
-                        .where(String.format("%s = %s and %s = '%s'", ZOID, zoid, NAME, name))
-                        .buildWithSemicolon()
-                        .toString()
-        );
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM FS.V_FFile WHERE zoid = ? AND name = ?");
+        setLongOrNull(statement, 1, zoid);
+        setStringOrNull(statement, 2, name);
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery();
             try {
                 resultSet.next();
                 return new FFile(resultSet);
             } finally {
-                preparedStatement.close();
+                statement.close();
                 resultSet.close();
             }
         }
@@ -252,23 +198,16 @@ public final class FSDao extends BasicDAO {
 
     public FDir getFDirByFileId(Long fileId, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = '%s'", FILE_ID, fileId, F_NAME, name))
-                        .buildWithSemicolon()
-                        .toString()
-        );
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM FS.V_FDir WHERE f_id = ? AND fname = ?");
+        setLongOrNull(statement, 1, fileId);
+        setStringOrNull(statement, 2, name);
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery();
             try {
                 boolean next = resultSet.next();
                 return new FDir(resultSet);
             } finally {
-                preparedStatement.close();
+                statement.close();
                 resultSet.close();
             }
         }
@@ -277,23 +216,16 @@ public final class FSDao extends BasicDAO {
 
     public FDir getFDir(Long zoid, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                Query.builder()
-                        .select()
-                        .all()
-                        .from()
-                        .add("FS.V_FDir")
-                        .where(String.format("%s = %s and %s = '%s'", ZOID, zoid, F_NAME, name))
-                        .buildWithSemicolon()
-                        .toString()
-        );
-        if (preparedStatement != null) {
-            ResultSet resultSet = preparedStatement.executeQuery();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM FS.V_FDir WHERE zoid = ? AND fname = ?");
+        setLongOrNull(statement, 1, zoid);
+        setStringOrNull(statement, 2, name);
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery();
             try {
                 resultSet.next();
                 return new FDir(resultSet);
             } finally {
-                preparedStatement.close();
+                statement.close();
                 resultSet.close();
             }
         }
@@ -321,16 +253,16 @@ public final class FSDao extends BasicDAO {
                     resultSet.close();
                 }
             }
+            commitObject("FS.F", status.getZoid(), status.getZver());
+            commitObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
         } catch (Exception exception) {
-            rollbackObject("FS.F", status.getZoid(), status.getZver());
-            rollbackObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
-        } finally {
-            if (status != null) {
-                commitObject("FS.F", status.getZoid(), status.getZver());
-            }
-            if (fDirOpen != null) {
-                commitObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
-            }
+            try {
+                rollbackObject("FS.F", status.getZoid(), status.getZver());
+            } catch (Exception ex) {}
+            try {
+                rollbackObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
+            } catch (Exception ex) {}
+            throw new IllegalArgumentException("Exception occurred while updating");
         }
     }
 

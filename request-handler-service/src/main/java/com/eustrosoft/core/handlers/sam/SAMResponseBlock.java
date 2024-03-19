@@ -6,6 +6,7 @@
 
 package com.eustrosoft.core.handlers.sam;
 
+import com.eustrosoft.core.dto.ScopeCreationDTO;
 import com.eustrosoft.core.handlers.responses.BasicResponse;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import static com.eustrosoft.core.constants.Constants.SUBSYSTEM_SAM;
 
 public final class SAMResponseBlock extends BasicResponse {
     private String data;
-    private List<Long> zsid;
+    private List<ScopeCreationDTO> scopes;
 
     public SAMResponseBlock() {
         super(SUBSYSTEM_SAM);
@@ -28,11 +29,11 @@ public final class SAMResponseBlock extends BasicResponse {
         this.data = data;
     }
 
-    public List<Long> getZsid() {
-        return zsid;
+    public List<ScopeCreationDTO> getScopes() {
+        return scopes;
     }
 
-    public void setZsid(List<Long> zsid) {
-        this.zsid = zsid;
+    public void setScopes(List<ScopeCreationDTO> scopes) {
+        this.scopes = scopes;
     }
 }

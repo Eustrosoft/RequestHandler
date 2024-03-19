@@ -59,7 +59,7 @@ public final class SAMHandler implements Handler {
                 respBlock.setData(dao.getUserLang());
                 break;
             case REQUEST_ZSID:
-                respBlock.setZsid(dao.getZsids(samRequestBlock.getType()));
+                respBlock.setScopes(dao.getZsids(samRequestBlock.getType()));
                 break;
             default:
                 respBlock.setE(ERR_UNEXPECTED);

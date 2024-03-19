@@ -1,6 +1,7 @@
 package com.eustrosoft.core.db.dao;
 
 import com.eustrosoft.core.db.util.DBUtils;
+import com.eustrosoft.core.dto.ScopeCreationDTO;
 import com.eustrosoft.core.model.user.User;
 import org.eustrosoft.qdbp.QDBPConnection;
 
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eustrosoft.core.constants.Constants.UNKNOWN;
+import static com.eustrosoft.core.constants.DBConstants.DESCRIPTION;
+import static com.eustrosoft.core.constants.DBConstants.NAME;
 import static com.eustrosoft.core.constants.DBConstants.SID;
 
 public class SamDAO extends BasicDAO {
@@ -158,19 +161,21 @@ public class SamDAO extends BasicDAO {
         return slvls;
     }
 
-    public List<Long> getZsids(String objectType) throws SQLException {
+    public List<ScopeCreationDTO> getZsids(String objectType) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM SAM.V_ScopeCurrentUserCreatea where obj_type = ?"
         );
         DBUtils.setStringOrNull(preparedStatement, 1, objectType);
-        List<Long> scopes = new ArrayList<>();
+        List<ScopeCreationDTO> scopes = new ArrayList<>();
         if (preparedStatement != null) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Long sid = resultSet.getLong(SID);
+                String name = resultSet.getString(NAME);
+                String description = resultSet.getString(DESCRIPTION);
                 if (sid != null) {
-                    scopes.add(sid);
+                    scopes.add(new ScopeCreationDTO(sid, name, description));
                 }
             }
             preparedStatement.close();

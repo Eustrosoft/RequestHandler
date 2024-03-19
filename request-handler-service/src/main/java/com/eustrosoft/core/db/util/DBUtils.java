@@ -13,7 +13,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static com.eustrosoft.core.constants.DBConstants.*;
+import static com.eustrosoft.core.constants.DBConstants.ID;
+import static com.eustrosoft.core.constants.DBConstants.SID;
+import static com.eustrosoft.core.constants.DBConstants.TYPE;
+import static com.eustrosoft.core.constants.DBConstants.ZOID;
+import static com.eustrosoft.core.constants.DBConstants.ZRID;
+import static com.eustrosoft.core.constants.DBConstants.ZSID;
 
 public final class DBUtils {
 
@@ -83,6 +88,11 @@ public final class DBUtils {
             // ex.printStackTrace();
         }
         return val;
+    }
+
+    public static void setNull(PreparedStatement preparedStatement, int pos, int type)
+            throws SQLException {
+        preparedStatement.setNull(pos, type);
     }
 
     public static CMSType getType(ResultSet resultSet, CMSType defaultValue) {
