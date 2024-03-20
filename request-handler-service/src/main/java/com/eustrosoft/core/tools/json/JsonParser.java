@@ -262,13 +262,21 @@ public class JsonParser {
         if (obj instanceof Number) {
             finalString = getNumberValue((Number) obj);
         } else if (obj instanceof CharSequence) {
-            finalString = String.format("\"%s\"", obj.toString().replaceAll("\"", "\\\\\""));
+            finalString = String.format("\"%s\"", processString((CharSequence) obj));
         } else if (obj instanceof Boolean) {
             finalString = String.format("%s", obj.toString());
         } else {
             finalString = parseObject(obj);
         }
         return finalString;
+    }
+
+    private String processString(CharSequence str) {
+        return str.toString().replaceAll("\"", "\\\\\"")
+                .replaceAll("\\n", "\\\\n")
+                .replaceAll("\\t", "\\\\t")
+                .replaceAll("\\r", "\\\\r");
+
     }
 
     private String getNumberValue(Number number) {
