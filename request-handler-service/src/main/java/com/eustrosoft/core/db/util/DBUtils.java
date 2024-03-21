@@ -149,7 +149,11 @@ public final class DBUtils {
         return zrid;
     }
 
-    public static String getFid(ResultSet resultSet) {
-        return getStrValueOrEmpty(resultSet, "f_id");
+    public static String getFidOrZoid(ResultSet resultSet) {
+        String fileId = getStrValueOrEmpty(resultSet, "f_id");
+        if (fileId.isEmpty()) {
+            return String.valueOf(getLongValueOrEmpty(resultSet, ZOID));
+        }
+        return fileId;
     }
 }

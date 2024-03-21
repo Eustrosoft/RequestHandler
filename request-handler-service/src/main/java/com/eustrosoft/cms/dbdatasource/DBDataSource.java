@@ -44,7 +44,7 @@ import static com.eustrosoft.cms.util.FileUtils.getParentPath;
 import static com.eustrosoft.cms.util.FileUtils.getPathLvl;
 import static com.eustrosoft.cms.util.FileUtils.getPathParts;
 import static com.eustrosoft.core.constants.DBConstants.*;
-import static com.eustrosoft.core.db.util.DBUtils.getFid;
+import static com.eustrosoft.core.db.util.DBUtils.getFidOrZoid;
 import static com.eustrosoft.core.db.util.DBUtils.getStrValueOrEmpty;
 import static com.eustrosoft.core.db.util.DBUtils.getType;
 import static com.eustrosoft.core.db.util.DBUtils.getZoid;
@@ -432,17 +432,13 @@ public class DBDataSource implements CMSDataSource {
             return true;
         }
         String fileName = getLastLevelFromPath(path);
-        //Long zoid = Long.parseLong(fileName);
-        List<CMSObject> content = getContent(path.substring(0, path.length() - fileName.length()));
-        Optional<CMSObject> first = content.stream().filter(c -> c.getFileName().equals(fileName)).findFirst();
-        if (first.isPresent()) {
-            FSDao fsDao = new FSDao(poolConnection);
-            FDir fDir = fsDao.getFDir(first.get().getZoid(), fileName);
-            if (Objects.nonNull(data.getDescription())) {
-                fDir.setDescription(data.getDescription());
-            }
-            fsDao.updateFDir(fDir);
+        Long zoid = Long.parseLong(getLastLevelFromPath(getFullPath(path)));
+        FSDao fsDao = new FSDao(poolConnection);
+        FDir fDir = fsDao.getFDir(zoid, fileName);
+        if (Objects.nonNull(data.getDescription())) {
+            fDir.setDescription(data.getDescription());
         }
+        fsDao.updateFDir(fDir);
         return true;
     }
 
@@ -499,12 +495,11 @@ public class DBDataSource implements CMSDataSource {
             copy(source, direction);
             delete(source);
         } else if (!lastLevelSource.equals(lastLevelDist)) {
-            List<CMSObject> content = getContent(sourcePath);
-            Optional<CMSObject> first = content.stream().filter(c -> c.getFileName().equals(lastLevelSource)).findFirst();
-            if (first.isPresent()) {
+            String zoid = getLastLevelFromPath(getFullPath(source));
+            if (!zoid.isEmpty()) {
                 FSDao fsDao = new FSDao(poolConnection);
                 fsDao.renameFile(
-                        first.get().getZoid(),
+                        Long.parseLong(zoid),
                         lastLevelSource,
                         lastLevelDist
                 );
@@ -614,12 +609,12 @@ public class DBDataSource implements CMSDataSource {
                     String fname = getStrValueOrEmpty(resultSet, F_NAME);
                     CMSType type = pathLvl < 2 ? CMSType.DIRECTORY : getType(resultSet);
                     Long sid = getZsid(resultSet);
-                    Long zoid = getZoid(resultSet);
                     String zlvl = getStrValueOrEmpty(resultSet, ZLVL);
                     String descr = getStrValueOrEmpty(resultSet, DESCRIPTION);
                     String mimeType = getStrValueOrEmpty(resultSet, MIME_TYPE);
                     String finalName = fname.isEmpty() ? name : fname;
-                    String fid = getFid(resultSet);
+                    String fid = getFidOrZoid(resultSet);
+                    Long zoid = getZoid(resultSet);
                     CMSGeneralObject.CMSGeneralObjectBuilder builder = CMSGeneralObject.builder()
                             .description(descr)
                             .fullPath(new File(fullPath, finalName).getPath())
@@ -636,6 +631,7 @@ public class DBDataSource implements CMSDataSource {
                     }
                     CMSGeneralObject build = builder.build();
                     build.setZoid(zoid);
+                    build.setZsid(sid);
                     objects.add(build);
                 } catch (Exception ex) {
                     // ex.printStackTrace();

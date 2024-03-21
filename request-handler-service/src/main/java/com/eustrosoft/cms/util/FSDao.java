@@ -222,10 +222,10 @@ public final class FSDao extends BasicDAO {
         return null;
     }
 
-    public FDir getFDir(Long zoid, String name) throws SQLException {
+    public FDir getFDir(Long fId, String name) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM FS.V_FDir WHERE zoid = ? AND fname = ?");
-        setLongOrNull(statement, 1, zoid);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM FS.V_FDir WHERE f_id = ? AND fname = ?");
+        setLongOrNull(statement, 1, fId);
         setStringOrNull(statement, 2, name);
         if (statement != null) {
             ResultSet resultSet = statement.executeQuery();

@@ -101,10 +101,9 @@ public class FDir extends DBObject implements Updatable {
         setLongOrNull(statement, 2, getZver());
         setLongOrNull(statement, 3, getZrid());
         setLongOrNull(statement, 4, getFileId());
-        setLongOrNull(statement, 5, getFileId());
-        setStringOrNull(statement, 6, getFileName());
-        setStringOrNull(statement, 7, getMimeType());
-        setStringOrNull(statement, 8, getDescription());
+        setStringOrNull(statement, 5, getFileName());
+        setStringOrNull(statement, 6, getMimeType());
+        setStringOrNull(statement, 7, getDescription());
         return statement;
     }
 }
