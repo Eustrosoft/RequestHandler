@@ -178,7 +178,7 @@ public final class FSDao extends BasicDAO {
     }
 
     public void renameFile(Long zoid, String name, String targetName) throws Exception {
-        FDir fDir = getFDir(zoid, name);
+        FDir fDir = getFDir(zoid);
         if (fDir == null) {
             throw new Exception("FDir was null while renaming");
         }
@@ -213,6 +213,24 @@ public final class FSDao extends BasicDAO {
             ResultSet resultSet = statement.executeQuery();
             try {
                 boolean next = resultSet.next();
+                return new FDir(resultSet);
+            } finally {
+                statement.close();
+                resultSet.close();
+            }
+        }
+        return null;
+    }
+
+
+    public FDir getFDir(Long zoid) throws SQLException {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM FS.V_FDir WHERE zoid = ?");
+        setLongOrNull(statement, 1, zoid);
+        if (statement != null) {
+            ResultSet resultSet = statement.executeQuery();
+            try {
+                resultSet.next();
                 return new FDir(resultSet);
             } finally {
                 statement.close();

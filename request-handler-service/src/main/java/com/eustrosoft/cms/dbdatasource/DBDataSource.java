@@ -397,7 +397,7 @@ public class DBDataSource implements CMSDataSource {
                     int columnCount = metaData.getColumnCount();
                     for (int i = 1; i <= columnCount; i++) {
                         String columnName = metaData.getColumnName(i);
-                        if (columnName.equals("f_id")) {
+                        if (columnName.equals("zoid")) {
                             String columnVal = resultSet.getString(i);
                             if (columnVal == null || columnName.isEmpty()) {
                                 throw new Exception("f_id was null for one of the files in path.");
@@ -431,10 +431,10 @@ public class DBDataSource implements CMSDataSource {
         if (isEmpty(path) || data.getDescription() == null) {
             return true;
         }
-        String fileName = getLastLevelFromPath(path);
-        Long fId = Long.parseLong(getLastLevelFromPath(getFullPath(path)));
+        //String fileName = getLastLevelFromPath(path);
+        Long zoid = Long.parseLong(getLastLevelFromPath(getFullPath(path)));
         FSDao fsDao = new FSDao(poolConnection);
-        FDir fDir = fsDao.getFDir(fId, fileName);
+        FDir fDir = fsDao.getFDir(zoid);
         if (Objects.nonNull(data.getDescription())) {
             fDir.setDescription(data.getDescription());
         }
