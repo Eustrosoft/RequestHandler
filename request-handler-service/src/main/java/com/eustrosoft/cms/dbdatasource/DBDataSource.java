@@ -397,7 +397,7 @@ public class DBDataSource implements CMSDataSource {
                     int columnCount = metaData.getColumnCount();
                     for (int i = 1; i <= columnCount; i++) {
                         String columnName = metaData.getColumnName(i);
-                        if (columnName.equals("zoid")) {
+                        if (columnName.equals("f_id")) {
                             String columnVal = resultSet.getString(i);
                             if (columnVal == null || columnName.isEmpty()) {
                                 throw new Exception("f_id was null for one of the files in path.");
