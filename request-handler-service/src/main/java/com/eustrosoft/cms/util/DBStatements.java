@@ -92,7 +92,7 @@ public class DBStatements {
             } else if (i == 1) {
                 builder.add("FF.ZOID, FF.name");
             } else {
-                builder.add(String.format("FD%d.f_id, FD%d.fname", i - 2, i - 2));
+                builder.add(String.format("FD%d.zoid, FD%d.f_id, FD%d.fname", i - 2, i - 2, i - 2));
             }
             if (i != lvl - 1) {
                 builder.comma();

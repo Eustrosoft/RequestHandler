@@ -261,8 +261,9 @@ public final class FSDao extends BasicDAO {
                     resultSet.close();
                 }
             }
-            commitObject("FS.F", status.getZoid(), status.getZver());
-            commitObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
+            ExecStatus execStatus = commitObject("FS.F", status.getZoid(), status.getZver());
+            ExecStatus execStatus1 = commitObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
+            System.out.println();
         } catch (Exception exception) {
             try {
                 rollbackObject("FS.F", status.getZoid(), status.getZver());

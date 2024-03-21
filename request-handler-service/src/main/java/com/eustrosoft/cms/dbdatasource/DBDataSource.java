@@ -432,9 +432,9 @@ public class DBDataSource implements CMSDataSource {
             return true;
         }
         String fileName = getLastLevelFromPath(path);
-        Long zoid = Long.parseLong(getLastLevelFromPath(getFullPath(path)));
+        Long fId = Long.parseLong(getLastLevelFromPath(getFullPath(path)));
         FSDao fsDao = new FSDao(poolConnection);
-        FDir fDir = fsDao.getFDir(zoid, fileName);
+        FDir fDir = fsDao.getFDir(fId, fileName);
         if (Objects.nonNull(data.getDescription())) {
             fDir.setDescription(data.getDescription());
         }
