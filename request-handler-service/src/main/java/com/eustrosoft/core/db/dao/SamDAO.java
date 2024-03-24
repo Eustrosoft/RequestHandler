@@ -183,4 +183,18 @@ public class SamDAO extends BasicDAO {
         }
         return scopes;
     }
+
+    public Long getUserDefaultZsid() throws SQLException {
+        Connection connection = getPoolConnection().get();
+        PreparedStatement preparedStatement = DBStatements.getFunctionStatement(connection, "SAM.get_user_sid");
+        Long userZsid = null;
+        if (preparedStatement != null) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            userZsid = resultSet.getLong("get_user_sid");
+            preparedStatement.close();
+            resultSet.close();
+        }
+        return userZsid;
+    }
 }

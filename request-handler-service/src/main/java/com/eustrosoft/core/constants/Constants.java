@@ -59,6 +59,7 @@ public final class Constants {
     public static final String REQUEST_USER_AVAILABLE_SLVL = "user_available_slvl";
     public static final String REQUEST_USER_LANG = "user_lang";
     public static final String REQUEST_ZSID = "zsid";
+    public static final String REQUEST_DEFAULT_ZSID = "default_zsid";
 
     // All subsystems
     public static final String REQUEST_SEND = "send";
