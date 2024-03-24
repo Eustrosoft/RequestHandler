@@ -460,7 +460,7 @@ public class DBDataSource implements CMSDataSource {
 
         String dirToMove = direction.substring(0, direction.length() - lastLevelDist.length() - 1);
         Long dirId = Long.parseLong(getLastLevelFromPath(getFullPath(dirToMove)));
-        FDir fDir = fsDao.getFDirByFileId(
+        FDir fDir = fsDao.getFDirZoid(
                 Long.parseLong(getLastLevelFromPath(getFullPathZoid(source))),
                 lastLevelDist
         );
