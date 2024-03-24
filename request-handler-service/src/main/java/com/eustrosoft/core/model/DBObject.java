@@ -112,6 +112,7 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
         }
     }
 
+    // TODO: do not use for short values
     protected <T> void trySet(Consumer<T> function, ResultSet resultSet, String name) {
         try {
             function.accept((T) resultSet.getObject(name));
@@ -119,6 +120,15 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
             function.accept(null);
         }
     }
+
+    protected Short getShort(ResultSet resultSet, String name) {
+        try {
+            return resultSet.getShort(name);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
 
     @Override
     public <T extends DBObject> void fillFromResultSet(ResultSet resultSet) throws SQLException {
@@ -128,7 +138,7 @@ public class DBObject implements IDBObject, ResultSetConverter<DBObject> {
         trySet(this::setZoid, resultSet, ZOID);
         trySet(this::setZver, resultSet, ZVER);
         trySet(this::setZrid, resultSet, ZRID);
-        trySet(this::setZlvl, resultSet, ZLVL);
+        setZlvl(getShort(resultSet, ZLVL));
         trySet(this::setZsid, resultSet, ZSID);
     }
 }
