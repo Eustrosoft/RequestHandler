@@ -460,7 +460,10 @@ public class DBDataSource implements CMSDataSource {
 
         String dirToMove = direction.substring(0, direction.length() - lastLevelDist.length() - 1);
         Long dirId = Long.parseLong(getLastLevelFromPath(getFullPath(dirToMove)));
-        FDir fDir = fsDao.getFDirByFileId(fileId, lastLevelDist);
+        FDir fDir = fsDao.getFDirByFileId(
+                Long.parseLong(getLastLevelFromPath(getFullPathZoid(source))),
+                lastLevelDist
+        );
         ExecStatus opened = fsDao.openObject("FS.F", dirId);
         try {
             if (!opened.isOk()) {
@@ -473,7 +476,7 @@ public class DBDataSource implements CMSDataSource {
             if (!objectInScope.isOk()) {
                 throw new Exception(objectInScope.getCaption());
             }
-            fsDao.createFDir(
+            ExecStatus status = fsDao.createFDir(
                     opened.getZoid(),
                     opened.getZver(),
                     null,
@@ -481,12 +484,13 @@ public class DBDataSource implements CMSDataSource {
                     fDir.getFileName(),
                     fDir.getDescription()
             );
-        } finally {
-            try {
-                fsDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
-            } catch (Exception e) {
-                // e.printStackTrace();
+            if (!status.isOk()) {
+                throw new Exception(status.getCaption());
             }
+            fsDao.commitObject("FS.F", opened.getZoid(), opened.getZver());
+        } catch (Exception exception) {
+            fsDao.rollbackObject("FS.F", opened.getZoid(), opened.getZver());
+            throw new Exception(exception.getMessage());
         }
         return true;
     }
