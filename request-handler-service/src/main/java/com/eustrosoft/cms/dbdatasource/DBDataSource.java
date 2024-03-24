@@ -251,7 +251,6 @@ public class DBDataSource implements CMSDataSource {
                         FileType.FILE,
                         fileName,
                         MimeType.getMimeTypeByFileName(fileName),
-                        params.getSecurityLevel(),
                         params.getDescription()
                 );
                 if (!fFile.isOk()) {
@@ -315,7 +314,6 @@ public class DBDataSource implements CMSDataSource {
                 FileType.DIRECTORY,
                 dirName,
                 null,
-                securityLevel,
                 description
         );
         if (!fFile.isOk()) {

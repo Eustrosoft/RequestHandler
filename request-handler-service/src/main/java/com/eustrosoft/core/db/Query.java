@@ -6,6 +6,8 @@
 
 package com.eustrosoft.core.db;
 
+import java.sql.SQLException;
+
 import static com.eustrosoft.core.constants.SQLConstants.*;
 
 public class Query {
@@ -135,6 +137,14 @@ public class Query {
 
         public Builder and() {
             this.query.addToQuery(AND + SPACE);
+            return this;
+        }
+
+        public Builder check() throws IllegalArgumentException {
+            String s = this.query.toString();
+            if (s.contains("\"")) {
+                throw new IllegalArgumentException("Illegal sql query");
+            }
             return this;
         }
 

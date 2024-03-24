@@ -14,13 +14,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Vector;
 
 import static com.eustrosoft.cms.util.DBStatements.getBlobDetails;
 import static com.eustrosoft.cms.util.DBStatements.getBlobLength;
-import static com.eustrosoft.core.db.util.DBUtils.setByteaOrNull;
-import static com.eustrosoft.core.db.util.DBUtils.setIntOrNull;
 import static com.eustrosoft.core.db.util.DBUtils.setLongOrNull;
 import static com.eustrosoft.core.db.util.DBUtils.setNull;
 import static com.eustrosoft.core.db.util.DBUtils.setStringOrNull;
@@ -64,12 +63,11 @@ public final class FSDao extends BasicDAO {
 
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
                                   FileType type, String name, String mimeType) throws SQLException {
-        return createFFile(objectZoid, objectVer, parentVer, type, name, mimeType,null, null);
+        return createFFile(objectZoid, objectVer, parentVer, type, name, mimeType, null);
     }
 
     public ExecStatus createFFile(String objectZoid, String objectVer, String parentVer,
-                                  FileType type, String name, String mimeType,
-                                  Integer securityLevel, String description) throws SQLException {
+                                  FileType type, String name, String mimeType, String description) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement statement
                 = connection.prepareStatement("SELECT FS.create_FFile(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -128,19 +126,21 @@ public final class FSDao extends BasicDAO {
     }
 
     public ExecStatus createFBlob(String zoid, String zver, String zpid,
-                                  String hex, String chunk, String chunkSize, String crc32) throws SQLException {
+                                  String hex, String chunk, String shunkSize, String crc32) throws SQLException {
         Connection connection = getPoolConnection().get();
-        PreparedStatement statement = connection.prepareStatement("SELECT FS.create_FBlob(?, ?, ?, ?, ?, ?, ?)");
-        setLongOrNull(statement, 1, Long.parseLong(zoid));
-        setLongOrNull(statement, 2, Long.parseLong(zver));
-        setLongOrNull(statement, 3, Long.parseLong(zpid));
-        setByteaOrNull(statement, 4, hex);
-        setLongOrNull(statement, 5, Long.parseLong(chunk));
-        setLongOrNull(statement, 6, Long.parseLong(chunkSize));
-        setIntOrNull(statement, 7, Integer.parseInt(crc32.substring(3), 16));
+        String query = Query.builder()
+                .select().add("FS.create_FBlob").leftBracket()
+                .add(String.format(
+                        "%s, %s, %s, '\\x%s', %s, %s, %s",
+                        zoid, zver, zpid,
+                        hex, chunk, shunkSize,
+                        Integer.parseInt(crc32.substring(3), 16)
+                ))
+                .rightBracket().check().buildWithSemicolon().toString();
+        Statement statement = connection.createStatement();
         ExecStatus status = new ExecStatus();
         if (statement != null) {
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery(query);
             status.fillFromResultSet(resultSet);
             statement.close();
             resultSet.close();
@@ -259,11 +259,13 @@ public final class FSDao extends BasicDAO {
                     updatedStatus.fillFromResultSet(resultSet);
                     statement.close();
                     resultSet.close();
+                    if (!updatedStatus.isOk()) {
+                        throw new IllegalArgumentException(updatedStatus.getCaption());
+                    }
                 }
             }
             ExecStatus execStatus = commitObject("FS.F", status.getZoid(), status.getZver());
             ExecStatus execStatus1 = commitObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
-            System.out.println();
         } catch (Exception exception) {
             try {
                 rollbackObject("FS.F", status.getZoid(), status.getZver());
@@ -271,42 +273,7 @@ public final class FSDao extends BasicDAO {
             try {
                 rollbackObject("FS.F", fDirOpen.getZoid(), fDirOpen.getZver());
             } catch (Exception ex) {}
-            throw new IllegalArgumentException("Exception occurred while updating");
-        }
-    }
-
-    public void updateFFile(FFile fFile) throws Exception {
-        ExecStatus status = null;
-        try {
-            if (fFile == null) {
-                throw new Exception("FFile is null while updating.");
-            }
-            status = openObject("FS.F", fFile.getZoid());
-            fFile.setZver(status.getZver());
-            if (status.isOk()) {
-                Connection connection = getPoolConnection().get();
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        Query.builder()
-                                .select()
-                                .add("FS.update_FFile")
-                                .leftBracket()
-                                .add(fFile.toUpdateString())
-                                .rightBracket()
-                                .buildWithSemicolon()
-                                .toString()
-                );
-                ExecStatus updatedStatus = new ExecStatus();
-                if (preparedStatement != null) {
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    updatedStatus.fillFromResultSet(resultSet);
-                    preparedStatement.close();
-                    resultSet.close();
-                }
-            }
-        } finally {
-            if (status != null) {
-                commitObject("FS.F", status.getZoid(), status.getZver());
-            }
+            throw new IllegalArgumentException(exception.getMessage());
         }
     }
 }
