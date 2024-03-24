@@ -375,8 +375,18 @@ public class DBDataSource implements CMSDataSource {
         return objectCommited.getZoid().toString();
     }
 
+    // get by f_id
     @Override
     public String getFullPath(String source) throws Exception {
+        return getFullPath(source, FILE_ID);
+    }
+
+    // get by zoid
+    public String getFullPathZoid(String source) throws Exception {
+        return getFullPath(source, ZOID);
+    }
+
+    public String getFullPath(String source, String paramName) throws Exception {
         if (source == null || source.isEmpty()) {
             return "";
         }
@@ -397,7 +407,7 @@ public class DBDataSource implements CMSDataSource {
                     int columnCount = metaData.getColumnCount();
                     for (int i = 1; i <= columnCount; i++) {
                         String columnName = metaData.getColumnName(i);
-                        if (columnName.equals("f_id")) {
+                        if (columnName.equals(paramName)) {
                             String columnVal = resultSet.getString(i);
                             if (columnVal == null || columnName.isEmpty()) {
                                 throw new Exception("f_id was null for one of the files in path.");
@@ -432,7 +442,7 @@ public class DBDataSource implements CMSDataSource {
             return true;
         }
         //String fileName = getLastLevelFromPath(path);
-        Long zoid = Long.parseLong(getLastLevelFromPath(getFullPath(path)));
+        Long zoid = Long.parseLong(getLastLevelFromPath(getFullPathZoid(path)));
         FSDao fsDao = new FSDao(poolConnection);
         FDir fDir = fsDao.getFDir(zoid);
         if (Objects.nonNull(data.getDescription())) {

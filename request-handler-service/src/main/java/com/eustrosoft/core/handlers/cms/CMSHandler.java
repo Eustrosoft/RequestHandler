@@ -103,7 +103,8 @@ public final class CMSHandler implements Handler {
                 break;
             case REQUEST_MOVE:
                 boolean notEmptyTo = to != null && !to.isEmpty();
-                if ((from != null && !from.isEmpty()) && notEmptyTo) {
+                boolean notEmptyFrom = from != null && !from.isEmpty();
+                if (notEmptyFrom && notEmptyTo) {
                     move(from, to);
                 }
                 if (cmsDataSource instanceof DBDataSource && notEmptyTo) {
