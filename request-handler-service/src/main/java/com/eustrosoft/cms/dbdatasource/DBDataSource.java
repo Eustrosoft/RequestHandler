@@ -452,9 +452,7 @@ public class DBDataSource implements CMSDataSource {
 
     @Override
     public boolean copy(String source, String direction) throws Exception {
-        String fullPath = getFullPath(source);
-        String lastLevelFromPath = getLastLevelFromPath(fullPath);
-        Long fileId = Long.parseLong(lastLevelFromPath);
+        String fileName = getLastLevelFromPath(source);
         String lastLevelDist = getLastLevelFromPath(direction);
         FSDao fsDao = new FSDao(poolConnection);
 
@@ -462,7 +460,7 @@ public class DBDataSource implements CMSDataSource {
         Long dirId = Long.parseLong(getLastLevelFromPath(getFullPath(dirToMove)));
         FDir fDir = fsDao.getFDirZoid(
                 Long.parseLong(getLastLevelFromPath(getFullPathZoid(source))),
-                lastLevelDist
+                fileName
         );
         ExecStatus opened = fsDao.openObject("FS.F", dirId);
         try {
