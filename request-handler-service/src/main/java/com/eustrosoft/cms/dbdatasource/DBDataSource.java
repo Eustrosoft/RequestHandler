@@ -407,7 +407,7 @@ public class DBDataSource implements CMSDataSource {
                     int columnCount = metaData.getColumnCount();
                     for (int i = 1; i <= columnCount; i++) {
                         String columnName = metaData.getColumnName(i);
-                        if (columnName.equals(paramName)) {
+                        if (columnName.equalsIgnoreCase(paramName)) {
                             String columnVal = resultSet.getString(i);
                             if (columnVal == null || columnName.isEmpty()) {
                                 throw new Exception("f_id was null for one of the files in path.");
@@ -441,10 +441,10 @@ public class DBDataSource implements CMSDataSource {
         if (isEmpty(path) || data.getDescription() == null) {
             return true;
         }
-        //String fileName = getLastLevelFromPath(path);
+        String fileName = getLastLevelFromPath(path);
         Long zoid = Long.parseLong(getLastLevelFromPath(getFullPathZoid(path)));
         FSDao fsDao = new FSDao(poolConnection);
-        FDir fDir = fsDao.getFDir(zoid);
+        FDir fDir = fsDao.getFDirZoid(zoid, fileName);
         if (Objects.nonNull(data.getDescription())) {
             fDir.setDescription(data.getDescription());
         }
@@ -505,7 +505,7 @@ public class DBDataSource implements CMSDataSource {
             copy(source, direction);
             delete(source);
         } else if (!lastLevelSource.equals(lastLevelDist)) {
-            String zoid = getLastLevelFromPath(getFullPath(source));
+            String zoid = getLastLevelFromPath(getFullPathZoid(source));
             if (!zoid.isEmpty()) {
                 FSDao fsDao = new FSDao(poolConnection);
                 fsDao.renameFile(
