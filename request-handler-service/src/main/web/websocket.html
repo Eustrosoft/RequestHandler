@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Socket example</title>
+</head>
+<script type="text/javascript">
+    let ws = new WebSocket("ws://localhost:8080/eustrosofthandler_war/api/chat");
+
+    ws.onmessage = function (event) {
+        let chat = document.getElementById("chat");
+        chat.innerHTML += event.data + "\n";
+    };
+
+    ws.onerror = function (event) {
+        console.log("Error ", event)
+    }
+
+    function sendMsg() {
+        let messageValue = document.getElementById("msg").value;
+        if (messageValue) {
+            ws.send(JSON.stringify({
+                s: "msg",
+                r: "send",
+                params: {
+                    zoid: 1552429,
+                    content: messageValue,
+                    type: "M",
+                    reference: ""
+                },
+                l: "en-US"
+            }));
+        }
+        document.getElementById("msg").value = "";
+    }
+</script>
+<body>
+<h1>Live Chat updates</h1>
+
+<div>
+    <textarea id="chat" class="chat" readonly="readonly" cols="50" rows="30"></textarea>
+    <div>
+        <input type="text" name="msg" id="msg" placeholder="Enter message here"/>
+        <button onclick="return sendMsg();">Enter</button>
+    </div>
+</div>
+</body>
+</html>
