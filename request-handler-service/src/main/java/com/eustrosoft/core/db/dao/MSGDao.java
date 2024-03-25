@@ -75,7 +75,7 @@ public final class MSGDao extends BasicDAO {
                         "tis.v_zobject as ts on msg.zoid = ts.zoid where ts.ztype = 'MSG.C'"
         );
         if (condition != null && !condition.isEmpty()) {
-            queryBuilder.append(" WHERE ").append(condition);
+            queryBuilder.append(" AND ").append(condition);
         }
         PreparedStatement preparedStatement = connection.prepareStatement(
                 queryBuilder.toString()
