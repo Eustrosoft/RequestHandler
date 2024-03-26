@@ -232,7 +232,6 @@ public final class MSGHandler implements Handler {
             }
         }
         resultSet.close();
-        Collections.reverse(objects);
         return objects;
     }
 }
