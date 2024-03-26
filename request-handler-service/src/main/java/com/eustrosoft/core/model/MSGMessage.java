@@ -41,7 +41,7 @@ public class MSGMessage extends DBObject {
     }
 
     public MSGMessage(String content, Long answerId, MSGMessageType type) {
-        this.content = content;
+        this.content = getProcessedContent(content);
         this.answerId = answerId;
         this.type = type;
     }
@@ -96,5 +96,9 @@ public class MSGMessage extends DBObject {
 
     public void setUser(UserDTO user) {
         this.user = user;
+    }
+
+    private String getProcessedContent(String content) {
+        return content.replaceAll("[\\n\\t\\r]+$", "");
     }
 }

@@ -161,8 +161,13 @@ public final class MSGHandler implements Handler {
         if (params.getContent() == null || params.getContent().isEmpty()) {
             throw new IllegalArgumentException("Message content can not be null or empty");
         }
-        MSGDao functions = new MSGDao(poolConnection);
-        ExecStatus message = functions.createMessage(
+        MSGDao dao = new MSGDao(poolConnection);
+        MSGChannel chat = dao.getChat(params.getZoid());
+        if (chat != null &&
+                (chat.getStatus() == null || chat.getStatus().equals(MSGChannelStatus.C))) {
+            throw new IllegalArgumentException("Can not send messages to the closed chat");
+        }
+        ExecStatus message = dao.createMessage(
                 params.getZoid(),
                 new MSGMessage(
                         params.getContent(),
