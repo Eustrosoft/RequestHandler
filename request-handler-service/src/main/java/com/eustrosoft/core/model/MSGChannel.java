@@ -7,6 +7,7 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.model.ranges.MSGChannelStatus;
+import com.eustrosoft.core.tools.json.JsonNotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import static com.eustrosoft.core.constants.DBConstants.OBJ_ID;
 import static com.eustrosoft.core.constants.DBConstants.STATUS;
 import static com.eustrosoft.core.constants.DBConstants.SUBJECT;
 
+@JsonNotNull
 public class MSGChannel extends DBObject {
     private String subject;
     private Long documentId;

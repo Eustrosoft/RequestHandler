@@ -71,8 +71,8 @@ public final class MSGDao extends BasicDAO {
         Connection connection = getPoolConnection().get();
         String condition = MSGChannelStatus.toSQLWhere(String.format("%s.%s", "msg", STATUS), statuses);
         StringBuilder queryBuilder = new StringBuilder(
-                "select ts.zoid, ts.zver, msg.status from msg.v_cchannel as msg left join " +
-                        "tis.v_zobject as ts on msg.zoid = ts.zoid where ts.ztype = 'MSG.C'"
+                "select ZO.zoid, ZO.zver, MSG.status from msg.v_cchannel MSG, " +
+                        "tis.v_zobject ZO where ZO.zoid = MSG.zoid AND ZO.ztype = 'MSG.C'"
         );
         if (condition != null && !condition.isEmpty()) {
             queryBuilder.append(" AND ").append(condition);
