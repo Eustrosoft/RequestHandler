@@ -162,11 +162,7 @@ public final class MSGHandler implements Handler {
             throw new IllegalArgumentException("Message content can not be null or empty");
         }
         MSGDao dao = new MSGDao(poolConnection);
-        MSGChannel chat = dao.getChat(params.getZoid());
-        if (chat != null &&
-                (chat.getStatus() == null || chat.getStatus().equals(MSGChannelStatus.C))) {
-            throw new IllegalArgumentException("Can not send messages to the closed chat");
-        }
+        checkIfChatClosed(dao, params.getZoid());
         ExecStatus message = dao.createMessage(
                 params.getZoid(),
                 new MSGMessage(
@@ -182,8 +178,9 @@ public final class MSGHandler implements Handler {
     }
 
     public void updateMessage(Long zoid, Long zrid, String content, Long answerId, MSGMessageType type) throws Exception {
-        MSGDao functions = new MSGDao(poolConnection);
-        functions.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
+        MSGDao dao = new MSGDao(poolConnection);
+        checkIfChatClosed(dao, zoid);
+        dao.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
     }
 
     private void deleteChannel(Long zoid, Long zver) throws Exception {
@@ -191,14 +188,16 @@ public final class MSGHandler implements Handler {
         functions.deleteChannel(zoid, zver);
     }
 
-    public void deleteMessage(Long chatId, Long messageId) throws Exception {
-        MSGDao functions = new MSGDao(poolConnection);
-        functions.deleteMessage(chatId, messageId);
+    public void deleteMessage(Long zoid, Long zrid) throws Exception {
+        MSGDao dao = new MSGDao(poolConnection);
+        checkIfChatClosed(dao, zoid);
+        dao.deleteMessage(zoid, zrid);
     }
 
     public void changeChannelStatus(Long zoid, Long zrid, String content, Long docId, MSGChannelStatus status) throws Exception {
-        MSGDao functions = new MSGDao(poolConnection);
-        functions.updateChannel(new MSGChannel(zoid, null, zrid, content, docId, status));
+        MSGDao dao = new MSGDao(poolConnection);
+        checkIfChatClosed(dao, zoid);
+        dao.updateChannel(new MSGChannel(zoid, null, zrid, content, docId, status));
     }
 
     private List<MSGMessage> processResultSetToMSGMessage(ResultSet resultSet) throws Exception {
@@ -238,5 +237,13 @@ public final class MSGHandler implements Handler {
         }
         resultSet.close();
         return objects;
+    }
+
+    private void checkIfChatClosed(MSGDao dao, Long zoid) throws Exception {
+        MSGChannel chat = dao.getChat(zoid);
+        if (chat != null &&
+                (chat.getStatus() == null || chat.getStatus().equals(MSGChannelStatus.C))) {
+            throw new IllegalArgumentException("Can not send messages to the closed chat");
+        }
     }
 }
