@@ -7,16 +7,20 @@
 package com.eustrosoft.core;
 
 import com.eustrosoft.core.config.ChatConfiguration;
+import com.eustrosoft.core.handlers.msg.MSGHandler;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.EndpointConfig;
+import javax.websocket.MessageHandler;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,22 +30,7 @@ public class ChatServlet extends HttpServlet {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
-        // check user is loggined
-//        try {
-//            checkLogin(session.get, resp, SUBSYSTEM_CMS);
-//        } catch (Exception ex) {
-//            try {
-//                printError(resp, getUnauthorizedResponse());
-//            } catch (Exception exception) {
-//                // ignored
-//            }
-//            return;
-//        }
-        try {
-            HttpServletResponse response = (HttpServletResponse) config.getUserProperties().get(HttpServletResponse.class.getName());
-        } catch (Exception ex) {
-
-        }
+        Map<String, Object> userProperties = config.getUserProperties();
         userSessions.add(session);
     }
 
@@ -49,7 +38,12 @@ public class ChatServlet extends HttpServlet {
     public void onMessage(String message, Session session) {
         // send message to specific chat
 
+        try {
 
+
+        } catch (Exception ex) {
+
+        }
         for (Session ses : userSessions) {
             ses.getAsyncRemote().sendText(message);
         }
