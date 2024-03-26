@@ -263,7 +263,7 @@ public class JsonParser {
         if (obj instanceof Number) {
             finalString = getNumberValue((Number) obj);
         } else if (obj instanceof CharSequence) {
-            finalString = String.format("\"%s\"", processString((CharSequence) obj));
+            finalString = String.format("\"%s\"", getString(obj.toString()));
         } else if (obj instanceof Boolean) {
             finalString = String.format("%s", obj.toString());
         } else {
@@ -273,11 +273,11 @@ public class JsonParser {
     }
 
     private String processString(CharSequence str) {
-
-        return str.toString().replaceAll("\"", "\\\\\"")
+        return str.toString()
+                .replaceAll("\"", "\\\\\"")
                 .replaceAll(ESCAPED_SLASH, ESCAPED_SLASH + ESCAPED_SLASH)
                 .replaceAll("\\n", ESCAPED_SLASH + "n")
-                .replaceAll("\\t", ESCAPED_SLASH+ "t")
+                .replaceAll("\\t", ESCAPED_SLASH + "t")
                 .replaceAll("\\r", ESCAPED_SLASH + "r");
 
     }
@@ -311,5 +311,35 @@ public class JsonParser {
             // All classes searched
         }
         return fields.toArray(new Field[0]);
+    }
+
+    private String getString(String str) {
+        if (str == null) {
+            return "null";
+        }
+        StringBuilder buffer = new StringBuilder();
+        int length = str.length();
+        int i = 0;
+        while (i < length) {
+            char c = str.charAt(i);
+            switch (c) {
+                case '\n':
+                    buffer.append("\\n");
+                    break;
+                case '\r':
+                    buffer.append("\\r");
+                    break;
+                case '"':
+                    buffer.append("\\\"");
+                    break;
+                case '\\':
+                    buffer.append("\\\\");
+                    break;
+                default:
+                    buffer.append(c);
+            }
+            i++;
+        }
+        return buffer.toString();
     }
 }
