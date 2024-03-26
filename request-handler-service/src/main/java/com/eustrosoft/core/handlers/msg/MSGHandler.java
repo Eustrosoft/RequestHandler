@@ -243,7 +243,7 @@ public final class MSGHandler implements Handler {
         MSGChannel chat = dao.getChat(zoid);
         if (chat != null &&
                 (chat.getStatus() == null || chat.getStatus().equals(MSGChannelStatus.C))) {
-            throw new IllegalArgumentException("Can not send messages to the closed chat");
+            throw new IllegalArgumentException("Can not manipulate with the closed chat");
         }
     }
 }
