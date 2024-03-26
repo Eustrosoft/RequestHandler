@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class JsonParser {
+    private final static String ESCAPED_SLASH = "\\\\";
     private final static String NULL = "null";
     private final static String START_OBJ = "{";
     private final static String END_OBJ = "}";
@@ -272,10 +273,12 @@ public class JsonParser {
     }
 
     private String processString(CharSequence str) {
+
         return str.toString().replaceAll("\"", "\\\\\"")
-                .replaceAll("\\n", "\\\\n")
-                .replaceAll("\\t", "\\\\t")
-                .replaceAll("\\r", "\\\\r");
+                .replaceAll(ESCAPED_SLASH, ESCAPED_SLASH + ESCAPED_SLASH)
+                .replaceAll("\\n", ESCAPED_SLASH + "n")
+                .replaceAll("\\t", ESCAPED_SLASH+ "t")
+                .replaceAll("\\r", ESCAPED_SLASH + "r");
 
     }
 
