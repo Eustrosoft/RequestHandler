@@ -199,7 +199,15 @@ public final class MSGHandler implements Handler {
 
     public void changeChannelStatus(Long zoid, Long zrid, String content, Long docId, MSGChannelStatus status) throws Exception {
         MSGDao dao = new MSGDao(poolConnection);
-        checkIfChatClosed(dao, zoid);
+        MSGChannel chat = dao.getChat(zoid);
+        if (chat == null) {
+            throw new IllegalArgumentException("Chat not found");
+        }
+        boolean chatReopen = chat.getStatus().equals(MSGChannelStatus.C)
+                                && status.equals(MSGChannelStatus.W);
+        if (!chatReopen) {
+            checkIfChatClosed(dao, zoid);
+        }
         dao.updateChannel(new MSGChannel(zoid, null, zrid, content, docId, status));
     }
 
