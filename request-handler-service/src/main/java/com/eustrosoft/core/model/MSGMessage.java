@@ -6,6 +6,7 @@
 
 package com.eustrosoft.core.model;
 
+import com.eustrosoft.core.db.util.DBUtils;
 import com.eustrosoft.core.dto.UserDTO;
 import com.eustrosoft.core.model.ranges.MSGMessageType;
 import com.eustrosoft.core.tools.DateTimeZone;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import static com.eustrosoft.core.constants.DBConstants.CONTENT;
 import static com.eustrosoft.core.constants.DBConstants.MSG_ID;
 import static com.eustrosoft.core.constants.DBConstants.TYPE;
+import static com.eustrosoft.core.constants.DBConstants.ZUID;
 
 public class MSGMessage extends DBObject {
     private String content;
@@ -49,9 +51,13 @@ public class MSGMessage extends DBObject {
     @Override
     public void fillFromResultSet(ResultSet resultSet) throws SQLException {
         super.fillFromResultSet(resultSet);
-        setContent(resultSet.getString(CONTENT));
-        setAnswerId(resultSet.getLong(MSG_ID));
+        setContent(DBUtils.getStrValueOrEmpty(resultSet, CONTENT));
+        setAnswerId(DBUtils.getLongValueOrEmpty(resultSet, MSG_ID));
         setType(MSGMessageType.of(resultSet.getString(TYPE)));
+        Long userId = DBUtils.getLongValueOrEmpty(resultSet, ZUID);
+        if (userId != null) {
+            setUser(new UserDTO(userId));
+        }
     }
 
     public void merge(MSGMessage otherMessage) {

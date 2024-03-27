@@ -9,6 +9,13 @@ public class UserDTO {
     private String role;
     private String icon;
 
+    public UserDTO() {
+    }
+
+    public UserDTO(Long id) {
+        this.id = id;
+    }
+
     public static UserDTO fromUser(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());

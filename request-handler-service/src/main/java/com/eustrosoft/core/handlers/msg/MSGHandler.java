@@ -253,7 +253,7 @@ public final class MSGHandler implements Handler {
         MSGDao dao = new MSGDao(connection);
         SamDAO samDAO = new SamDAO(connection);
         Long userId = samDAO.getUserId();
-        MSGMessage message = dao.getMessage(zoid, zrid);
+        MSGMessage message = dao.getMessageWithUserId(zoid, zrid);
         if (message == null) {
             throw new Exception("Message not found");
         }
