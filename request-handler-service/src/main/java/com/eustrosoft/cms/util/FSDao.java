@@ -126,17 +126,18 @@ public final class FSDao extends BasicDAO {
     }
 
     public ExecStatus createFBlob(String zoid, String zver, String zpid,
-                                  String hex, String chunk, String shunkSize, String crc32) throws SQLException {
+                                  String hex, String chunk, String chunkSize, String crc32) throws SQLException {
         Connection connection = getPoolConnection().get();
         String query = Query.builder()
                 .select().add("FS.create_FBlob").leftBracket()
-                .add(String.format(
-                        "%s, %s, %s, '\\x%s', %s, %s, %s",
-                        zoid, zver, zpid,
-                        hex, chunk, shunkSize,
-                        Integer.parseInt(crc32.substring(3), 16)
-                ))
-                .rightBracket().check().buildWithSemicolon().toString();
+                .addWithComma(zoid)
+                .addWithComma(zver)
+                .addWithComma(zpid)
+                .addWithComma("'\\x" + hex + "'")
+                .addWithComma(chunk)
+                .addWithComma(chunkSize)
+                .add(Integer.parseInt(crc32.substring(3), 16))
+                .rightBracket().checkQuotes().buildWithSemicolon().toString();
         Statement statement = connection.createStatement();
         ExecStatus status = new ExecStatus();
         if (statement != null) {
