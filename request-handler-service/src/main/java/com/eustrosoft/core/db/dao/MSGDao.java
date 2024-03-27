@@ -148,9 +148,11 @@ public final class MSGDao extends BasicDAO {
     public MSGMessage getMessageWithUserId(Long zoid, Long zrid) throws SQLException {
         Connection connection = getPoolConnection().get();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT MSG.zoid, MSG.type, MSG.content, MSG.zrid, MSG.msg_id, ZO.zuid, ZO.zoid " +
-                        "FROM MSG.V_CMsg MSG, TIS.v_zobject ZO where MSG.zoid = ? " +
-                        "AND msg.zrid = ? AND MSG.zoid = ZO.zoid"
+                "SELECT CM.zoid,CM.zver,CM.zrid,CM.content,CM.msg_id,CM.type, ZO.zuid,ZO.zdate,XU.login,XU.full_name,ZO.qrsq > CM.zrid " +
+                        "FROM msg.V_CMsg as CM " +
+                        "LEFT OUTER JOIN TIS.VH_ZObject as ZO ON (CM.zoid = ZO.zoid AND CM.zver = ZO.zver) " +
+                        "LEFT OUTER JOIN SAM.V_User as XU ON (XU.id = ZO.zuid) " +
+                        "WHERE CM.zoid = ? AND CM.zrid = ?"
         );
         setLongOrNull(preparedStatement, 1, zoid);
         setLongOrNull(preparedStatement, 2, zrid);

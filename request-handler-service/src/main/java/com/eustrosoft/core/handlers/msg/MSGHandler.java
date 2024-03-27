@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.eustrosoft.core.constants.Constants.*;
 import static com.eustrosoft.core.constants.DBConstants.ZDATE;
@@ -250,12 +251,12 @@ public final class MSGHandler implements Handler {
     }
 
     private void checkUserMessage(QDBPConnection connection, Long zoid, Long zrid) throws Exception {
-        MSGDao dao = new MSGDao(connection);
         SamDAO samDAO = new SamDAO(connection);
         Long userId = samDAO.getUserId();
+        MSGDao dao = new MSGDao(connection);
         MSGMessage message = dao.getMessageWithUserId(zoid, zrid);
         if (message == null) {
-            throw new Exception("Message not found");
+            throw new Exception("Can not find message");
         }
         UserDTO user = message.getUser();
         if (user != null && userId != null) {
