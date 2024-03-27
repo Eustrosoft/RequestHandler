@@ -180,6 +180,7 @@ public final class MSGHandler implements Handler {
     public void updateMessage(Long zoid, Long zrid, String content, Long answerId, MSGMessageType type) throws Exception {
         MSGDao dao = new MSGDao(poolConnection);
         checkIfChatClosed(dao, zoid);
+        checkUserMessage(poolConnection, zoid, zrid);
         dao.updateMessage(new MSGMessage(zoid, null, zrid, content, answerId, type));
     }
 
@@ -191,6 +192,7 @@ public final class MSGHandler implements Handler {
     public void deleteMessage(Long zoid, Long zrid) throws Exception {
         MSGDao dao = new MSGDao(poolConnection);
         checkIfChatClosed(dao, zoid);
+        checkUserMessage(poolConnection, zoid, zrid);
         dao.deleteMessage(zoid, zrid);
     }
 
@@ -245,5 +247,22 @@ public final class MSGHandler implements Handler {
                 (chat.getStatus() == null || chat.getStatus().equals(MSGChannelStatus.C))) {
             throw new IllegalArgumentException("Can not manipulate with the closed chat");
         }
+    }
+
+    private void checkUserMessage(QDBPConnection connection, Long zoid, Long zrid) throws Exception {
+        MSGDao dao = new MSGDao(connection);
+        SamDAO samDAO = new SamDAO(connection);
+        Long userId = samDAO.getUserId();
+        MSGMessage message = dao.getMessage(zoid, zrid);
+        if (message == null) {
+            throw new Exception("Message not found");
+        }
+        UserDTO user = message.getUser();
+        if (user != null && userId != null) {
+            if (user.getId().equals(userId)) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("You can not manipulate other user messages");
     }
 }
