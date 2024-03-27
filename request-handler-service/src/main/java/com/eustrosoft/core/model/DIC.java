@@ -1,6 +1,7 @@
 package com.eustrosoft.core.model;
 
 import com.eustrosoft.core.constants.DBConstants;
+import com.eustrosoft.core.tools.json.JsonNotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,6 +9,7 @@ import java.sql.SQLException;
 import static com.eustrosoft.core.constants.DBConstants.CODE;
 import static com.eustrosoft.core.constants.DBConstants.VALUE;
 
+@JsonNotNull
 public class DIC extends DBObject {
     private String dic;
     private String code;
