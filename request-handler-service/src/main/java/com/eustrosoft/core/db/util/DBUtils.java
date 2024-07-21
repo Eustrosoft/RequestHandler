@@ -7,7 +7,6 @@
 package com.eustrosoft.core.db.util;
 
 import com.eustrosoft.cms.CMSType;
-import javax.xml.bind.DatatypeConverter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,15 +58,6 @@ public final class DBUtils {
             preparedStatement.setNull(pos, Types.VARCHAR);
         } else {
             preparedStatement.setString(pos, str);
-        }
-    }
-
-    public static void setByteaOrNull(PreparedStatement preparedStatement, int pos, String str)
-            throws SQLException {
-        if (str == null || str.isEmpty()) {
-            preparedStatement.setNull(pos, Types.BLOB);
-        } else {
-            preparedStatement.setBytes(pos, DatatypeConverter.parseHexBinary(str));
         }
     }
 

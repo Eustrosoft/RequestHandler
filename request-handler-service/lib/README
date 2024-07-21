@@ -1,0 +1,8 @@
+Place here jars to make the project
+
+Libraries:
+- DBPool-0.0.1.jar
+- javax.servlet-api-4.0.0.jar
+- postgresql-42.5.1.jar
+- SessionCookie-0.0.1.jar
+- commons-io.2.11.0.jar
